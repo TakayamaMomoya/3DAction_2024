@@ -130,7 +130,7 @@ HRESULT CPlayer::Init(void)
 
 	SetMotion(MOTION_WALK_FRONT);
 
-	EnableMotion(0, false);
+	//EnableMotion(0, false);
 
 	return S_OK;
 }
