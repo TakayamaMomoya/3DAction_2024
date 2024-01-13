@@ -195,7 +195,6 @@
     <ClCompile Include="code\object.cpp" />
     <ClCompile Include="code\object2D.cpp" />
     <ClCompile Include="code\object3D.cpp" />
-    <ClCompile Include="code\objectmanager.cpp" />
     <ClCompile Include="code\objectX.cpp" />
     <ClCompile Include="code\orbit.cpp" />
     <ClCompile Include="code\particle.cpp" />
@@ -258,7 +257,6 @@
     <ClInclude Include="code\object.h" />
     <ClInclude Include="code\object2D.h" />
     <ClInclude Include="code\object3D.h" />
-    <ClInclude Include="code\objectmanager.h" />
     <ClInclude Include="code\objectX.h" />
     <ClInclude Include="code\orbit.h" />
     <ClInclude Include="code\particle.h" />

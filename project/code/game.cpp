@@ -94,7 +94,7 @@ HRESULT CGame::Init(void)
 
 	if (pSound != nullptr)
 	{
-		pSound->Play(pSound->LABEL_BGM_GAME);
+		//pSound->Play(pSound->LABEL_BGM_GAME);
 	}
 
 #ifdef _DEBUG

@@ -20,6 +20,14 @@
 class CObject3D : public CObject
 {
 public:
+	enum MODE
+	{
+		MODE_NORMAL = 0,	// 通常モード
+		MODE_BILLBOARD,	// ビルボード
+		MODE_STRETCHBILLBOARD,	// ストレッチビルボード
+		MODE_MAX
+	};
+
 	CObject3D(int nPriority = 3);	// コンストラクタ
 	~CObject3D();	// デストラクタ
 
@@ -42,10 +50,12 @@ public:
 	void SetColor(D3DXCOLOR col);
 	void SetTex(D3DXVECTOR2 rd, D3DXVECTOR2 lu);
 	void SetVtx(void);
-	void EnableBillboard(bool bEnable) { m_bBillboard = bEnable; }
+	void SetMode(MODE mode);
 	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void) { return m_pVtxBuff; }
 
 private:
+	void SetVtxNormal(void);
+	void SetStretchBillboard(void);
 	void SetMtx(void);
 	void SetMtxBillboard(void);
 
@@ -58,7 +68,7 @@ private:
 	float m_width;	// 幅
 	float m_heigth;	// 高さ
 	int m_nIdxTexture;	// テクスチャの番号
-	bool m_bBillboard;	// ビルボードにするかどうか
+	MODE m_mode;	// モード
 };
 
 #endif

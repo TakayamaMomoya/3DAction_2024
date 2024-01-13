@@ -284,7 +284,12 @@ CAnim3D *CAnimEffect3D::CreateEffect(D3DXVECTOR3 pos, TYPE type)
 		{// テクスチャの設定
 			int nIdx = pTexture->Regist(&m_apAnimEffect[type]->acPath[0]);
 			pAnim3D->SetIdxTexture(nIdx);
-			pAnim3D->EnableBillboard(m_apAnimEffect[type]->bBillboard);
+
+			if (m_apAnimEffect[type]->bBillboard)
+			{
+				pAnim3D->SetMode(CAnim3D::MODE_BILLBOARD);
+			}
+
 			pAnim3D->SetVtx();
 		}
 	}

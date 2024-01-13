@@ -27,7 +27,6 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 	m_heigth = 0.0f;
 	m_pVtxBuff = nullptr;
 	m_nIdxTexture = -1;
-	m_bBillboard = false;
 }
 
 //=====================================================
@@ -120,6 +119,33 @@ void CObject3D::Update(void)
 //=====================================================
 void CObject3D::SetVtx(void)
 {
+	switch (m_mode)
+	{
+	case CObject3D::MODE_NORMAL:
+
+		SetVtxNormal();
+
+		break;
+	case CObject3D::MODE_BILLBOARD:
+
+		SetVtxNormal();
+
+		break;
+	case CObject3D::MODE_STRETCHBILLBOARD:
+
+		SetStretchBillboard();
+
+		break;
+	default:
+		break;
+	}
+}
+
+//=====================================================
+// 通常頂点設定
+//=====================================================
+void CObject3D::SetVtxNormal(void)
+{
 	if (m_pVtxBuff == nullptr)
 	{
 		return;
@@ -131,7 +157,47 @@ void CObject3D::SetVtx(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	if (m_bBillboard)
+	if (m_mode == MODE_BILLBOARD)
+	{
+		//頂点座標の設定
+		pVtx[0].pos = D3DXVECTOR3(-m_width, m_heigth, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(m_width, m_heigth, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_width, -m_heigth, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(m_width, -m_heigth, 0.0f);
+	}
+	else
+	{
+		//頂点座標の設定
+		pVtx[0].pos = D3DXVECTOR3(-m_width, 0.0f, m_heigth);
+		pVtx[1].pos = D3DXVECTOR3(m_width, 0.0f, m_heigth);
+		pVtx[2].pos = D3DXVECTOR3(-m_width, 0.0f, -m_heigth);
+		pVtx[3].pos = D3DXVECTOR3(m_width, 0.0f, -m_heigth);
+	}
+
+	//頂点バッファをアンロック
+	m_pVtxBuff->Unlock();
+}
+
+//=====================================================
+// ストレッチビルボード頂点設定
+//=====================================================
+void CObject3D::SetStretchBillboard(void)
+{
+	if (m_pVtxBuff == nullptr)
+	{
+		return;
+	}
+
+	//頂点情報のポインタ
+	VERTEX_3D *pVtx;
+
+	//頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	D3DXVECTOR3 vecFront;
+	D3DXVECTOR3 vecRear;
+
+	if (m_mode == MODE_BILLBOARD)
 	{
 		//頂点座標の設定
 		pVtx[0].pos = D3DXVECTOR3(-m_width, m_heigth, 0.0f);
@@ -163,7 +229,7 @@ void CObject3D::Draw(void)
 	//ワールドマトリックス初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
-	if (m_bBillboard)
+	if (m_mode == MODE_BILLBOARD)
 	{
 		SetMtxBillboard();
 	}
@@ -253,6 +319,18 @@ CObject3D *CObject3D::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 }
 
 //=====================================================
+// モードの設定
+//=====================================================
+void CObject3D::SetMode(MODE mode)
+{
+	if (mode < MODE_MAX &&
+		mode >= 0)
+	{
+		m_mode = mode;
+	}
+}
+
+//=====================================================
 // サイズ設定処理
 //=====================================================
 void CObject3D::SetSize(float width, float height)
@@ -271,7 +349,7 @@ void CObject3D::SetSize(float width, float height)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	if (m_bBillboard)
+	if (m_mode == MODE_BILLBOARD)
 	{
 		//頂点座標の設定
 		pVtx[0].pos = D3DXVECTOR3(-m_width, m_heigth, 0.0f);
