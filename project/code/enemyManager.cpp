@@ -9,14 +9,17 @@
 // インクルード
 //*****************************************************
 #include "main.h"
+#include "manager.h"
 #include "enemyManager.h"
 #include "enemyNormal.h"
+#include "inputkeyboard.h"
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
+const float TIME_SPAWN = 5.0f;	// 敵のスポーン
 }
 
 //*****************************************************
@@ -29,6 +32,7 @@ CEnemyManager *CEnemyManager::m_pEnemyManager = nullptr;	// 自身のポインタ
 //=====================================================
 CEnemyManager::CEnemyManager()
 {
+	m_fTimer = 0.0f;
 	m_pHead = nullptr;
 	m_pTail = nullptr;
 }
@@ -65,7 +69,7 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 	char *apPath[CEnemy::TYPE_MAX] = 
 	{
 		nullptr,
-		"data\\MOTION\\motionEnemy00.txt",
+		"data\\MOTION\\motionArms00.txt",
 		"data\\MOTION\\motionEnemy01.txt",
 	};
 
@@ -134,7 +138,19 @@ void CEnemyManager::Uninit(void)
 //=====================================================
 void CEnemyManager::Update(void)
 {
+#ifdef _DEBUG
 
+	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
+
+	if (pKeyboard != nullptr)
+	{
+		if (pKeyboard->GetTrigger(DIK_C))
+		{
+			CreateEnemy(D3DXVECTOR3(0.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+		}
+	}
+
+#endif
 }
 
 //=====================================================

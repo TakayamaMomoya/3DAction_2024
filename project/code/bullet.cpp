@@ -134,9 +134,9 @@ void CBullet::Update(void)
 	bool bHit = false;
 
 	// éıñΩå∏êä
-	float fTIck = CManager::GetTick();
+	float fDeltaTime = CManager::GetDeltaTime();
 
-	m_fLife -= fTIck;
+	m_fLife -= fDeltaTime;
 
 	m_posOld = m_pos;
 

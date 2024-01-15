@@ -63,6 +63,7 @@ private:
 		MOTION_ASSAULT,	// “Ëió‘Ô
 		MOTION_MELEE,	// ‹ßÚUŒ‚
 		MOTION_MELEE2,	// ‚Q‰ñ–Ú‚Ì‹ßÚUŒ‚
+		MOTION_STOP,	// ‹}’âŽ~ƒ‚[ƒVƒ‡ƒ“
 		MOTION_MAX
 	};
 	struct SFragMotion
@@ -73,6 +74,7 @@ private:
 		bool bMelee;	// ‹ßÚUŒ‚
 		bool bAddAttack;	// ’Ç‰ÁUŒ‚
 		bool bAir;	// ‘Ø‹ó
+		bool bStop;	// ‹}’âŽ~
 	};
 	struct SInfo
 	{

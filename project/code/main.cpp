@@ -147,7 +147,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 
 			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
 			{//60分の1秒経過
-				float fTick = ((float)dwCurrentTime - (float)dwExecLastTime) * 0.001f;
+				float fDeltaTime = ((float)dwCurrentTime - (float)dwExecLastTime) * 0.001f;
 
 				//処理開始の時刻を計算
 				dwExecLastTime = dwCurrentTime;
@@ -155,7 +155,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 				if (pManager != nullptr)
 				{
 					// ティックの設定
-					CManager::SetTick(fTick);
+					CManager::SetTick(fDeltaTime);
 
 					// 更新処理
 					pManager->Update();

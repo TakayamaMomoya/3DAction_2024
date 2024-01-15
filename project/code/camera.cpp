@@ -94,9 +94,9 @@ void CCamera::MoveDist(float fFact)
 	// カウンターの変更
 	if (m_camera.fTimeEvent > 0.0f)
 	{
-		float fTick = CManager::GetTick();
+		float fDeltaTime = CManager::GetDeltaTime();
 
-		m_camera.fTimeEvent -= fTick;
+		m_camera.fTimeEvent -= fDeltaTime;
 
 		if (m_camera.fTimeEvent <= 0.0f)
 		{

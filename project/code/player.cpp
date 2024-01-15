@@ -32,7 +32,7 @@ const float SPEED_ROLL_CAMERA = 0.03f;	// ƒJƒƒ‰‰ñ“]‘¬“x
 const float SPEED_BULLET = 50.0f;	// ’e‘¬
 const float POW_JUMP = 20.0f;	// ƒWƒƒƒ“ƒv—Í
 const float SPEED_MOVE = 2.0f;	// ˆÚ“®‘¬“x
-const float FACT_MOVE = 0.07f;	// ˆÚ“®‚ÌŒ¸ŠŒW”
+const float FACT_MOVE = 0.04f;	// ˆÚ“®‚ÌŒ¸ŠŒW”
 const float SPEED_ASSAULT = 4.0f;	// “Ëi‚ÌˆÚ“®‘¬“x
 const float POW_ADDMELEE = 50.0f;	// ’ÇŒ‚‚Ì„i—Í
 }
@@ -304,6 +304,13 @@ void CPlayer::InputMove(void)
 		vecMove += {sinf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x, 0.0f, cosf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x};
 		vecMove += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
 
+		float fLengthAxis = D3DXVec3Length(&axisMove);
+
+		if (m_fragMotion.bMove && fLengthAxis <= 0.3f)
+		{// ‹}’âŽ~ƒtƒ‰ƒO
+			m_fragMotion.bStop = true;
+		}
+
 		// ˆÚ“®‘¬“x‚ÌÝ’è
 		D3DXVECTOR3 move = GetMove();
 
@@ -479,7 +486,7 @@ void CPlayer::Rotation(void)
 	}
 	else
 	{
-		if (fLenghtMove >= 3.0f)
+		if (fLenghtMove >= 10.0f)
 		{
 			// Œü‚«‚Ì•â³
 			D3DXVECTOR3 rot = GetRot();
@@ -693,6 +700,20 @@ void CPlayer::ManageMotion(void)
 
 		}
 	}
+	else if (m_fragMotion.bStop)
+	{// ‹}’âŽ~ƒ‚[ƒVƒ‡ƒ“
+		if (nMotion != MOTION_STOP)
+		{
+			SetMotion(MOTION_STOP);
+		}
+		else
+		{
+			if (bFinish)
+			{
+				m_fragMotion.bStop = false;
+			}
+		}
+	}
 	else if (m_fragMotion.bMove)
 	{// •à‚«ƒ‚[ƒVƒ‡ƒ“
 		if (nMotion != MOTION_WALK_FRONT)
@@ -771,7 +792,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 		D3DXVECTOR3 posMazzle = { mtxMazzle._41,mtxMazzle._42 ,mtxMazzle._43 };
 
-		ManageAttack(posMazzle,60.0f);
+		ManageAttack(posMazzle,300.0f);
 	}
 }
 
@@ -805,7 +826,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 	m_info.pClsnAttack->SetPosition(pos);
 	m_info.pClsnAttack->SetRadius(fRadius);
 
-	if (m_info.pClsnAttack->SphereCollision(CCollision::TAG::TAG_ENEMY))
+	if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
 	{// ‘ÎÛ‚Æ‚Ì“–‚½‚è”»’è1
 		CObject *pObj = m_info.pClsnAttack->GetOther();
 
