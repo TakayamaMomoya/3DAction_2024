@@ -169,6 +169,14 @@ void CInputManager::Update(void)
 		pKeyboard->GetTrigger(DIK_E)
 	);
 
+	// 回避ブースト
+	m_info.abTrigger[BUTTON_DODGE] =
+	(
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_X, 0) ||
+		pMouse->GetTrigger(CInputMouse::BUTTON_SIDE01) ||
+		pKeyboard->GetTrigger(DIK_LSHIFT)
+	);
+
 	// ポーズ
 	m_info.abTrigger[BUTTON_PAUSE] =
 	(

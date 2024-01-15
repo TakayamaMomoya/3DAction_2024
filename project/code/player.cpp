@@ -35,6 +35,7 @@ const float SPEED_MOVE = 2.0f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
 const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
+const float SPEED_DODGE = 50.0f;	// 回避推進力
 }
 
 //*****************************************************
@@ -337,6 +338,18 @@ void CPlayer::InputMove(void)
 			if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
 			{// ブースト上昇
 				vecMove.y += 1.0f;
+			};
+		}
+		
+		float fAngleInput = atan2f(axisMove.x, axisMove.z);
+
+		if (pInputManager->GetTrigger(CInputManager::BUTTON_DODGE))
+		{
+			vecMove +=
+			{
+				sinf(fAngleInput) * SPEED_DODGE,
+				0.0f,
+				cosf(fAngleInput) * SPEED_DODGE,
 			};
 		}
 

@@ -26,6 +26,7 @@ public:
 		BUTTON_JUMP,	// ジャンプ
 		BUTTON_SHOT,	// 射撃
 		BUTTON_MELEE,	// 近接攻撃
+		BUTTON_DODGE,	// 回避
 		BUTTON_PAUSE,	// ポーズ
 		BUTTON_AXIS_UP,	// 上方向キー
 		BUTTON_AXIS_DOWN,	// 下方向キー
