@@ -62,6 +62,7 @@ private:
 		MOTION_AIR,	// ‘Ø‹ó
 		MOTION_ASSAULT,	// “Ëió‘Ô
 		MOTION_MELEE,	// ‹ßÚUŒ‚
+		MOTION_MELEE2,	// ‚Q‰ñ–Ú‚Ì‹ßÚUŒ‚
 		MOTION_MAX
 	};
 	struct SFragMotion
@@ -70,6 +71,7 @@ private:
 		bool bJump;	// ƒWƒƒƒ“ƒv
 		bool bShot;	// ËŒ‚
 		bool bMelee;	// ‹ßÚUŒ‚
+		bool bAddAttack;	// ’Ç‰ÁUŒ‚
 		bool bAir;	// ‘Ø‹ó
 	};
 	struct SInfo
@@ -90,9 +92,10 @@ private:
 	void ManageCollision(void);
 	void ManageState(void);
 	void ManageMotion(void);
+	void AddMoveForward(float fSpeed);
 	void Event(EVENT_INFO *pEventInfo);
 	void Shot(D3DXVECTOR3 posMazzle);
-	void ManageAttack(void);
+	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
 	void Debug(void);
 
 	SInfo m_info;	// ©g‚Ìî•ñ

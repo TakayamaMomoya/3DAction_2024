@@ -33,7 +33,8 @@ const float SPEED_BULLET = 50.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
 const float SPEED_MOVE = 2.0f;	// 移動速度
 const float FACT_MOVE = 0.07f;	// 移動の減衰係数
-const float SPEED_ASSAULT = 3.5f;	// 突進の移動速度
+const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
+const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
 }
 
 //*****************************************************
@@ -209,7 +210,7 @@ void CPlayer::Update(void)
 	// 重力
 	int nMotion = GetMotion();
 	
-	if (nMotion != MOTION_SHOT && nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE)
+	if (nMotion != MOTION_SHOT && nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE && nMotion != MOTION_MELEE2)
 	{
 		if (pSlow != nullptr)
 		{
@@ -230,9 +231,9 @@ void CPlayer::Update(void)
 	}
 	else
 	{
-		move.x += (0 - move.x) * 0.1f;
+		move.x += (0 - move.x) * 0.05f;
 		move.y += (0 - move.y) * 0.5f;
-		move.z += (0 - move.z) * 0.1f;
+		move.z += (0 - move.z) * 0.05f;
 	}
 
 	SetMove(move);
@@ -245,9 +246,6 @@ void CPlayer::Update(void)
 
 	// モーション管理
 	ManageMotion();
-
-	// 攻撃判定管理
-	ManageAttack();
 
 // デバッグ処理
 #if _DEBUG
@@ -295,7 +293,7 @@ void CPlayer::InputMove(void)
 
 	int nMotion = GetMotion();
 
-	if (nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE)
+	if (nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE && nMotion != MOTION_MELEE2)
 	{
 		// 方向入力の取得
 		CInputManager::SAxis axis = pInputManager->GetAxis();
@@ -339,22 +337,9 @@ void CPlayer::InputMove(void)
 
 		SetMove(move);
 	}
-	else
-	{// 目標方向に突撃
-		D3DXVECTOR3 move = GetMove();
-		D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-		D3DXVECTOR3 rot = GetRot();
-
-		vecMove =
-		{
-			sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * SPEED_ASSAULT,
-			cosf(rot.x - D3DX_PI * 0.5f) * SPEED_ASSAULT,
-			sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_ASSAULT
-		};
-
-		move += vecMove;
-
-		SetMove(move);
+	else if (nMotion == MOTION_ASSAULT)
+	{
+		AddMoveForward(SPEED_ASSAULT);
 	}
 
 #ifdef _DEBUG
@@ -429,6 +414,7 @@ void CPlayer::InputCamera(void)
 void CPlayer::InputAttack(void)
 {
 	CInputManager *pInputManager = CInputManager::GetInstance();
+	int nMotion = GetMotion();
 
 	if (pInputManager == nullptr)
 	{
@@ -443,6 +429,11 @@ void CPlayer::InputAttack(void)
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE))
 	{// 近接攻撃処理
 		m_fragMotion.bMelee = true;
+
+		if (nMotion == MOTION_MELEE)
+		{
+			m_fragMotion.bAddAttack = true;
+		}
 	}
 }
 
@@ -629,11 +620,29 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (nMotion == MOTION_MELEE)
+	if (nMotion == MOTION_MELEE2)
 	{
 		if (bFinish)
 		{
 			SetMotion(MOTION_AIR);
+		}
+	}
+	else if (nMotion == MOTION_MELEE)
+	{
+		if (bFinish)
+		{
+			if (m_fragMotion.bAddAttack)
+			{
+				SetMotion(MOTION_MELEE2);
+				m_fragMotion.bAddAttack = false;
+				m_fragMotion.bMelee = false;
+
+				AddMoveForward(POW_ADDMELEE);
+			}
+			else
+			{
+				SetMotion(MOTION_AIR);
+			}
 		}
 	}
 	else if (m_fragMotion.bMelee)
@@ -701,6 +710,27 @@ void CPlayer::ManageMotion(void)
 }
 
 //=====================================================
+// 前方に移動量を加える
+//=====================================================
+void CPlayer::AddMoveForward(float fSpeed)
+{
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
+	D3DXVECTOR3 rot = GetRot();
+
+	vecMove =
+	{
+		sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * fSpeed,
+		cosf(rot.x - D3DX_PI * 0.5f) * fSpeed,
+		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * fSpeed
+	};
+
+	move += vecMove;
+
+	SetMove(move);
+}
+
+//=====================================================
 // イベントタイミングの管理
 //=====================================================
 void CPlayer::Event(EVENT_INFO *pEventInfo)
@@ -722,7 +752,6 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 			Shot(posMazzle);
 		}
 	}
-
 	if (nMotion == MOTION_JUMP)
 	{// ジャンプ
 		D3DXVECTOR3 move = GetMove();
@@ -730,6 +759,19 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 		move.y += POW_JUMP;
 
 		SetMove(move);
+	}
+
+	if (nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
+	{// 近接攻撃
+		D3DXVECTOR3 offset = pEventInfo->offset;
+		D3DXMATRIX mtxMazzle;
+		D3DXMATRIX mtxParts = *GetParts(pEventInfo->nIdxParent)->pParts->GetMatrix();
+
+		universal::SetOffSet(&mtxMazzle, mtxParts, offset);
+
+		D3DXVECTOR3 posMazzle = { mtxMazzle._41,mtxMazzle._42 ,mtxMazzle._43 };
+
+		ManageAttack(posMazzle,60.0f);
 	}
 }
 
@@ -753,11 +795,25 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 //=====================================================
 // 攻撃判定の管理
 //=====================================================
-void CPlayer::ManageAttack(void)
+void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 {
 	if (m_info.pClsnAttack == nullptr)
 	{// 判定のエラー
 		return;
+	}
+
+	m_info.pClsnAttack->SetPosition(pos);
+	m_info.pClsnAttack->SetRadius(fRadius);
+
+	if (m_info.pClsnAttack->SphereCollision(CCollision::TAG::TAG_ENEMY))
+	{// 対象との当たり判定1
+		CObject *pObj = m_info.pClsnAttack->GetOther();
+
+		if (pObj != nullptr)
+		{
+			// 当たったオブジェクトのヒット処理
+			pObj->Hit(0.5f);
+		}
 	}
 }
 
