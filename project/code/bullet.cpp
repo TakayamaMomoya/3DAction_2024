@@ -19,6 +19,7 @@
 #include "orbit.h"
 #include "universal.h"
 #include "object3D.h"
+#include "debugproc.h"
 
 //*****************************************************
 // 定数定義
@@ -69,7 +70,12 @@ CBullet::~CBullet()
 //=====================================================
 HRESULT CBullet::Init(void)
 {
-	m_rot.y = atan2f(m_move.x,m_move.z);
+	m_rot.y = atan2f(m_move.x, m_move.z);
+	float fLengthMove = sqrtf(m_move.x * m_move.x + m_move.z * m_move.z);
+
+	m_rot.x = atan2f(fLengthMove,m_move.y) - D3DX_PI * 0.5f;
+
+	universal::LimitRot(&m_rot.x);
 
 	// タイプの設定
 	SetType(TYPE_BULLET);

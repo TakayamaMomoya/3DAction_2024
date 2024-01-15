@@ -30,6 +30,10 @@ const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
 const float GRAVITY = 0.30f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 50.0f;	// 弾速
+const float POW_JUMP = 20.0f;	// ジャンプ力
+const float SPEED_MOVE = 2.0f;	// 移動速度
+const float FACT_MOVE = 0.07f;	// 移動の減衰係数
+const float SPEED_ASSAULT = 3.5f;	// 突進の移動速度
 }
 
 //*****************************************************
@@ -124,13 +128,15 @@ HRESULT CPlayer::Init(void)
 	}
 
 	m_info.fLife = m_param.fInitialLife;
-	m_param.fSpeedMove = 1.0f;
+	m_param.fSpeedMove = SPEED_MOVE;
 
 	// 影の有効化
 	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
 	EnableShadow(true);
 
 	SetMotion(MOTION_WALK_FRONT);
+
+	m_info.bLand = true;
 
 	return S_OK;
 }
@@ -200,22 +206,33 @@ void CPlayer::Update(void)
 		SetPosition(pos);
 	}
 
-	// 移動量の減衰
-	if (pSlow != nullptr)
+	// 重力
+	int nMotion = GetMotion();
+	
+	if (nMotion != MOTION_SHOT && nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE)
 	{
-		float fScale = pSlow->GetScale();
+		if (pSlow != nullptr)
+		{
+			float fScale = pSlow->GetScale();
 
-		move.x += (0 - move.x) * 0.1f * fScale;
-		move.z += (0 - move.z) * 0.1f * fScale;
+			move.x += (0 - move.x) * FACT_MOVE * fScale;
+			move.z += (0 - move.z) * FACT_MOVE * fScale;
 
-		move.y -= GRAVITY * fScale;
+			move.y -= GRAVITY * fScale;
+		}
+		else
+		{
+			move.x *= FACT_MOVE;
+			move.z *= FACT_MOVE;
+
+			move.y -= GRAVITY;
+		}
 	}
 	else
 	{
-		move.x *= 0.1f;
-		move.z *= 0.1f;
-
-		move.y -= GRAVITY;
+		move.x += (0 - move.x) * 0.1f;
+		move.y += (0 - move.y) * 0.5f;
+		move.z += (0 - move.z) * 0.1f;
 	}
 
 	SetMove(move);
@@ -276,37 +293,69 @@ void CPlayer::InputMove(void)
 
 	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
 
-	// 方向入力の取得
-	CInputManager::SAxis axis = pInputManager->GetAxis();
-	D3DXVECTOR3 axisMove = axis.axisMove;
+	int nMotion = GetMotion();
 
-	D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-
-	vecMove += {sinf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x, 0.0f, cosf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x};
-	vecMove += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
-
-	// 移動速度の設定
-	D3DXVECTOR3 move = GetMove();
-
-	D3DXVec3Normalize(&vecMove, &vecMove);
-	vecMove *= m_param.fSpeedMove;
-
-	if (pSlow != nullptr)
+	if (nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE)
 	{
-		float fScale = pSlow->GetScale();
+		// 方向入力の取得
+		CInputManager::SAxis axis = pInputManager->GetAxis();
+		D3DXVECTOR3 axisMove = axis.axisMove;
 
-		vecMove *= fScale;
+		D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
+
+		vecMove += {sinf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x, 0.0f, cosf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x};
+		vecMove += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
+
+		// 移動速度の設定
+		D3DXVECTOR3 move = GetMove();
+
+		D3DXVec3Normalize(&vecMove, &vecMove);
+		vecMove *= m_param.fSpeedMove;
+
+		if (pSlow != nullptr)
+		{
+			float fScale = pSlow->GetScale();
+
+			vecMove *= fScale;
+		}
+
+		if (m_info.bLand)
+		{
+			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
+			{// ジャンプ操作
+				m_fragMotion.bJump = true;
+				m_fragMotion.bMove = false;
+			};
+		}
+		else
+		{
+			if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
+			{// ブースト上昇
+				vecMove.y += 1.0f;
+			};
+		}
+
+		move += vecMove;
+
+		SetMove(move);
 	}
+	else
+	{// 目標方向に突撃
+		D3DXVECTOR3 move = GetMove();
+		D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
+		D3DXVECTOR3 rot = GetRot();
 
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
-	{// ジャンプ操作
-		m_fragMotion.bJump = true;
-		m_fragMotion.bMove = false;
-	};
+		vecMove =
+		{
+			sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * SPEED_ASSAULT,
+			cosf(rot.x - D3DX_PI * 0.5f) * SPEED_ASSAULT,
+			sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_ASSAULT
+		};
 
-	move += vecMove;
+		move += vecMove;
 
-	SetMove(move);
+		SetMove(move);
+	}
 
 #ifdef _DEBUG
 	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
@@ -390,6 +439,11 @@ void CPlayer::InputAttack(void)
 	{// 射撃処理
 		m_fragMotion.bShot = true;
 	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE))
+	{// 近接攻撃処理
+		m_fragMotion.bMelee = true;
+	}
 }
 
 //=====================================================
@@ -403,23 +457,62 @@ void CPlayer::Rotation(void)
 	float fAngleMove = atan2f(-move.x, -move.z);
 	float fLenghtMove = sqrtf(move.x * move.x + move.z * move.z);
 
-	if (fLenghtMove >= 3.0f)
+	int nMotion = GetMotion();
+
+	if (nMotion == MOTION_SHOT)
 	{
+		// カメラ取得
+		CCamera *pCamera = CManager::GetCamera();
+
+		if (pCamera == nullptr)
+		{
+			return;
+		}
+
+		CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
 		// 向きの補正
 		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rotCamera = pInfoCamera->rot;
 
-		universal::FactingRot(&rot.y, fAngleMove, 0.1f);
+		rotCamera.x -= D3DX_PI * 0.5f;
+		rotCamera.y += D3DX_PI;
+
+		universal::LimitRot(&rotCamera.x);
+		universal::LimitRot(&rotCamera.y);
+
+		universal::FactingRot(&rot.x, rotCamera.x, 0.15f);
+		universal::FactingRot(&rot.y, rotCamera.y, 0.15f);
 
 		SetRot(rot);
-
-		if (m_info.bLand)
-		{
-			m_fragMotion.bMove = true;
-		}
 	}
 	else
 	{
-		m_fragMotion.bMove = false;
+		if (fLenghtMove >= 3.0f)
+		{
+			// 向きの補正
+			D3DXVECTOR3 rot = GetRot();
+
+			universal::FactingRot(&rot.y, fAngleMove, 0.1f);
+
+			SetRot(rot);
+
+			if (m_info.bLand)
+			{
+				m_fragMotion.bMove = true;
+			}
+		}
+		else
+		{
+			m_fragMotion.bMove = false;
+		}
+
+		// 向きの補正
+		D3DXVECTOR3 rot = GetRot();
+
+		rot.x += (0 - rot.x) * 0.1f;
+
+		SetRot(rot);
 	}
 }
 
@@ -536,7 +629,30 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (m_fragMotion.bShot)
+	if (nMotion == MOTION_MELEE)
+	{
+		if (bFinish)
+		{
+			SetMotion(MOTION_AIR);
+		}
+	}
+	else if (m_fragMotion.bMelee)
+	{// 近接攻撃モーション
+		if (nMotion != MOTION_ASSAULT)
+		{
+			SetMotion(MOTION_ASSAULT);
+		}
+		else
+		{
+			if (bFinish)
+			{
+				m_fragMotion.bMelee = false;
+
+				SetMotion(MOTION_MELEE);
+			}
+		}
+	}
+	else if (m_fragMotion.bShot)
 	{// 射撃モーション
 		if (nMotion != MOTION_SHOT)
 		{
@@ -611,7 +727,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	{// ジャンプ
 		D3DXVECTOR3 move = GetMove();
 
-		move.y += 10.0f;
+		move.y += POW_JUMP;
 
 		SetMove(move);
 	}
@@ -630,7 +746,7 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_BULLET
 	};
 
-	CBullet *pBullet = CBullet::Create(posMazzle, move, 120, CBullet::TYPE_PLAYER, false, 40.0f, 5.0f,
+	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, 5.0f,
 		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
 }
 

@@ -209,7 +209,7 @@ void CGame::UpdateCamera(void)
 		pCamera->Control();
 	}
 
-	pCamera->MoveDist(0.05f);
+	pCamera->MoveDist(0.08f);
 }
 
 //=====================================================

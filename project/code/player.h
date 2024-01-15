@@ -60,6 +60,8 @@ private:
 		MOTION_SHOT,	// 射撃
 		MOTION_JUMP,	// ジャンプ
 		MOTION_AIR,	// 滞空
+		MOTION_ASSAULT,	// 突進状態
+		MOTION_MELEE,	// 近接攻撃
 		MOTION_MAX
 	};
 	struct SFragMotion
@@ -67,6 +69,7 @@ private:
 		bool bMove;	// 移動
 		bool bJump;	// ジャンプ
 		bool bShot;	// 射撃
+		bool bMelee;	// 近接攻撃
 		bool bAir;	// 滞空
 	};
 	struct SInfo

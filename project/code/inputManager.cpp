@@ -147,6 +147,11 @@ void CInputManager::Update(void)
 		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_A, 0) ||
 		pKeyboard->GetTrigger(DIK_SPACE)
 	);
+	m_info.abPress[BUTTON_JUMP] =
+	(
+		pJoypad->GetPress(CInputJoypad::PADBUTTONS_A, 0) ||
+		pKeyboard->GetPress(DIK_SPACE)
+	);
 
 	// éÀåÇ
 	m_info.abTrigger[BUTTON_SHOT] =
@@ -154,6 +159,14 @@ void CInputManager::Update(void)
 		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_LB, 0) ||
 		pMouse->GetTrigger(CInputMouse::BUTTON_LMB) ||
 		pKeyboard->GetTrigger(DIK_RETURN)
+	);
+
+	// ãﬂê⁄çUåÇ
+	m_info.abTrigger[BUTTON_MELEE] =
+	(
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_RB, 0) ||
+		pMouse->GetTrigger(CInputMouse::BUTTON_RMB) ||
+		pKeyboard->GetTrigger(DIK_E)
 	);
 
 	// É|Å[ÉY
