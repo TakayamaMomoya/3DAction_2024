@@ -300,7 +300,8 @@ void CPlayer::InputMove(void)
 
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
 	{// ジャンプ操作
-		vecMove.y += 10.0f;
+		m_fragMotion.bJump = true;
+		m_fragMotion.bMove = false;
 	};
 
 	move += vecMove;
@@ -411,7 +412,10 @@ void CPlayer::Rotation(void)
 
 		SetRot(rot);
 
-		m_fragMotion.bMove = true;
+		if (m_info.bLand)
+		{
+			m_fragMotion.bMove = true;
+		}
 	}
 	else
 	{
@@ -489,6 +493,22 @@ void CPlayer::ManageCollision(void)
 				move.y = 0.0f;
 
 				SetPosition(pos);
+				
+				int nMotion = GetMotion();
+				bool bFinish = IsFinish();
+
+				if (nMotion == MOTION_AIR)
+				{
+					m_info.bLand = true;
+					m_fragMotion.bAir = false;
+					m_fragMotion.bJump = false;
+				}
+			}
+			else
+			{
+				m_info.bLand = false;
+
+				m_fragMotion.bAir = true;
 			}
 
 			SetMove(move);
@@ -530,6 +550,24 @@ void CPlayer::ManageMotion(void)
 			}
 		}
 	}
+	else if (m_fragMotion.bAir)
+	{// 滞空モーション
+		if (nMotion != MOTION_AIR)
+		{
+			SetMotion(MOTION_AIR);
+		}
+	}
+	else if (m_fragMotion.bJump)
+	{// ジャンプモーション
+		if (nMotion != MOTION_JUMP)
+		{
+			SetMotion(MOTION_JUMP);
+		}
+		else
+		{
+
+		}
+	}
 	else if (m_fragMotion.bMove)
 	{// 歩きモーション
 		if (nMotion != MOTION_WALK_FRONT)
@@ -567,6 +605,15 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 			Shot(posMazzle);
 		}
+	}
+
+	if (nMotion == MOTION_JUMP)
+	{// ジャンプ
+		D3DXVECTOR3 move = GetMove();
+
+		move.y += 10.0f;
+
+		SetMove(move);
 	}
 }
 
@@ -658,4 +705,5 @@ void CPlayer::Debug(void)
 	int nMotion = GetMotion();
 
 	pDebugProc->Print("\nモーション[%d]", nMotion);
+	pDebugProc->Print("\n着地[%d]", m_info.bLand);
 }

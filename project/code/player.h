@@ -58,6 +58,8 @@ private:
 		MOTION_NEUTRAL = 0,	// 待機
 		MOTION_WALK_FRONT,	// 前歩
 		MOTION_SHOT,	// 射撃
+		MOTION_JUMP,	// ジャンプ
+		MOTION_AIR,	// 滞空
 		MOTION_MAX
 	};
 	struct SFragMotion
@@ -65,6 +67,7 @@ private:
 		bool bMove;	// 移動
 		bool bJump;	// ジャンプ
 		bool bShot;	// 射撃
+		bool bAir;	// 滞空
 	};
 	struct SInfo
 	{
@@ -73,6 +76,7 @@ private:
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
+		bool bLand;	// 着地しているかどうか
 	};
 
 	void Input(void);
