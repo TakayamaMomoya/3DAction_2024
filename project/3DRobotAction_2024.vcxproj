@@ -162,7 +162,6 @@
     <ClCompile Include="code\bullet.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\character.cpp" />
-    <ClCompile Include="code\characterDiv.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\debris.cpp" />
     <ClCompile Include="code\debrisspawner.cpp" />
@@ -189,7 +188,6 @@
     <ClCompile Include="code\meshcylinder.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
-    <ClCompile Include="code\motionDiv.cpp" />
     <ClCompile Include="code\number.cpp" />
     <ClCompile Include="code\number3D.cpp" />
     <ClCompile Include="code\object.cpp" />
@@ -224,7 +222,6 @@
     <ClInclude Include="code\bullet.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\character.h" />
-    <ClInclude Include="code\characterDiv.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\debris.h" />
     <ClInclude Include="code\debrisSpawner.h" />
@@ -251,7 +248,6 @@
     <ClInclude Include="code\meshcylinder.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
-    <ClInclude Include="code\motionDiv.h" />
     <ClInclude Include="code\number.h" />
     <ClInclude Include="code\number3D.h" />
     <ClInclude Include="code\object.h" />

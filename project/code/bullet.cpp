@@ -18,6 +18,7 @@
 #include "collision.h"
 #include "orbit.h"
 #include "universal.h"
+#include "object3D.h"
 
 //*****************************************************
 // 定数定義
@@ -48,7 +49,7 @@ CBullet::CBullet(int nPriority) : CObject(nPriority)
 	m_posOld = { 0.0f,0.0f,0.0f };
 	m_col = { 0.0f,0.0f,0.0f,0.0f };
 	m_pCollisionSphere = nullptr;
-	m_pOrbit = nullptr;
+	m_pObject3D = nullptr;
 	m_nIdxPlayer = -1;
 
 	// 総数カウントアップ
@@ -73,11 +74,25 @@ HRESULT CBullet::Init(void)
 	// タイプの設定
 	SetType(TYPE_BULLET);
 
-	Draw();
+	// 見た目の生成
+	if (m_pObject3D == nullptr)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 rot = GetRot();
 
-	if (m_pOrbit == nullptr)
-	{// 軌跡の生成
-		m_pOrbit = COrbit::Create(m_mtxWorld, D3DXVECTOR3(m_fSize, 0.0f, 0.0f), D3DXVECTOR3(-m_fSize, 0.0f, 0.0f), m_col, EDGE_ORBIT);
+		m_pObject3D = CObject3D::Create(pos, rot);
+
+		if (m_pObject3D != nullptr)
+		{
+			m_pObject3D->SetSize(m_fSize, m_fSize * 5.0f);
+			m_pObject3D->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
+			m_pObject3D->SetVtx();
+
+			int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\EFFECT\\bullet000.png");
+			m_pObject3D->SetIdxTexture(nIdx);
+			m_pObject3D->SetColor(m_col);
+			m_pObject3D->EnableAdd(true);
+		}
 	}
 
 	return S_OK;
@@ -89,15 +104,16 @@ HRESULT CBullet::Init(void)
 void CBullet::Uninit(void)
 {
 	if (m_pCollisionSphere != nullptr)
-	{// 当たり判定の消去
+	{
 		m_pCollisionSphere->Uninit();
 
 		m_pCollisionSphere = nullptr;
 	}
 
-	if (m_pOrbit != nullptr)
-	{// 軌跡の終了
-		m_pOrbit = nullptr;
+	if (m_pObject3D != nullptr)
+	{
+		m_pObject3D->Uninit();
+		m_pObject3D = nullptr;
 	}
 
 	Release();
@@ -150,12 +166,6 @@ void CBullet::Update(void)
 
 		if (m_pCollisionSphere->TriggerCube(CCollision::TAG_BLOCK))
 		{// ブロックとの当たり判定
-			if (m_pOrbit != nullptr)
-			{
-				m_pOrbit->SetEnd(true);
-				m_pOrbit = nullptr;
-			}
-
 			Death();
 		}
 	}
@@ -164,12 +174,6 @@ void CBullet::Update(void)
 	{
 		if (m_fLife < 0)
 		{// 自分の削除
-			if (m_pOrbit != nullptr)
-			{
-				m_pOrbit->SetEnd(true);
-				m_pOrbit = nullptr;
-			}
-
 			Death();
 		}
 	}
@@ -177,19 +181,18 @@ void CBullet::Update(void)
 	{
 		if (m_bPierce == false)
 		{// 貫通しない弾は消える
-			if (m_pOrbit != nullptr)
-			{
-				m_pOrbit->SetEnd(true);
-				m_pOrbit = nullptr;
-			}
-
 			Death();
 		}
 	}
 
-	if (m_pOrbit != nullptr)
-	{
-		m_pOrbit->SetPositionOffset(m_mtxWorld, 0);
+	if (m_pObject3D != nullptr)
+	{// 見た目の追従
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 rot = GetRot();
+
+		m_pObject3D->SetPosition(pos);
+		m_pObject3D->SetRot(rot);
+		m_pObject3D->SetVtx();
 	}
 }
 

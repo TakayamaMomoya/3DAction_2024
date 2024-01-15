@@ -57,12 +57,14 @@ private:
 	{
 		MOTION_NEUTRAL = 0,	// 待機
 		MOTION_WALK_FRONT,	// 前歩
+		MOTION_SHOT,	// 射撃
 		MOTION_MAX
 	};
 	struct SFragMotion
 	{
 		bool bMove;	// 移動
 		bool bJump;	// ジャンプ
+		bool bShot;	// 射撃
 	};
 	struct SInfo
 	{
@@ -82,6 +84,7 @@ private:
 	void ManageState(void);
 	void ManageMotion(void);
 	void Event(EVENT_INFO *pEventInfo);
+	void Shot(D3DXVECTOR3 posMazzle);
 	void ManageAttack(void);
 	void Debug(void);
 

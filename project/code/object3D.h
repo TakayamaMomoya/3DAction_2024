@@ -55,7 +55,7 @@ public:
 
 private:
 	void SetVtxNormal(void);
-	void SetStretchBillboard(void);
+	void SetVtxStretchBillboard(void);
 	void SetMtx(void);
 	void SetMtxBillboard(void);
 

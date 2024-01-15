@@ -600,7 +600,7 @@ void CMotion::Load(char *pPath)
 			//変数宣言
 			int nCntKey = 0;
 			int nCntPart = 0;
-			int nCntParticle = 0;
+			int nCntEvent = 0;
 
 			//モーション設定===========================================
 			if (strcmp(cTemp, "MOTIONSET") == 0)
@@ -624,18 +624,16 @@ void CMotion::Load(char *pPath)
 						(void)fscanf(pFile, "%d", &m_aMotionInfo[nCntMotion].nNumKey);
 					}
 
-					if (strcmp(cTemp, "NUM_PARTICLE") == 0)
-					{//パーティクル数判断
+					if (strcmp(cTemp, "NUM_EVENT") == 0)
+					{// イベント数判断
 						(void)fscanf(pFile, "%s", &cTemp[0]);
 
 						(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].nNumEvent);
 
 						if (m_aMotionInfo[m_nNumMotion].nNumEvent != 0)
-						{
-							// パーティクル情報を生成
+						{// イベント情報を生成
 							m_aMotionInfo[m_nNumMotion].pEvent = new EVENT_INFO[m_aMotionInfo[m_nNumMotion].nNumEvent];
 
-							// パーティクル情報初期化
 							ZeroMemory(m_aMotionInfo[m_nNumMotion].pEvent, sizeof(EVENT_INFO) * m_aMotionInfo[m_nNumMotion].nNumEvent);
 						}
 					}
@@ -650,18 +648,39 @@ void CMotion::Load(char *pPath)
 							{// 再生キー取得
 								(void)fscanf(pFile, "%s", &cTemp[0]);
 
-								(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].pEvent[nCntParticle].nKey);
+								(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].nKey);
 							}
 
 							if (strcmp(cTemp, "FRAME") == 0)
 							{// 再生フレーム取得
 								(void)fscanf(pFile, "%s", &cTemp[0]);
 
-								(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].pEvent[nCntParticle].nFrame);
+								(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].nFrame);
+							}
+
+							if (strcmp(cTemp, "POS") == 0)
+							{//位置読み込み
+								D3DXVECTOR3 pos;
+
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								for (int nCntPos = 0; nCntPos < 3; nCntPos++)
+								{
+									(void)fscanf(pFile, "%f", &pos[nCntPos]);
+								}
+
+								m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].offset = pos;
+							}
+
+							if (strcmp(cTemp, "PARENT") == 0)
+							{// 親パーツ番号取得
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].nIdxParent);
 							}
 						}
 
-						nCntParticle++;
+						nCntEvent++;
 					}
 
 					if (strcmp(cTemp, "KEYSET") == 0)

@@ -48,6 +48,8 @@ public:
 	{// パーティクル情報構造体
 		int nKey;	//生成するキー
 		int nFrame;	//生成するフレーム
+		D3DXVECTOR3 offset;	// オフセット位置
+		int nIdxParent;	// 親となるパーツの番号
 	}EVENT_INFO;
 	
 	typedef struct

@@ -11,7 +11,6 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "object2D.h"
 #include "collision.h"
 
 //*****************************************************
@@ -23,7 +22,7 @@
 // 前方宣言
 //*****************************************************
 class CCollisionSphere;
-class COrbit;
+class CObject3D;
 
 //*****************************************************
 // クラスの定義
@@ -50,6 +49,8 @@ public:
 	static int GetNumAll(void) { return m_nNumAll; }
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
 	D3DXVECTOR3 GetPositionOld(void) { return m_posOld; }
+	D3DXVECTOR3 GetRot(void) { return m_rot; }
+	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 
 	void SetIdxPlayer(int nIdx) { m_nIdxPlayer = nIdx; }
 
@@ -67,7 +68,7 @@ private:
 	static int m_nNumAll;	// 総数
 	bool m_bPierce;	// 貫通するかどうか
 	CCollisionSphere *m_pCollisionSphere;	// 球の当たり判定
-	COrbit *m_pOrbit;	// 軌跡のポインタ
+	CObject3D *m_pObject3D;	// 見た目のポインタ
 	D3DXCOLOR m_col;	// 色
 	float m_fDamage;	// 与ダメージ
 	float m_fSize;	// 弾のサイズ

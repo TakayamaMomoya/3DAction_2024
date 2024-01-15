@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "debugproc.h"
+#include "camera.h"
 
 //=====================================================
 // コンストラクタ
@@ -133,7 +134,7 @@ void CObject3D::SetVtx(void)
 		break;
 	case CObject3D::MODE_STRETCHBILLBOARD:
 
-		SetStretchBillboard();
+		SetVtxStretchBillboard();
 
 		break;
 	default:
@@ -181,12 +182,21 @@ void CObject3D::SetVtxNormal(void)
 //=====================================================
 // ストレッチビルボード頂点設定
 //=====================================================
-void CObject3D::SetStretchBillboard(void)
+void CObject3D::SetVtxStretchBillboard(void)
 {
 	if (m_pVtxBuff == nullptr)
 	{
 		return;
 	}
+
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera == nullptr)
+	{
+		return;
+	}
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
 
 	//頂点情報のポインタ
 	VERTEX_3D *pVtx;
@@ -194,25 +204,39 @@ void CObject3D::SetStretchBillboard(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
+	D3DXVECTOR3 pos = m_pos;
 	D3DXVECTOR3 vecFront;
 	D3DXVECTOR3 vecRear;
 
-	if (m_mode == MODE_BILLBOARD)
-	{
-		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-m_width, m_heigth, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(m_width, m_heigth, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(-m_width, -m_heigth, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(m_width, -m_heigth, 0.0f);
-	}
-	else
-	{
-		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-m_width, 0.0f, m_heigth);
-		pVtx[1].pos = D3DXVECTOR3(m_width, 0.0f, m_heigth);
-		pVtx[2].pos = D3DXVECTOR3(-m_width, 0.0f, -m_heigth);
-		pVtx[3].pos = D3DXVECTOR3(m_width, 0.0f, -m_heigth);
-	}
+	vecFront =
+	{// 前方ベクトル
+		sinf(m_rot.x + D3DX_PI * 0.5f) * sinf(m_rot.y) * m_heigth,
+		cosf(m_rot.x + D3DX_PI * 0.5f) * m_heigth,
+		sinf(m_rot.x + D3DX_PI * 0.5f) * cosf(m_rot.y) * m_heigth
+	};
+
+	// 後方ベクトル
+	vecRear = -vecFront;
+
+	vecFront += pos;
+	vecRear += pos;
+
+	// カメラからのベクトル取得
+	D3DXVECTOR3 vecEye = pInfoCamera->posV - vecFront;
+	D3DXVECTOR3 nor;
+	D3DXVECTOR3 vecPolygon = vecFront - vecRear;
+
+	// 法線の算出
+	D3DXVec3Cross(&nor, &vecEye, &vecPolygon);
+
+	// 法線正規化
+	D3DXVec3Normalize(&nor, &nor);
+
+	//頂点座標の設定
+	pVtx[1].pos = vecFront + nor * m_width;
+	pVtx[3].pos = vecFront - nor * m_width;
+	pVtx[0].pos = vecRear + nor * m_width;
+	pVtx[2].pos = vecRear - nor * m_width;
 
 	//頂点バッファをアンロック
 	m_pVtxBuff->Unlock();
@@ -251,8 +275,20 @@ void CObject3D::Draw(void)
 	LPDIRECT3DTEXTURE9 pTexture = CTexture::GetInstance()->GetAddress(m_nIdxTexture);
 	pDevice->SetTexture(0, pTexture);
 
-	//描画
+	if (m_mode == MODE_STRETCHBILLBOARD)
+	{
+		// カリングを無効化
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	}
+
+	// 描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+
+	if (m_mode == MODE_STRETCHBILLBOARD)
+	{
+		// カリングを有効化
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
 }
 
 //=====================================================
@@ -261,15 +297,23 @@ void CObject3D::Draw(void)
 void CObject3D::SetMtx(void)
 {
 	D3DXMATRIX mtxRot, mtxTrans;
+	D3DXVECTOR3 pos = m_pos;
+	D3DXVECTOR3 rot = m_rot;
+
+	if (m_mode == MODE_STRETCHBILLBOARD)
+	{
+		pos = { 0.0f,0.0f,0.0f };
+		rot = { 0.0f,0.0f,0.0f };
+	}
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot,
-		m_rot.y, m_rot.x, m_rot.z);
+		rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	//位置を反映
 	D3DXMatrixTranslation(&mtxTrans,
-		m_pos.x, m_pos.y, m_pos.z);
+		pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 }
 

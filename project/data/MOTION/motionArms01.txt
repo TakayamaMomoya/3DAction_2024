@@ -573,6 +573,14 @@ END_MOTIONSET
 MOTIONSET
     LOOP = 0
     NUM_KEY = 4
+    NUM_EVENT = 1
+    
+    EVENTSET	# ’e‚ðŒ‚‚Â
+		KEY = 1
+		FRAME = 2
+		POS = 0.0 -15.0 -5.0
+		PARENT = 15
+	END_EVENTSET
 
     KEYSET     #---<< 0 / 4 >>
         FRAME = 5

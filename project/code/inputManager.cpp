@@ -148,6 +148,14 @@ void CInputManager::Update(void)
 		pKeyboard->GetTrigger(DIK_SPACE)
 	);
 
+	// éÀåÇ
+	m_info.abTrigger[BUTTON_SHOT] =
+	(
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_LB, 0) ||
+		pMouse->GetTrigger(CInputMouse::BUTTON_LMB) ||
+		pKeyboard->GetTrigger(DIK_RETURN)
+	);
+
 	// É|Å[ÉY
 	m_info.abTrigger[BUTTON_PAUSE] =
 	(

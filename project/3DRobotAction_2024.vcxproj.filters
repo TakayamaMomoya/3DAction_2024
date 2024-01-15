@@ -45,9 +45,6 @@
     <ClCompile Include="code\character.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="code\characterDiv.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="code\collision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="code\motion.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="code\motionDiv.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="code\number.cpp">
@@ -227,9 +221,6 @@
     <ClInclude Include="code\character.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="code\characterDiv.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="code\collision.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
@@ -240,9 +231,6 @@
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\motion.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="code\motionDiv.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\number.h">

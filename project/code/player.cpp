@@ -19,6 +19,7 @@
 #include "slow.h"
 #include "camera.h"
 #include "manager.h"
+#include "bullet.h"
 
 //*****************************************************
 // 定数定義
@@ -28,6 +29,7 @@ namespace
 const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
 const float GRAVITY = 0.30f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
+const float SPEED_BULLET = 50.0f;	// 弾速
 }
 
 //*****************************************************
@@ -129,8 +131,6 @@ HRESULT CPlayer::Init(void)
 	EnableShadow(true);
 
 	SetMotion(MOTION_WALK_FRONT);
-
-	//EnableMotion(0, false);
 
 	return S_OK;
 }
@@ -378,6 +378,17 @@ void CPlayer::InputCamera(void)
 //=====================================================
 void CPlayer::InputAttack(void)
 {
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager == nullptr)
+	{
+		return;
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_SHOT))
+	{// 射撃処理
+		m_fragMotion.bShot = true;
+	}
 }
 
 //=====================================================
@@ -503,9 +514,24 @@ void CPlayer::ManageCollision(void)
 void CPlayer::ManageMotion(void)
 {
 	int nMotion = GetMotion();
+	bool bFinish = IsFinish();
 
-	if (m_fragMotion.bMove)
-	{
+	if (m_fragMotion.bShot)
+	{// 射撃モーション
+		if (nMotion != MOTION_SHOT)
+		{
+			SetMotion(MOTION_SHOT);
+		}
+		else
+		{
+			if (bFinish)
+			{
+				m_fragMotion.bShot = false;
+			}
+		}
+	}
+	else if (m_fragMotion.bMove)
+	{// 歩きモーション
 		if (nMotion != MOTION_WALK_FRONT)
 		{
 			SetMotion(MOTION_WALK_FRONT);
@@ -525,7 +551,40 @@ void CPlayer::ManageMotion(void)
 //=====================================================
 void CPlayer::Event(EVENT_INFO *pEventInfo)
 {
+	int nMotion = GetMotion();
 
+	if (nMotion == MOTION_SHOT)
+	{// 弾を発射
+		if (pEventInfo != nullptr)
+		{
+			D3DXVECTOR3 offset = pEventInfo->offset;
+			D3DXMATRIX mtxMazzle;
+			D3DXMATRIX mtxWeapon = *GetParts(15)->pParts->GetMatrix();
+
+			universal::SetOffSet(&mtxMazzle, mtxWeapon, offset);
+
+			D3DXVECTOR3 posMazzle = { mtxMazzle._41,mtxMazzle._42 ,mtxMazzle._43 };
+
+			Shot(posMazzle);
+		}
+	}
+}
+
+//=====================================================
+// 射撃
+//=====================================================
+void CPlayer::Shot(D3DXVECTOR3 posMazzle)
+{
+	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 move =
+	{
+		sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * SPEED_BULLET,
+		cosf(rot.x - D3DX_PI * 0.5f) * SPEED_BULLET,
+		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_BULLET
+	};
+
+	CBullet *pBullet = CBullet::Create(posMazzle, move, 120, CBullet::TYPE_PLAYER, false, 40.0f, 5.0f,
+		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
 }
 
 //=====================================================
