@@ -44,6 +44,12 @@ public:
 		PADBUTTONS_Y,
 		PADBUTTONS_MAX
 	}PADBUTTOS;
+	enum TRIGGER
+	{// トリガー判定
+		TRIGGER_RT = 0,
+		TRIGGER_LT,
+		TRIGGER_MAX
+	};
 	typedef enum
 	{//バイブレーションの状態
 		PADVIB_NONE = 0,						//使用していない状態
@@ -70,6 +76,7 @@ public:
 	bool GetTrigger(PADBUTTOS nKey, int nPlayer);
 	bool GetRelease(PADBUTTOS nKey, int nPlayer);
 	int GetRepeat(PADBUTTOS nKey, int nPlayer);
+	bool GetTriggerTB(TRIGGER trigger,int nPlayer);
 	float GetJoyStickLX(int nPlayer);
 	float GetJoyStickLY(int nPlayer);
 	float GetJoyStickRX(int nPlayer);
@@ -80,6 +87,7 @@ public:
 	static CInputJoypad *GetInstance(void) { return m_pJoyPad; }
 
 private:
+	void CheckTrigger(XINPUT_STATE state, int nPlayer);
 	void CheckStickTrigger(XINPUT_STATE state,int nPlayer);
 
 	XINPUT_STATE m_aState[MAX_PLAYER];				//ゲームパッドのプレス情報
@@ -91,6 +99,7 @@ private:
 	int m_aVibTimer[MAX_PLAYER];		// バイブレーションのタイマー
 	int m_aCntRepeat[MAX_PLAYER][PADBUTTONS_MAX];	// リピートカウンター
 	bool m_abTrigggerLStick[MAX_PLAYER][DIRECTION_MAX];	// スティックのトリガー判定
+	bool m_abTriggerTB[MAX_PLAYER][TRIGGER_MAX];	// トリガーの判定
 
 	static CInputJoypad *m_pJoyPad;	// 自身のポインタ
 };

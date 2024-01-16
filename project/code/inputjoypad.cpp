@@ -13,6 +13,14 @@
 #include "manager.h"
 
 //*****************************************************
+// 定数定義
+//*****************************************************
+namespace
+{
+const float LINE_TRIGGER = 100;	// トリガーボタンのトリガー判定のしきい値
+}
+
+//*****************************************************
 // 静的メンバ変数宣言
 //*****************************************************
 CInputJoypad *CInputJoypad::m_pJoyPad = nullptr;
@@ -142,6 +150,9 @@ void CInputJoypad::Update(void)
 			// スティックのトリガー判定
 			CheckStickTrigger(aState[nCntPlayer], nCntPlayer);
 
+			// トリガーボタンの判定
+			CheckTrigger(aState[nCntPlayer], nCntPlayer);
+
 			//トリガー
 			m_aStateTrigger[nCntPlayer].Gamepad.wButtons =
 				(m_aState[nCntPlayer].Gamepad.wButtons ^ aState[nCntPlayer].Gamepad.wButtons)
@@ -150,12 +161,40 @@ void CInputJoypad::Update(void)
 			//リリース
 			m_aStateRelease[nCntPlayer].Gamepad.wButtons =
 				(m_aState[nCntPlayer].Gamepad.wButtons ^ aState[nCntPlayer].Gamepad.wButtons)
-				& m_aState[nCntPlayer].Gamepad.wButtons;
+				& m_aState[nCntPlayer].Gamepad.wButtons;			
 
 			//プレス
 			m_aState[nCntPlayer] = aState[nCntPlayer];
 		}
 	}
+
+	CDebugProc::GetInstance()->Print("\nトリガー左[%d]右[%d]",m_aState[0].Gamepad.bLeftTrigger, m_aState[0].Gamepad.bRightTrigger);
+}
+
+//====================================================
+// トリガー判定取得
+//====================================================
+bool CInputJoypad::GetTriggerTB(TRIGGER trigger, int nPlayer)
+{
+	return m_abTriggerTB[nPlayer][trigger];
+}
+
+//====================================================
+// トリガーの入力判定
+//====================================================
+void CInputJoypad::CheckTrigger(XINPUT_STATE state, int nPlayer)
+{
+	// 差分取得
+	int nDiffRT, nDiffLT;
+
+	nDiffRT = state.Gamepad.bRightTrigger - m_aState[nPlayer].Gamepad.bRightTrigger;
+	nDiffLT = state.Gamepad.bLeftTrigger - m_aState[nPlayer].Gamepad.bLeftTrigger;
+
+	// 一気に押されていたらトリガー判定
+	m_abTriggerTB[nPlayer][TRIGGER_RT] = nDiffRT > LINE_TRIGGER;
+	m_abTriggerTB[nPlayer][TRIGGER_LT] = nDiffLT > LINE_TRIGGER;
+
+	CDebugProc::GetInstance()->Print("\n差分左[%d]右[%d]", nDiffLT, nDiffRT);
 }
 
 //====================================================
@@ -177,11 +216,6 @@ void CInputJoypad::CheckStickTrigger(XINPUT_STATE state, int nPlayer)
 	m_abTrigggerLStick[nPlayer][DIRECTION_UP] = fDiff > 0.5f && (float)m_aState[nPlayer].Gamepad.sThumbLY >= 0.0f;
 
 	m_abTrigggerLStick[nPlayer][DIRECTION_DOWN] = fDiff < -0.5f && (float)m_aState[nPlayer].Gamepad.sThumbLY <= 0.0f;
-
-	if (m_abTrigggerLStick[nPlayer][DIRECTION_DOWN])
-	{
-		int n = 10;
-	}
 }
 
 //====================================================
