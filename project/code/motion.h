@@ -107,7 +107,8 @@ public:
 	Parts *GetParts(int nIdx) { return m_apParts[nIdx]; }
 	D3DXMATRIX *GetMatrix(void) { return &m_mtxWorld; }
 	bool IsFinish(void) { return m_bFinish; }
-	void SetMatrix(void);
+	void CalcMatrix(void);
+	void SetMatrix(D3DXMATRIX mtx) { m_mtxWorld = mtx; }
 	float GetRadiusMax(void);
 	void SetAfterImage(D3DXCOLOR col = { 0.0f,0.0f,0.0f,0.0f }, int m_nLife = 10);
 	int GetKey(void) { return m_nKey; }
@@ -118,6 +119,7 @@ public:
 	void InitPose(int nMotion);
 	void EnableShadow(bool bShadow) { m_bShadow = bShadow; }
 	void EnableIndependent(bool bInde) { m_bInde = bInde; }
+	bool IsIndependent(void) { return m_bInde; }
 	EVENT_INFO *GetInfoEvent(int nMotion) { return m_aMotionInfo[nMotion].pEvent; }
 	int GetNumEventInfo(int nMotion) { return m_aMotionInfo[nMotion].nNumEvent; }
 	virtual void Event(EVENT_INFO *pEventInfo) {};

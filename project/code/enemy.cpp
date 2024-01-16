@@ -30,11 +30,12 @@
 //*****************************************************
 namespace
 {
-	const float INITIAL_LIFE = 10.0f;	// 初期体力
-	const float INITIAL_SPEED = 1.0f;	// 初期速度
-	const float LINE_CHASE = 470;	// 追跡状態に移行するエリア
-	const int DAMAGE_FRAME = 10;	// ダメージ状態のフレーム数
-	const int TIME_DEATH = 60;	// 死亡までの時間
+const float INITIAL_LIFE = 10.0f;	// 初期体力
+const float INITIAL_SPEED = 1.0f;	// 初期速度
+const float LINE_CHASE = 470;	// 追跡状態に移行するエリア
+const int DAMAGE_FRAME = 10;	// ダメージ状態のフレーム数
+const int TIME_DEATH = 60;	// 死亡までの時間
+const float DAMAGE_THROWN = 10.0f;	// 投げでのダメージ
 }
 
 //*****************************************************
@@ -192,34 +193,13 @@ CEnemy *CEnemy::Create(D3DXVECTOR3 pos, TYPE type)
 HRESULT CEnemy::Init(void)
 {
 	// 継承クラスの初期化
-	CCharacter::Init();
+	CMotion::Init();
 
 	// タイプの設定
 	SetType(TYPE_ENEMY);
 
-	if (m_pCollisionSphere == nullptr)
-	{// 球の当たり判定生成
-		m_pCollisionSphere = CCollisionSphere::Create(CCollision::TAG_ENEMY, CCollision::TYPE_SPHERE,this);
-
-		if (m_pCollisionSphere != nullptr)
-		{// 情報の設定
-			m_pCollisionSphere->SetPosition(GetPosition());
-			m_pCollisionSphere->SetRadius(50.0f);
-		}
-	}
-
-	if (m_pCollisionCube == nullptr)
-	{// 立方体の当たり判定
-		m_pCollisionCube = CCollisionCube::Create(CCollision::TAG_ENEMY, this);
-
-		D3DXVECTOR3 vtxMax = { 20,20,20 };
-		D3DXVECTOR3 vtxMin = { -20,0.0f,-20 };
-
-		if (m_pCollisionCube != nullptr)
-		{
-			m_pCollisionCube->SetVtx(vtxMax, vtxMin);
-		}
-	}
+	// 当たり判定生成
+	CreateCollision();
 
 	// パラメーター初期設定
 	m_fLife = INITIAL_LIFE;
@@ -232,13 +212,8 @@ HRESULT CEnemy::Init(void)
 	SetPositionOld(GetPosition());
 
 	// 影の有効可
-	CMotion *pBody = GetBody();
-
-	if (pBody != nullptr)
-	{
-		pBody->EnableShadow(true);
-		pBody->SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
-	}
+	EnableShadow(true);
+	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
 
 	return S_OK;
 }
@@ -252,7 +227,7 @@ void CEnemy::Uninit(void)
 	DeleteCollision();
 
 	// 継承クラスの終了
-	CCharacter::Uninit();
+	CMotion::Uninit();
 }
 
 //=====================================================
@@ -261,16 +236,10 @@ void CEnemy::Uninit(void)
 void CEnemy::Update(void)
 {
 	// 継承クラスの更新
-	CCharacter::Update();
-
-	// 目標の追跡
-	ChaseTarget();
+	CMotion::Update();
 
 	// 状態管理
 	ManageState();
-
-	// 移動状態の管理
-	ManageMoveState();
 
 	// 当たり判定の管理
 	ManageCollision();
@@ -285,7 +254,7 @@ void CEnemy::Update(void)
 	SetPosition(pos);
 
 	// 移動量の減衰
-	move *= 0.1f;
+	move *= 0.95f;
 	SetMove(move);
 }
 
@@ -296,25 +265,23 @@ void CEnemy::ManageCollision(void)
 {
 	if (m_pCollisionSphere != nullptr)
 	{// 球の当たり判定の管理
-		CMotion* pBody = GetBody();
+		D3DXVECTOR3 posWaist = GetMtxPos(0);
 
-		if (pBody != nullptr)
+		D3DXVECTOR3 pos = GetPosition();
+
+		m_pCollisionSphere->SetPosition(pos);
+
+		if (m_state != STATE_THROWN)
 		{
-			D3DXVECTOR3 posWaist = pBody->GetMtxPos(0);
-
-			D3DXVECTOR3 pos = GetPosition();
-
-			m_pCollisionSphere->SetPosition(pos);
-
 			m_pCollisionSphere->PushCollision(&pos, CCollision::TAG_PLAYER);
 			m_pCollisionSphere->PushCollision(&pos, CCollision::TAG_ENEMY);
 
 			SetPosition(pos);
-
-			m_pCollisionSphere->SetPositionOld(m_pCollisionSphere->GetPosition());
-
-			m_pCollisionSphere->SetPosition(posWaist);
 		}
+
+		m_pCollisionSphere->SetPositionOld(m_pCollisionSphere->GetPosition());
+
+		m_pCollisionSphere->SetPosition(posWaist);
 	}
 
 	if (m_pCollisionCube != nullptr)
@@ -342,13 +309,18 @@ void CEnemy::ManageState(void)
 	{
 	case STATE_NORMAL:
 		break;
+	case STATE_THROWN:
+
+		CollisionThrown();
+
+		break;
 	case STATE_DAMAGE:
 		if (m_nTimerState > DAMAGE_FRAME)
 		{// 通常状態に戻る
 			m_nTimerState = 0;
 			m_state = STATE_NORMAL;
 
-			GetBody()->ResetAllCol();
+			ResetAllCol();
 		}
 		else
 		{// カウントアップ
@@ -365,7 +337,7 @@ void CEnemy::ManageState(void)
 
 		col.a = 1.0f - (float)((float)(m_nTimerState) / (TIME_DEATH));
 
-		GetBody()->SetAllCol(col);
+		SetAllCol(col);
 
 		if (m_nTimerState >= TIME_DEATH)
 		{// 死亡
@@ -422,6 +394,32 @@ bool CEnemy::IsInArea(void)
 	}
 
 	return false;
+}
+
+//=====================================================
+// 投げられてる時の判定
+//=====================================================
+void CEnemy::CollisionThrown(void)
+{
+	if (m_pCollisionSphere != nullptr)
+	{
+		m_pCollisionSphere->SetRadius(200.0f);
+
+		if (m_pCollisionSphere->OnEnter(CCollision::TAG_ENEMY))
+		{/*
+			CObject *pObj = m_pCollisionSphere->GetOther();
+
+			if (pObj != nullptr && pObj != this)*/
+			{// 当たった敵にダメージを与える
+				m_pCollisionSphere->DamageAll(CCollision::TAG_ENEMY, DAMAGE_THROWN);
+			}
+		}
+
+		if (m_pCollisionSphere != nullptr)
+		{
+			m_pCollisionSphere->SetRadius(90.0f);
+		}
+	}
 }
 
 //=====================================================
@@ -543,7 +541,7 @@ void CEnemy::Hit(float fDamage)
 			// ヒット色
 			D3DXCOLOR col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 
-			GetBody()->SetAllCol(col);
+			SetAllCol(col);
 		}
 	}
 }
@@ -554,6 +552,68 @@ void CEnemy::Hit(float fDamage)
 void CEnemy::Death(void)
 {
 	m_state = STATE_DEATH;
+}
+
+//=====================================================
+// スコア管理
+//=====================================================
+void CEnemy::ManageScore(void)
+{
+
+}
+
+//=====================================================
+// 描画処理
+//=====================================================
+void CEnemy::Draw(void)
+{
+	// 継承クラスの描画
+	CMotion::Draw();
+
+#ifdef _DEBUG
+	CDebugProc::GetInstance()->Print("\n敵の移動量：[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
+#endif
+}
+
+//=====================================================
+// 球の当たり判定の位置設定
+//=====================================================
+void CEnemy::SetSpherePosition(D3DXVECTOR3 pos)
+{
+	if (m_pCollisionSphere != nullptr)
+	{// 位置設定
+		m_pCollisionSphere->SetPosition(pos);
+	}
+}
+
+//=====================================================
+// 当たり判定生成
+//=====================================================
+void CEnemy::CreateCollision(void)
+{
+	if (m_pCollisionSphere == nullptr)
+	{// 球の当たり判定生成
+		m_pCollisionSphere = CCollisionSphere::Create(CCollision::TAG_ENEMY, CCollision::TYPE_SPHERE, this);
+
+		if (m_pCollisionSphere != nullptr)
+		{// 情報の設定
+			m_pCollisionSphere->SetPosition(GetPosition());
+			m_pCollisionSphere->SetRadius(90.0f);
+		}
+	}
+
+	if (m_pCollisionCube == nullptr)
+	{// 立方体の当たり判定
+		m_pCollisionCube = CCollisionCube::Create(CCollision::TAG_ENEMY, this);
+
+		D3DXVECTOR3 vtxMax = { 20,20,20 };
+		D3DXVECTOR3 vtxMin = { -20,0.0f,-20 };
+
+		if (m_pCollisionCube != nullptr)
+		{
+			m_pCollisionCube->SetVtx(vtxMax, vtxMin);
+		}
+	}
 }
 
 //=====================================================
@@ -573,38 +633,5 @@ void CEnemy::DeleteCollision(void)
 		m_pCollisionCube->Uninit();
 
 		m_pCollisionCube = nullptr;
-	}
-}
-
-//=====================================================
-// スコア管理
-//=====================================================
-void CEnemy::ManageScore(void)
-{
-
-}
-
-//=====================================================
-// 描画処理
-//=====================================================
-void CEnemy::Draw(void)
-{
-	// 継承クラスの描画
-	CCharacter::Draw();
-
-#ifdef _DEBUG
-	//CDebugProc::GetInstance()->Print("\n敵の位置：[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
-	//CDebugProc::GetInstance()->Print("\n敵の移動量：[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
-#endif
-}
-
-//=====================================================
-// 球の当たり判定の位置設定
-//=====================================================
-void CEnemy::SetSpherePosition(D3DXVECTOR3 pos)
-{
-	if (m_pCollisionSphere != nullptr)
-	{// 位置設定
-		m_pCollisionSphere->SetPosition(pos);
 	}
 }

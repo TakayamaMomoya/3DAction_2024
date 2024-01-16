@@ -420,7 +420,7 @@ bool CCollisionSphere::OnEnter(TAG tag)
 				{
 
 				}
-				else if (ppCollision[nCnt]->GetTag() != tag)
+				else if (ppCollision[nCnt]->GetTag() != tag || ppCollision[nCnt] == this)
 				{
 					continue;
 				}

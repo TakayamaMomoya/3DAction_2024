@@ -8,7 +8,7 @@
 #ifndef _ENEMY_H_
 #define _ENEMY_H_
 
-#include "character.h"
+#include "motion.h"
 
 //*****************************************************
 // 前方宣言
@@ -27,7 +27,7 @@ class CBlock;
 //*****************************************************
 // クラスの定義
 //*****************************************************
-class CEnemy : public CCharacter
+class CEnemy : public CMotion
 {
 public:
 	enum TYPE
@@ -42,6 +42,7 @@ public:
 	{// 状態
 		STATE_NONE = 0,	// 何でもない状態
 		STATE_NORMAL,	// 通常状態
+		STATE_THROWN,	// 投げられた状態
 		STATE_DAMAGE,	// ダメージ状態
 		STATE_DEATH,	// 死亡状態
 		STATE_MAX
@@ -74,11 +75,12 @@ public:
 	CEnemy *GetNext(void) { return m_pNext; }
 	int GetCntState(void) { return m_nTimerState; }
 	void SetCntState(int nCnt) { m_nTimerState = nCnt; }
-	void DeleteCollision(void);
 	float GetSpeed(void) { return m_fMoveSpeed; }
 	void SetMoveSpeed(float fSpeed) { m_fMoveSpeed = fSpeed; }
 	MOVESTATE GetMoveState(void) { return m_moveState; }
 	void SetPosDest(D3DXVECTOR3 pos) { m_posDest = pos; }
+	void CreateCollision(void);
+	void DeleteCollision(void);
 
 protected:
 	CArrow *GetShadow(void) { return m_pShadow; }
@@ -93,6 +95,7 @@ private:
 	void ManageMoveState(void);
 	void ManageCollision(void);
 	bool IsInArea(void);
+	void CollisionThrown(void);
 
 	static int m_nNumAll;	// 総数
 	float m_fLife;	// 体力

@@ -10,6 +10,7 @@
 //*****************************************************
 #include "main.h"
 #include "player.h"
+#include "enemyManager.h"
 #include "collision.h"
 #include "motion.h"
 #include "inputManager.h"
@@ -37,6 +38,8 @@ const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
 const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
 const float SPEED_DODGE = 50.0f;	// 回避推進力
 const float POW_GRAB = 50.0f;	// 掴みの推進力
+const float RADIUS_GRAB = 500.0f;	// 掴みの判定
+const float POW_THROW = 100.0f;	// 投げの力
 }
 
 //*****************************************************
@@ -248,6 +251,19 @@ void CPlayer::Update(void)
 
 	// モーション管理
 	ManageMotion();
+
+	if (m_info.pEnemyGrab != nullptr)
+	{// 手に追従
+		D3DXVECTOR3 offset = { 0.0f,-100.0f,0.0f };
+		D3DXMATRIX mtxParent;
+		D3DXMATRIX mtxPart = *GetParts(5)->pParts->GetMatrix();
+
+		universal::SetOffSet(&mtxParent, mtxPart, offset);
+
+		CDebugProc::GetInstance()->Print("\n掴み位置[%f,%f,%f]", mtxParent._41, mtxParent._42, mtxParent._43);
+
+		m_info.pEnemyGrab->SetMatrix(mtxParent);
+	}
 
 // デバッグ処理
 #if _DEBUG
@@ -578,7 +594,7 @@ void CPlayer::ManageCollision(void)
 
 		if (bHit)
 		{
-			Hit(5.0f);
+			//Hit(5.0f);
 		}
 
 		if (m_info.pCollisionCube != nullptr)
@@ -646,7 +662,14 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (m_fragMotion.bGrab)
+	if (nMotion == MOTION_THROW)
+	{// 投げモーション
+		if (bFinish)
+		{
+			SetMotion(MOTION_AIR);
+		}
+	}
+	else if (m_fragMotion.bGrab)
 	{// 掴みモーション
 		if (nMotion != MOTION_GRAB)
 		{
@@ -787,26 +810,23 @@ void CPlayer::AddMoveForward(float fSpeed)
 }
 
 //=====================================================
-// イベントタイミングの管理
+// イベントの管理
 //=====================================================
 void CPlayer::Event(EVENT_INFO *pEventInfo)
 {
 	int nMotion = GetMotion();
 
+	D3DXVECTOR3 offset = pEventInfo->offset;
+	D3DXMATRIX mtxParent;
+	D3DXMATRIX mtxPart = *GetParts(pEventInfo->nIdxParent)->pParts->GetMatrix();
+
+	universal::SetOffSet(&mtxParent, mtxPart, offset);
+
+	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
+
 	if (nMotion == MOTION_SHOT)
 	{// 弾を発射
-		if (pEventInfo != nullptr)
-		{
-			D3DXVECTOR3 offset = pEventInfo->offset;
-			D3DXMATRIX mtxMazzle;
-			D3DXMATRIX mtxWeapon = *GetParts(15)->pParts->GetMatrix();
-
-			universal::SetOffSet(&mtxMazzle, mtxWeapon, offset);
-
-			D3DXVECTOR3 posMazzle = { mtxMazzle._41,mtxMazzle._42 ,mtxMazzle._43 };
-
-			Shot(posMazzle);
-		}
+		Shot(pos);
 	}
 	if (nMotion == MOTION_JUMP)
 	{// ジャンプ
@@ -819,15 +839,89 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 	if (nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
 	{// 近接攻撃
-		D3DXVECTOR3 offset = pEventInfo->offset;
-		D3DXMATRIX mtxMazzle;
-		D3DXMATRIX mtxParts = *GetParts(pEventInfo->nIdxParent)->pParts->GetMatrix();
+		ManageAttack(pos,300.0f);
+	}
 
-		universal::SetOffSet(&mtxMazzle, mtxParts, offset);
+	if (nMotion == MOTION_GRAB)
+	{// 掴み
+		// 敵を掴む
+		if (m_info.pClsnAttack == nullptr)
+		{// 判定のエラー
+			return;
+		}
 
-		D3DXVECTOR3 posMazzle = { mtxMazzle._41,mtxMazzle._42 ,mtxMazzle._43 };
+		m_info.pClsnAttack->SetPosition(pos);
+		m_info.pClsnAttack->SetRadius(RADIUS_GRAB);
 
-		ManageAttack(posMazzle,300.0f);
+		if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
+		{// 対象との当たり判定
+			CObject *pObj = m_info.pClsnAttack->GetOther();
+
+			CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+			if (pEnemyManager != nullptr)
+			{// 敵チェック
+				// 掴む
+				CEnemy *pEnemy = pEnemyManager->GetHead();
+				CEnemy *pEnemyGrab = nullptr;
+
+				while (pEnemy != nullptr)
+				{
+					CEnemy *pEnemyNext = pEnemy->GetNext();
+
+					if ((CObject*)pEnemy == pObj)
+					{
+						pEnemyGrab = pEnemy;
+
+						pEnemyGrab->DeleteCollision();
+						pEnemyGrab->EnableIndependent(true);
+						SetMotion(MOTION_THROW);
+
+						m_fragMotion.bGrab = false;
+					}
+
+					pEnemy = pEnemyNext;
+				}
+
+				// 掴む敵の決定
+				m_info.pEnemyGrab = pEnemyGrab;
+			}
+		}
+	}
+
+	if (nMotion == MOTION_THROW)
+	{// 掴んだ敵を投げ飛ばす
+		if (m_info.pEnemyGrab != nullptr)
+		{
+			m_info.pEnemyGrab->EnableIndependent(false);
+
+			D3DXVECTOR3 offset = { 0.0f,-100.0f,0.0f };
+			D3DXMATRIX mtxParent;
+			D3DXMATRIX mtxPart = *GetParts(5)->pParts->GetMatrix();
+
+			universal::SetOffSet(&mtxParent, mtxPart, offset);
+
+			D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42, mtxParent._43 };
+
+			m_info.pEnemyGrab->SetPosition(pos);
+			m_info.pEnemyGrab->CreateCollision();
+			m_info.pEnemyGrab->SetState(CEnemy::STATE::STATE_THROWN);
+
+			// 投げ方向に移動量を設定
+			D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
+			D3DXVECTOR3 rot = GetRot();
+
+			vecMove =
+			{
+				sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * POW_THROW,
+				cosf(rot.x - D3DX_PI * 0.5f) * POW_THROW,
+				sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * POW_THROW
+			};
+
+			m_info.pEnemyGrab->SetMove(vecMove);
+
+			m_info.pEnemyGrab = nullptr;
+		}
 	}
 }
 
@@ -862,7 +956,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 	m_info.pClsnAttack->SetRadius(fRadius);
 
 	if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
-	{// 対象との当たり判定1
+	{// 対象との当たり判定
 		CObject *pObj = m_info.pClsnAttack->GetOther();
 
 		if (pObj != nullptr)

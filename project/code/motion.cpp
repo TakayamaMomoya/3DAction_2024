@@ -352,7 +352,7 @@ void CMotion::InitPose(int nMotion)
 //=====================================================
 // 自分のマトリックスの設定
 //=====================================================
-void CMotion::SetMatrix(void)
+void CMotion::CalcMatrix(void)
 {
 	//変数宣言
 	D3DXMATRIX mtxRotModel, mtxTransModel;
@@ -372,9 +372,6 @@ void CMotion::SetMatrix(void)
 	D3DXMatrixTranslation(&mtxTransModel,
 		m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTransModel);
-
-	//ワールドマトリックス設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 }
 
 //=====================================================
@@ -385,11 +382,14 @@ void CMotion::MultiplyMtx(void)
 	if (m_bInde == false)
 	{
 		// 親のマトリックス
-		SetMatrix();
+		CalcMatrix();
 	}
 
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();
+
+	//ワールドマトリックス設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
 	D3DXMATRIX mtxRotModel, mtxTransModel;
 	D3DXMATRIX *pMtxParent;

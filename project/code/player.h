@@ -19,6 +19,7 @@
 class CCollisionSphere;
 class CCollisionCube;
 class CObject3D;
+class CEnemy;
 
 //*****************************************************
 // クラスの定義
@@ -65,6 +66,7 @@ private:
 		MOTION_MELEE2,	// ２回目の近接攻撃
 		MOTION_STOP,	// 急停止モーション
 		MOTION_GRAB,	// 掴みモーション
+		MOTION_THROW,	// 投げモーション
 		MOTION_MAX
 	};
 	struct SFragMotion
@@ -86,6 +88,7 @@ private:
 		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
 		bool bLand;	// 着地しているかどうか
+		CEnemy *pEnemyGrab;	// 掴んでいる敵
 	};
 
 	void Input(void);
