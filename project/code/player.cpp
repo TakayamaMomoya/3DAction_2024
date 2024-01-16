@@ -36,6 +36,7 @@ const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
 const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
 const float SPEED_DODGE = 50.0f;	// 回避推進力
+const float POW_GRAB = 50.0f;	// 掴みの推進力
 }
 
 //*****************************************************
@@ -344,12 +345,12 @@ void CPlayer::InputMove(void)
 		float fAngleInput = atan2f(axisMove.x, axisMove.z);
 
 		if (pInputManager->GetTrigger(CInputManager::BUTTON_DODGE))
-		{
+		{// ブースト回避
 			vecMove +=
 			{
-				sinf(fAngleInput) * SPEED_DODGE,
+				sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
 				0.0f,
-				cosf(fAngleInput) * SPEED_DODGE,
+				cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
 			};
 		}
 
@@ -454,6 +455,11 @@ void CPlayer::InputAttack(void)
 		{
 			m_fragMotion.bAddAttack = true;
 		}
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_GRAB))
+	{// 掴み処理
+		m_fragMotion.bGrab = true;
 	}
 }
 
@@ -640,7 +646,23 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (nMotion == MOTION_MELEE2)
+	if (m_fragMotion.bGrab)
+	{// 掴みモーション
+		if (nMotion != MOTION_GRAB)
+		{
+			SetMotion(MOTION_GRAB);
+
+			AddMoveForward(POW_GRAB);
+		}
+		else
+		{
+			if (bFinish)
+			{
+				m_fragMotion.bGrab = false;
+			}
+		}
+	}
+	else if (nMotion == MOTION_MELEE2)
 	{
 		if (bFinish)
 		{
