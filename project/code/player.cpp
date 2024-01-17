@@ -514,7 +514,22 @@ void CPlayer::InputAttack(void)
 
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_GRAB))
 	{// 掴み処理
-		m_fragMotion.bGrab = true;
+
+		if (nMotion != MOTION_THROW && nMotion != MOTION_GRAB)
+		{
+			m_fragMotion.bGrab = true;
+		}
+
+		if (nMotion == MOTION_THROW)
+		{
+			// スローをキャンセル
+			CSlow *pSlow = CSlow::GetInstance();
+
+			if (pSlow != nullptr)
+			{
+				pSlow->SetScale(1.0f);
+			}
+		}
 	}
 }
 
