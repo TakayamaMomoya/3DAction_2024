@@ -137,21 +137,6 @@ void CMotion::Update(void)
 	// パーツのトランスフォーム
 	D3DXVECTOR3 pos, rot;
 
-	// イベントの管理
-	if (m_aMotionInfo[m_motionType].pEvent != nullptr &&
-		m_aMotionInfo[m_motionType].nNumEvent > 0)
-	{
-		for (int nCntEvent = 0; nCntEvent < m_aMotionInfo[m_motionType].nNumEvent; nCntEvent++)
-		{
-			if (m_nKey == m_aMotionInfo[m_motionType].pEvent[nCntEvent].nKey &&
-				m_fCounterMotion == m_aMotionInfo[m_motionType].pEvent[nCntEvent].nFrame)
-			{// イベント呼び出し
-				// イベント
-				Event(&m_aMotionInfo[m_motionType].pEvent[nCntEvent]);
-			}
-		}
-	}
-
 	// モーションのトランスフォーム管理
 	for (int nCntParts = 0; nCntParts < m_nNumParts; nCntParts++)
 	{
@@ -232,6 +217,8 @@ void CMotion::Update(void)
 		m_apParts[nCntParts]->pParts->SetRot(rot);
 	}
 
+	float fFrameOld = m_fCounterMotion;;
+
 	CSlow *pSlow = CSlow::GetInstance();
 
 	if (pSlow != nullptr)
@@ -243,6 +230,22 @@ void CMotion::Update(void)
 	else
 	{
 		m_fCounterMotion += 1.0f;
+	}
+
+	// イベントの管理
+	if (m_aMotionInfo[m_motionType].pEvent != nullptr &&
+		m_aMotionInfo[m_motionType].nNumEvent > 0)
+	{
+		for (int nCntEvent = 0; nCntEvent < m_aMotionInfo[m_motionType].nNumEvent; nCntEvent++)
+		{
+			if (m_nKey == m_aMotionInfo[m_motionType].pEvent[nCntEvent].nKey &&
+				m_fCounterMotion >= m_aMotionInfo[m_motionType].pEvent[nCntEvent].nFrame && 
+				fFrameOld <= m_aMotionInfo[m_motionType].pEvent[nCntEvent].nFrame)
+			{// イベント呼び出し
+				// イベント
+				Event(&m_aMotionInfo[m_motionType].pEvent[nCntEvent]);
+			}
+		}
 	}
 
 	if (m_nKey >= m_aMotionInfo[m_motionType].nNumKey - 1)

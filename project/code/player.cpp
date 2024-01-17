@@ -28,11 +28,12 @@
 namespace
 {
 const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
-const float GRAVITY = 0.30f;	// 重力
+const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 50.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
-const float SPEED_MOVE = 2.0f;	// 移動速度
+const float POW_STAMP = 15.0f;	// 踏みつけの推進力
+const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
 const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
@@ -215,7 +216,11 @@ void CPlayer::Update(void)
 	// 重力
 	int nMotion = GetMotion();
 	
-	if (nMotion != MOTION_SHOT && nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE && nMotion != MOTION_MELEE2)
+	if (nMotion != MOTION_SHOT && 
+		nMotion != MOTION_ASSAULT && 
+		nMotion != MOTION_MELEE && 
+		nMotion != MOTION_MELEE2 &&
+		m_fragMotion.bStamp == false)
 	{
 		if (pSlow != nullptr)
 		{
@@ -356,6 +361,11 @@ void CPlayer::InputMove(void)
 			{// ブースト上昇
 				vecMove.y += 1.0f;
 			};
+
+			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
+			{// 踏みつけ
+				Stamp();
+			}
 		}
 		
 		float fAngleInput = atan2f(axisMove.x, axisMove.z);
@@ -408,6 +418,35 @@ void CPlayer::InputMove(void)
 		}
 	}
 #endif
+}
+
+//=====================================================
+// 踏みつけ
+//=====================================================
+void CPlayer::Stamp(void)
+{
+	if (m_info.pClsnAttack == nullptr)
+	{// 判定のエラー
+		return;
+	}
+
+	D3DXVECTOR3 pos = GetPosition();
+
+	m_info.pClsnAttack->SetRadius(100.0f);
+	m_info.pClsnAttack->SetPosition(pos);
+
+	if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
+	{// 対象との当たり判定
+		CObject *pObj = m_info.pClsnAttack->GetOther();
+
+		if (pObj != nullptr)
+		{
+			// 当たったオブジェクトのヒット処理
+			pObj->Hit(5.0f);
+		}
+
+		m_fragMotion.bStamp = true;
+	}
 }
 
 //=====================================================
@@ -662,7 +701,21 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (nMotion == MOTION_THROW)
+	if (m_fragMotion.bStamp || nMotion == MOTION_STAMP)
+	{// 踏みつけモーション
+		if (nMotion != MOTION_STAMP)
+		{
+			SetMotion(MOTION_STAMP);
+		}
+		else
+		{
+			if (bFinish)
+			{
+				SetMotion(MOTION_AIR);
+			}
+		}
+	}
+	else if (nMotion == MOTION_THROW)
 	{// 投げモーション
 		if (bFinish)
 		{
@@ -810,6 +863,21 @@ void CPlayer::AddMoveForward(float fSpeed)
 }
 
 //=====================================================
+// 上に移動量を加える
+//=====================================================
+void CPlayer::AddMoveUp(float fSpeed)
+{
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
+
+	vecMove.y += fSpeed;
+
+	move += vecMove;
+
+	SetMove(move);
+}
+
+//=====================================================
 // イベントの管理
 //=====================================================
 void CPlayer::Event(EVENT_INFO *pEventInfo)
@@ -828,6 +896,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	{// 弾を発射
 		Shot(pos);
 	}
+
 	if (nMotion == MOTION_JUMP)
 	{// ジャンプ
 		D3DXVECTOR3 move = GetMove();
@@ -835,6 +904,13 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 		move.y += POW_JUMP;
 
 		SetMove(move);
+	}
+
+	if (nMotion == MOTION_STAMP)
+	{// 踏みつけ
+		AddMoveUp(POW_STAMP);
+
+		m_fragMotion.bStamp = false;
 	}
 
 	if (nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
@@ -876,6 +952,14 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 						pEnemyGrab->DeleteCollision();
 						pEnemyGrab->EnableIndependent(true);
 						SetMotion(MOTION_THROW);
+
+						// スローにする
+						CSlow *pSlow = CSlow::GetInstance();
+
+						if (pSlow != nullptr)
+						{
+							pSlow->SetScale(0.1f);
+						}
 
 						m_fragMotion.bGrab = false;
 					}
@@ -921,6 +1005,14 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 			m_info.pEnemyGrab->SetMove(vecMove);
 
 			m_info.pEnemyGrab = nullptr;
+
+			// スローにする
+			CSlow *pSlow = CSlow::GetInstance();
+
+			if (pSlow != nullptr)
+			{
+				pSlow->SetScale(1.0f);
+			}
 		}
 	}
 }
@@ -962,7 +1054,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 		if (pObj != nullptr)
 		{
 			// 当たったオブジェクトのヒット処理
-			pObj->Hit(0.5f);
+			pObj->Hit(5.0f);
 		}
 	}
 }

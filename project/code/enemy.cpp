@@ -406,13 +406,9 @@ void CEnemy::CollisionThrown(void)
 		m_pCollisionSphere->SetRadius(200.0f);
 
 		if (m_pCollisionSphere->OnEnter(CCollision::TAG_ENEMY))
-		{/*
-			CObject *pObj = m_pCollisionSphere->GetOther();
-
-			if (pObj != nullptr && pObj != this)*/
-			{// “–‚½‚Á‚½“G‚Éƒ_ƒ[ƒW‚ð—^‚¦‚é
-				m_pCollisionSphere->DamageAll(CCollision::TAG_ENEMY, DAMAGE_THROWN);
-			}
+		{
+			// “–‚½‚Á‚½“G‚Éƒ_ƒ[ƒW‚ð—^‚¦‚é
+			m_pCollisionSphere->DamageAll(CCollision::TAG_ENEMY, DAMAGE_THROWN);
 		}
 
 		if (m_pCollisionSphere != nullptr)

@@ -67,12 +67,14 @@ private:
 		MOTION_STOP,	// 急停止モーション
 		MOTION_GRAB,	// 掴みモーション
 		MOTION_THROW,	// 投げモーション
+		MOTION_STAMP,	// 踏みつけモーション
 		MOTION_MAX
 	};
 	struct SFragMotion
 	{
 		bool bMove;	// 移動
 		bool bJump;	// ジャンプ
+		bool bStamp;	// 踏みつけ
 		bool bShot;	// 射撃
 		bool bMelee;	// 近接攻撃
 		bool bAddAttack;	// 追加攻撃
@@ -85,7 +87,7 @@ private:
 		float fLife;	// 体力
 		STATE state;	// 状態
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
-		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
+		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
 		bool bLand;	// 着地しているかどうか
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
@@ -93,6 +95,7 @@ private:
 
 	void Input(void);
 	void InputMove(void);
+	void Stamp(void);
 	void InputCamera(void);
 	void InputAttack(void);
 	void Rotation(void);
@@ -100,6 +103,7 @@ private:
 	void ManageState(void);
 	void ManageMotion(void);
 	void AddMoveForward(float fSpeed);
+	void AddMoveUp(float fSpeed);
 	void Event(EVENT_INFO *pEventInfo);
 	void Shot(D3DXVECTOR3 posMazzle);
 	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
