@@ -25,7 +25,7 @@ namespace universal
 	bool IsInTriangle(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECTOR3 posTarget);
 	bool IsCross(D3DXVECTOR3 posTarget, D3DXVECTOR3 vecSorce, D3DXVECTOR3 vecDest, float *pRate, D3DXVECTOR3 move = { 0.0f,0.0f,0.0f });
 	bool CubeCrossProduct(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECTOR3 vtx4, D3DXVECTOR3 pos);
-	bool IsInScreen(const D3DXVECTOR3 pos, D3DXMATRIX mtx);
+	bool IsInScreen(const D3DXVECTOR3 pos, D3DXMATRIX mtx,D3DXVECTOR3 *pPos = nullptr);
 	D3DXVECTOR3 LinePridiction(D3DXVECTOR3 pos, float fSpeedBullet, D3DXVECTOR3 posTarget, D3DXVECTOR3 moveTarget);
 	float PlusMin(float fData1, float fData2);
 }

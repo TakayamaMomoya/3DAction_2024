@@ -154,9 +154,9 @@ float CrossProduct(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
 	return pos1.z * pos2.x - pos1.x * pos2.z;
 }
 
-//=====================================================
+//========================================
 // ŠOÏ‚Ì“–‚½‚è”»’èŒvŽZ
-//=====================================================
+//========================================
 bool IsCross(D3DXVECTOR3 posTarget, D3DXVECTOR3 vecSorce, D3DXVECTOR3 vecDest, float *pRate, D3DXVECTOR3 move)
 {
 	bool bHit = false;
@@ -184,9 +184,9 @@ bool IsCross(D3DXVECTOR3 posTarget, D3DXVECTOR3 vecSorce, D3DXVECTOR3 vecDest, f
 	return bHit;
 }
 
-//=====================================================
+//========================================
 // ŽOŠpŒ`‚Ì’†‚É‚¢‚é‚©‚Ì”»’è
-//=====================================================
+//========================================
 bool IsInTriangle(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECTOR3 posTarget)
 {
 	int nHit = 0;
@@ -247,7 +247,7 @@ bool CubeCrossProduct(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DX
 //========================================
 // ‰æ–Ê“à”»’è
 //========================================
-bool IsInScreen(const D3DXVECTOR3 pos, D3DXMATRIX mtx)
+bool IsInScreen(const D3DXVECTOR3 pos, D3DXMATRIX mtx, D3DXVECTOR3 *pPos)
 {
 	CRenderer *pRenderer = CRenderer::GetInstance();
 
@@ -270,11 +270,16 @@ bool IsInScreen(const D3DXVECTOR3 pos, D3DXMATRIX mtx)
 	D3DXVECTOR3 screenPosition;
 	D3DXVec3Project(&screenPosition, &pos, &viewport, &projectionMatrix, &viewMatrix, D3DXMatrixIdentity(&mtx));
 
+	if (pPos != nullptr)
+	{
+		*pPos = screenPosition;
+	}
+
 	if (screenPosition.x >= viewport.X && 
 		screenPosition.x <= viewport.X + viewport.Width &&
 		screenPosition.y >= viewport.Y && 
 		screenPosition.y <= viewport.Y + viewport.Height &&
-		screenPosition.z >= 0.0f/* && screenPosition.z <= 1.0f*/)
+		screenPosition.z >= 0.0f && screenPosition.z <= 1.0f)
 	{
 		return true;
 	}

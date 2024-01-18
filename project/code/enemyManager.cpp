@@ -150,7 +150,8 @@ void CEnemyManager::Update(void)
 	{
 		if (pKeyboard->GetTrigger(DIK_C))
 		{
-			//CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+			CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+			CreateEnemy(D3DXVECTOR3(0.0f, 500.0f, 500.0f), CEnemy::TYPE::TYPE_NORMAL);
 			CreateEnemy(D3DXVECTOR3(-1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 		}
 	}
@@ -174,22 +175,33 @@ CEnemy *CEnemyManager::Lockon(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vt
 
 		while (pEnemy != nullptr)
 		{
+			CEnemy::STATE state = pEnemy->GetState();
+
 			CEnemy *pEnemyNext = pEnemy->GetNext();
 
-			D3DXVECTOR3 pos = pEnemy->GetPosition();
-			D3DXMATRIX mtx = *pEnemy->GetMatrix();
+			if (state != CEnemy::STATE::STATE_DEATH)
+			{
+				D3DXVECTOR3 pos = pEnemy->GetPosition();
+				D3DXMATRIX mtx = *pEnemy->GetMatrix();
 
-			// ロックオンする敵の決定
-			if (universal::IsInScreen(pos, mtx))
-				m_pEnemyLockon = pEnemy;
+				// ロックオンする敵の決定
+				if (universal::IsInScreen(pos, mtx))
+					m_pEnemyLockon = pEnemy;
+			}
 
 			pEnemy = pEnemyNext;
 		}
-
-
 	}
 
 	return m_pEnemyLockon;
+}
+
+//=====================================================
+// ターゲットのロック
+//=====================================================
+void CEnemyManager::EnableLockTarget(bool bLock)
+{
+	m_bLockTarget = bLock;
 }
 
 //=====================================================

@@ -111,6 +111,7 @@ private:
 	void Shot(D3DXVECTOR3 posMazzle);
 	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
 	CEnemy *GetLockOn(void);
+	void EndMelee(void);
 	void Debug(void);
 
 	SInfo m_info;	// ©g‚Ìî•ñ

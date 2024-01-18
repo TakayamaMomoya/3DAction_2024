@@ -376,9 +376,13 @@ void CPlayer::InputMove(void)
 
 	int nMotion = GetMotion();
 
-	if (m_fragMotion.bMove && fLengthAxis >= 0.3f && nMotion != MOTION_SHOT)
+	if (/*m_fragMotion.bMove && */fLengthAxis >= 0.3f && nMotion != MOTION_SHOT)
 	{// 通常移動時の目標向き設定
 		m_info.rotDest.y = atan2f(vecInput.x, vecInput.z);
+
+		CDebugProc *pDebugProc = CDebugProc::GetInstance();
+
+		pDebugProc->Print("\n通常移動");
 	}
 
 	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
@@ -879,6 +883,8 @@ void CPlayer::ManageMotion(void)
 		if (bFinish)
 		{
 			SetMotion(MOTION_AIR);
+
+			EndMelee();
 		}
 	}
 	else if (nMotion == MOTION_MELEE)
@@ -907,6 +913,8 @@ void CPlayer::ManageMotion(void)
 			else
 			{
 				SetMotion(MOTION_AIR);
+
+				EndMelee();
 			}
 		}
 	}
@@ -1011,6 +1019,13 @@ void CPlayer::StartMelee(void)
 		SetMotion(MOTION_MELEE);
 
 		m_info.rotDest.x = 0.0f;
+
+		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+		if (pEnemyManager != nullptr)
+		{
+			pEnemyManager->EnableLockTarget(true);
+		}
 	}
 }
 
@@ -1287,6 +1302,19 @@ CEnemy *CPlayer::GetLockOn(void)
 }
 
 //=====================================================
+// 格闘の終了
+//=====================================================
+void CPlayer::EndMelee(void)
+{
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager != nullptr)
+	{
+		pEnemyManager->EnableLockTarget(false);
+	}
+}
+
+//=====================================================
 // デバッグ表示
 //=====================================================
 void CPlayer::Debug(void)
@@ -1312,4 +1340,8 @@ void CPlayer::Debug(void)
 
 	pDebugProc->Print("\nモーション[%d]", nMotion);
 	pDebugProc->Print("\n着地[%d]", m_info.bLand);
+	pDebugProc->Print("\n移動[%d]", m_fragMotion.bMove);
+	pDebugProc->Print("\n射撃[%d]", m_fragMotion.bShot);
+	pDebugProc->Print("\n追撃[%d]", m_fragMotion.bAddAttack);
+	pDebugProc->Print("\n空中[%d]", m_fragMotion.bAir);
 }
