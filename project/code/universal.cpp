@@ -17,6 +17,22 @@
 namespace universal
 {
 //=========================================
+// ílÇÃêßå¿
+//=========================================
+void LimitValue(float *pValue, float fMax, float fMin)
+{
+	if (fMax < *pValue)
+	{
+		*pValue = fMax;
+	}
+
+	if (fMin > *pValue)
+	{
+		*pValue = fMin;
+	}
+}
+
+//=========================================
 // âÒì]êßå‰èàóù
 //=========================================
 void LimitRot(float *fRot)

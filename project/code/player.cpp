@@ -45,6 +45,8 @@ const float POW_THROW = 100.0f;	// 投げの力
 const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
 const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
 const float MELEE_DIST = 800.0f;	// 格闘に移る距離
+const float MIN_ANGLE_CAMERA = D3DX_PI * 0.2f;	// カメラの下を見る制限
+const float MAX_ANGLE_CAMERA = D3DX_PI * 0.7f;	// カメラの上を見る制限
 }
 
 //*****************************************************
@@ -376,7 +378,7 @@ void CPlayer::InputMove(void)
 
 	int nMotion = GetMotion();
 
-	if (/*m_fragMotion.bMove && */fLengthAxis >= 0.3f && nMotion != MOTION_SHOT)
+	if (fLengthAxis >= 0.3f && nMotion != MOTION_SHOT)
 	{// 通常移動時の目標向き設定
 		m_info.rotDest.y = atan2f(vecInput.x, vecInput.z);
 
@@ -586,6 +588,8 @@ void CPlayer::InputCamera(void)
 	// カメラの回転
 	pInfoCamera->rot.x += axisCamera.y * SPEED_ROLL_CAMERA;
 	pInfoCamera->rot.y += axisCamera.x * SPEED_ROLL_CAMERA;
+
+	universal::LimitValue(&pInfoCamera->rot.x, MAX_ANGLE_CAMERA, MIN_ANGLE_CAMERA);
 
 	universal::LimitRot(&pInfoCamera->rot.x);
 	universal::LimitRot(&pInfoCamera->rot.y);
