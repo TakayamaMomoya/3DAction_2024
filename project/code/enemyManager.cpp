@@ -14,6 +14,7 @@
 #include "enemyNormal.h"
 #include "inputkeyboard.h"
 #include "effect3D.h"
+#include "player.h"
 
 //*****************************************************
 // 定数定義
@@ -21,6 +22,7 @@
 namespace
 {
 const float TIME_SPAWN = 5.0f;	// 敵のスポーン
+const float DIST_LOCKON = 5000.0f;	// ロックオン距離
 }
 
 //*****************************************************
@@ -116,6 +118,12 @@ HRESULT CEnemyManager::Init(void)
 	// 読込処理
 	Load();
 
+	CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+	CreateEnemy(D3DXVECTOR3(0.0f, 500.0f, 500.0f), CEnemy::TYPE::TYPE_NORMAL);
+	CreateEnemy(D3DXVECTOR3(-1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+	CreateEnemy(D3DXVECTOR3(-1200.0f, 400.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+	CreateEnemy(D3DXVECTOR3(1500.0f, 1000.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+
 	return S_OK;
 }
 
@@ -153,6 +161,8 @@ void CEnemyManager::Update(void)
 			CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 			CreateEnemy(D3DXVECTOR3(0.0f, 500.0f, 500.0f), CEnemy::TYPE::TYPE_NORMAL);
 			CreateEnemy(D3DXVECTOR3(-1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+			CreateEnemy(D3DXVECTOR3(-1200.0f, 400.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+			CreateEnemy(D3DXVECTOR3(1500.0f, 1000.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 		}
 	}
 
@@ -164,14 +174,23 @@ void CEnemyManager::Update(void)
 //=====================================================
 // ロックオン処理
 //=====================================================
-CEnemy *CEnemyManager::Lockon(void)
+CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 {
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+	{
+		return nullptr;
+	}
+
 	bool bLock = IsLockTarget();
 
 	if (bLock == false)
 	{
 		CEnemy *pEnemy = GetHead();
 		m_pEnemyLockon = nullptr;
+		float fDistMax = FLT_MAX;
+		D3DXVECTOR3 posCenter = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
 
 		while (pEnemy != nullptr)
 		{
@@ -179,14 +198,35 @@ CEnemy *CEnemyManager::Lockon(void)
 
 			CEnemy *pEnemyNext = pEnemy->GetNext();
 
-			if (state != CEnemy::STATE::STATE_DEATH)
+			if (state != CEnemy::STATE::STATE_DEATH && pEnemyExclusive != pEnemy)
 			{
 				D3DXVECTOR3 pos = pEnemy->GetPosition();
+				D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 				D3DXMATRIX mtx = *pEnemy->GetMatrix();
+				D3DXVECTOR3 posScreen;
 
-				// ロックオンする敵の決定
-				if (universal::IsInScreen(pos, mtx))
-					m_pEnemyLockon = pEnemy;
+				D3DXVECTOR3 vecDiffPlayer = pos - posPlayer;
+				float fDistPlayer = D3DXVec3Length(&vecDiffPlayer);
+
+				// 距離制限
+				if (DIST_LOCKON > fDistPlayer)
+				{
+					// ロックオンする敵の決定
+					if (universal::IsInScreen(pos, mtx, &posScreen))
+					{
+						D3DXVECTOR3 vecDiff = posScreen - posCenter;
+
+						// 画面中心からの距離を計算
+						float fDist = sqrtf(vecDiff.x * vecDiff.x + vecDiff.z * vecDiff.z);
+
+						if (fDist < fDistMax)
+						{
+							m_pEnemyLockon = pEnemy;
+
+							fDistMax = fDist;
+						}
+					}
+				}
 			}
 
 			pEnemy = pEnemyNext;

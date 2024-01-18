@@ -298,7 +298,7 @@ void CPlayer::Lockon(void)
 	}
 
 	// 敵をロックオン
-	pEnemyManager->Lockon();
+	pEnemyManager->Lockon(m_info.pEnemyGrab);
 }
 
 //=====================================================
@@ -362,8 +362,8 @@ void CPlayer::InputMove(void)
 		pDebugProc->Print("\n通常移動");
 	}
 
-	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
-	{
+	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW)
+	{// 敵の方向を向く処理
 		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
 		if (pEnemyManager != nullptr)
@@ -632,7 +632,7 @@ void CPlayer::Rotation(void)
 
 	int nMotion = GetMotion();
 
-	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
+	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW)
 	{
 		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
@@ -1228,8 +1228,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 
 		if (pObj != nullptr)
 		{
-			// 当たったオブジェクトのヒット処理
-			pObj->Hit(5.0f);
+			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 5.0f);
 		}
 	}
 }

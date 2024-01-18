@@ -29,7 +29,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	CEnemy *Lockon(void);
+	CEnemy *Lockon(CEnemy *pEnemyExclusive = nullptr);
 	void EnableLockTarget(bool bLock);
 	bool IsLockTarget(void) { return m_bLockTarget; }
 	void CheckDeathLockon(CEnemy *pEnemy);
