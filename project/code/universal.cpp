@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "universal.h"
+#include "debugproc.h"
 #include <stdio.h>
 
 namespace universal
@@ -109,6 +110,22 @@ void FactingRot(float *pfRot, float fRotDest, float rotateFact)
 //========================================
 // ‹——£‚Ì”äŠr
 //========================================
+D3DXVECTOR3 VecToRot(D3DXVECTOR3 vec)
+{
+	D3DXVECTOR3 rot = { 0.0f,0.0f,0.0f };
+
+	rot.y = atan2f(vec.x, vec.z);
+
+	float fLength = sqrtf(vec.x * vec.x + vec.z * vec.z);
+
+	rot.x = atan2f(fLength, -vec.y);
+
+	return rot;
+}
+
+//========================================
+// ‹——£‚Ì”äŠr
+//========================================
 bool DistCmp(D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fLengthMax, float *fDiff)
 {
 	D3DXVECTOR3 vecDiff = posTarget - posOwn;
@@ -150,10 +167,10 @@ bool IsCross(D3DXVECTOR3 posTarget, D3DXVECTOR3 vecSorce, D3DXVECTOR3 vecDest, f
 
 	if (fArea > 0)
 	{
-		D3DXVECTOR3 vecToPos = posTarget - vecSorce;
-
 		if (pRate != nullptr)
 		{
+			D3DXVECTOR3 vecToPos = posTarget - vecSorce;
+
 			// Š„‡‚ğZo
 			float fAreaMax = (vecDest.z * move.x) - (vecDest.x * move.z);
 			float fArea = (vecToPos.z * move.x) - (vecToPos.x * move.z);
@@ -165,6 +182,30 @@ bool IsCross(D3DXVECTOR3 posTarget, D3DXVECTOR3 vecSorce, D3DXVECTOR3 vecDest, f
 	}
 
 	return bHit;
+}
+
+//=====================================================
+// OŠpŒ`‚Ì’†‚É‚¢‚é‚©‚Ì”»’è
+//=====================================================
+bool IsInTriangle(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECTOR3 posTarget)
+{
+	int nHit = 0;
+
+	if(IsCross(posTarget, vtx1, vtx2, nullptr) == false)
+		nHit++;
+	if (IsCross(posTarget, vtx2, vtx3, nullptr) == false)
+		nHit++;
+	if (IsCross(posTarget, vtx3, vtx1, nullptr) == false)
+		nHit++;
+
+	CDebugProc::GetInstance()->Print("\n”X”XF[%d]", nHit);
+
+	if (nHit == 3)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //========================================

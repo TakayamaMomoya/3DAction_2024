@@ -223,6 +223,11 @@ HRESULT CEnemy::Init(void)
 //=====================================================
 void CEnemy::Uninit(void)
 {
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager != nullptr)
+		pEnemyManager->CheckDeathLockon(this);
+
 	// “–‚½‚è”»’èíœ
 	DeleteCollision();
 

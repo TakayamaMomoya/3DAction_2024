@@ -87,12 +87,14 @@ private:
 		float fLife;	// ‘Ì—Í
 		STATE state;	// ó‘Ô
 		CCollisionSphere *pCollisionSphere;	// ‹…‚Ì“–‚½‚è”»’è
-		CCollisionSphere *pClsnAttack;	// UŒ‚‚Ì“–‚½‚è”»’è888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+		CCollisionSphere *pClsnAttack;	// UŒ‚‚Ì“–‚½‚è”»’è
 		CCollisionCube *pCollisionCube;	// —§•û‘Ì‚Ì“–‚½‚è”»’è
 		bool bLand;	// ’…’n‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
 		CEnemy *pEnemyGrab;	// ’Í‚ñ‚Å‚¢‚é“G
+		D3DXVECTOR3 rotDest;	// –Ú•W‚ÌŒü‚«
 	};
 
+	void Lockon(void);
 	void Input(void);
 	void InputMove(void);
 	void Stamp(void);
@@ -102,11 +104,13 @@ private:
 	void ManageCollision(void);
 	void ManageState(void);
 	void ManageMotion(void);
+	void StartMelee(void);
 	void AddMoveForward(float fSpeed);
 	void AddMoveUp(float fSpeed);
 	void Event(EVENT_INFO *pEventInfo);
 	void Shot(D3DXVECTOR3 posMazzle);
 	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
+	CEnemy *GetLockOn(void);
 	void Debug(void);
 
 	SInfo m_info;	// ©g‚Ìî•ñ

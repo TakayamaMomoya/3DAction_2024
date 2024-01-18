@@ -107,7 +107,7 @@ HRESULT CGame::Init(void)
 
 	if (pRenderer != nullptr)
 	{
-		pRenderer->EnableFog(true);
+		//pRenderer->EnableFog(true);
 	}
 
 	// ƒvƒŒƒCƒ„[‚Ì¶¬

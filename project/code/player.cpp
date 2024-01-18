@@ -21,6 +21,7 @@
 #include "camera.h"
 #include "manager.h"
 #include "bullet.h"
+#include "effect3D.h"
 
 //*****************************************************
 // 定数定義
@@ -41,6 +42,9 @@ const float SPEED_DODGE = 50.0f;	// 回避推進力
 const float POW_GRAB = 50.0f;	// 掴みの推進力
 const float RADIUS_GRAB = 500.0f;	// 掴みの判定
 const float POW_THROW = 100.0f;	// 投げの力
+const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
+const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
+const float MELEE_DIST = 800.0f;	// 格闘に移る距離
 }
 
 //*****************************************************
@@ -187,6 +191,9 @@ void CPlayer::Update(void)
 	// 継承クラスの更新
 	CMotion::Update();
 
+	// ロックオン
+	Lockon();
+
 	// 入力
 	Input();
 
@@ -277,6 +284,47 @@ void CPlayer::Update(void)
 }
 
 //=====================================================
+// ロックオン
+//=====================================================
+void CPlayer::Lockon(void)
+{
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager == nullptr)
+	{
+		return;
+	}
+
+	// カメラ取得
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera == nullptr)
+	{
+		return;
+	}
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rotCamera = pInfoCamera->rot;
+
+	// ロックオンの位置設定
+	D3DXVECTOR3 vtx1, vtx2;
+
+	vtx1 = pos +
+		D3DXVECTOR3(sinf(rotCamera.y + ANGLE_LOCKON) * LENGTH_LOCKON,0.0f, cosf(rotCamera.y + ANGLE_LOCKON) * LENGTH_LOCKON);
+
+	vtx2 = pos +
+		D3DXVECTOR3(sinf(rotCamera.y - ANGLE_LOCKON) * LENGTH_LOCKON, 0.0f, cosf(rotCamera.y - ANGLE_LOCKON) * LENGTH_LOCKON);
+
+	// 敵をロックオン
+	pEnemyManager->Lockon(pos, vtx1, vtx2);
+
+	CEffect3D::Create(vtx1, 30.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	CEffect3D::Create(vtx2, 30.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+}
+
+//=====================================================
 // 入力処理
 //=====================================================
 void CPlayer::Input(void)
@@ -314,24 +362,79 @@ void CPlayer::InputMove(void)
 
 	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
 
+	// 目標方向の設定
+	CInputManager::SAxis axis = pInputManager->GetAxis();
+	D3DXVECTOR3 axisMove = axis.axisMove;
+
+	// 入力方向の取得
+	D3DXVECTOR3 vecInput = { 0.0f,0.0f,0.0f };
+
+	vecInput += {sinf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x, 0.0f, cosf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x};
+	vecInput += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
+
+	float fLengthAxis = D3DXVec3Length(&axisMove);
+
 	int nMotion = GetMotion();
 
-	if (nMotion != MOTION_ASSAULT && nMotion != MOTION_MELEE && nMotion != MOTION_MELEE2)
+	if (m_fragMotion.bMove && fLengthAxis >= 0.3f && nMotion != MOTION_SHOT)
+	{// 通常移動時の目標向き設定
+		m_info.rotDest.y = atan2f(vecInput.x, vecInput.z);
+	}
+
+	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
+	{
+		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+		if (pEnemyManager != nullptr)
+		{
+			CEnemy *pEnemyLockon = pEnemyManager->GetLockon();
+
+			if (pEnemyLockon != nullptr)
+			{
+				D3DXVECTOR3 pos = GetPosition();
+				pos.y += 200.0f;
+
+				D3DXVECTOR3 vecDiff = pEnemyLockon->GetPosition() - pos;
+
+				m_info.rotDest = universal::VecToRot(vecDiff);
+				m_info.rotDest.x -= D3DX_PI * 0.5f;
+			}
+		}
+	}
+
+	if (nMotion != MOTION_ASSAULT &&
+		nMotion != MOTION_MELEE &&
+		nMotion != MOTION_MELEE2 &&
+		nMotion != MOTION_GRAB &&
+		nMotion != MOTION_THROW &&
+		m_fragMotion.bStamp == false)
 	{
 		// 方向入力の取得
 		CInputManager::SAxis axis = pInputManager->GetAxis();
 		D3DXVECTOR3 axisMove = axis.axisMove;
 
 		D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-
-		vecMove += {sinf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x, 0.0f, cosf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x};
-		vecMove += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
+		D3DXVECTOR3 rot = GetRot();
 
 		float fLengthAxis = D3DXVec3Length(&axisMove);
 
 		if (m_fragMotion.bMove && fLengthAxis <= 0.3f)
 		{// 急停止フラグ
 			m_fragMotion.bStop = true;
+		}
+
+		fLengthAxis *= SPEED_MOVE;
+
+		if (nMotion == MOTION_SHOT)
+		{// 視点固定時
+			D3DXVECTOR3 rotCamera = pInfoCamera->rot;
+
+			vecMove += {sinf(rotCamera.y + D3DX_PI * 0.5f) * axisMove.x, 0.0f, cosf(rotCamera.y + D3DX_PI * 0.5f) * axisMove.x};
+			vecMove += {sinf(rotCamera.y) * axisMove.z, 0.0f, cosf(rotCamera.y) * axisMove.z};
+		}
+		else
+		{// 向きが自由な時
+			vecMove -= {sinf(rot.y) * fLengthAxis, 0.0f, cosf(rot.y) * fLengthAxis};
 		}
 
 		// 移動速度の設定
@@ -546,41 +649,49 @@ void CPlayer::Rotation(void)
 
 	int nMotion = GetMotion();
 
-	if (nMotion == MOTION_SHOT)
+	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
 	{
-		// カメラ取得
-		CCamera *pCamera = CManager::GetCamera();
+		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
-		if (pCamera == nullptr)
+		if (pEnemyManager == nullptr)
 		{
 			return;
 		}
 
-		CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+		CEnemy *pEnemyLockon = pEnemyManager->GetLockon();
 
-		// 向きの補正
-		D3DXVECTOR3 rot = GetRot();
-		D3DXVECTOR3 rotCamera = pInfoCamera->rot;
+		if (pEnemyLockon == nullptr)
+		{
+			// カメラ取得
+			CCamera *pCamera = CManager::GetCamera();
 
-		rotCamera.x -= D3DX_PI * 0.5f;
-		rotCamera.y += D3DX_PI;
+			if (pCamera == nullptr)
+			{
+				return;
+			}
 
-		universal::LimitRot(&rotCamera.x);
-		universal::LimitRot(&rotCamera.y);
+			CCamera::Camera *pInfoCamera = pCamera->GetCamera();
 
-		universal::FactingRot(&rot.x, rotCamera.x, 0.15f);
-		universal::FactingRot(&rot.y, rotCamera.y, 0.15f);
+			// 向きの補正
+			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rotCamera = pInfoCamera->rot;
 
-		SetRot(rot);
+			rotCamera.x -= D3DX_PI * 0.5f;
+			rotCamera.y;
+
+			universal::LimitRot(&rotCamera.x);
+			universal::LimitRot(&rotCamera.y);
+
+			universal::FactingRot(&m_info.rotDest.x, rotCamera.x, 0.15f);
+			universal::FactingRot(&m_info.rotDest.y, rotCamera.y, 0.15f);
+		}
 	}
 	else
 	{
-		if (fLenghtMove >= 10.0f)
+		if (fLenghtMove >= 6.0f)
 		{
 			// 向きの補正
 			D3DXVECTOR3 rot = GetRot();
-
-			universal::FactingRot(&rot.y, fAngleMove, 0.1f);
 
 			SetRot(rot);
 
@@ -594,13 +705,23 @@ void CPlayer::Rotation(void)
 			m_fragMotion.bMove = false;
 		}
 
-		// 向きの補正
-		D3DXVECTOR3 rot = GetRot();
-
-		rot.x += (0 - rot.x) * 0.1f;
-
-		SetRot(rot);
+		m_info.rotDest.x = 0.0f;
 	}
+
+	// 向きの補正
+	D3DXVECTOR3 rot = GetRot();
+
+	float fFact = 0.1f;
+
+	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT)
+	{
+		fFact = 0.4f;
+	}
+
+	universal::FactingRot(&rot.y, m_info.rotDest.y + D3DX_PI, fFact);
+	universal::FactingRot(&rot.x, m_info.rotDest.x, fFact);
+
+	SetRot(rot);
 }
 
 //=====================================================
@@ -770,7 +891,18 @@ void CPlayer::ManageMotion(void)
 				m_fragMotion.bAddAttack = false;
 				m_fragMotion.bMelee = false;
 
-				AddMoveForward(POW_ADDMELEE);
+				CEnemy *pEnemyLockon = GetLockOn();
+
+				if (pEnemyLockon != nullptr)
+				{
+					D3DXVECTOR3 pos = GetPosition();
+					D3DXVECTOR3 posEnemy = pEnemyLockon->GetPosition();
+
+					if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr) == false)
+					{
+						AddMoveForward(POW_ADDMELEE);
+					}
+				}
 			}
 			else
 			{
@@ -786,12 +918,7 @@ void CPlayer::ManageMotion(void)
 		}
 		else
 		{
-			if (bFinish)
-			{
-				m_fragMotion.bMelee = false;
-
-				SetMotion(MOTION_MELEE);
-			}
+			StartMelee();
 		}
 	}
 	else if (m_fragMotion.bShot)
@@ -853,6 +980,37 @@ void CPlayer::ManageMotion(void)
 		{
 			SetMotion(MOTION_NEUTRAL);
 		}
+	}
+}
+
+//=====================================================
+// 近接攻撃の始まるタイミング
+//=====================================================
+void CPlayer::StartMelee(void)
+{
+	bool bFinish = IsFinish();
+	bool bNear = false;
+
+	CEnemy *pEnemyLockon = GetLockOn();
+
+	if (pEnemyLockon != nullptr)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 posEnemy = pEnemyLockon->GetPosition();
+
+		if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr))
+		{
+			bNear = true;
+		}
+	}
+
+	if (bFinish || bNear)
+	{// 条件を満たしたら格闘攻撃に移行
+		m_fragMotion.bMelee = false;
+
+		SetMotion(MOTION_MELEE);
+
+		m_info.rotDest.x = 0.0f;
 	}
 }
 
@@ -1038,6 +1196,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 {
 	D3DXVECTOR3 rot = GetRot();
+
 	D3DXVECTOR3 move =
 	{
 		sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * SPEED_BULLET,
@@ -1111,6 +1270,23 @@ void CPlayer::Hit(float fDamage)
 }
 
 //=====================================================
+// ロックオンの敵取得
+//=====================================================
+CEnemy *CPlayer::GetLockOn(void)
+{
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager == nullptr)
+	{
+		return nullptr;
+	}
+
+	CEnemy *pEnemyLockon = pEnemyManager->GetLockon();
+
+	return pEnemyLockon;
+}
+
+//=====================================================
 // デバッグ表示
 //=====================================================
 void CPlayer::Debug(void)
@@ -1130,6 +1306,7 @@ void CPlayer::Debug(void)
 
 	pDebugProc->Print("\nプレイヤーの位置[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
 	pDebugProc->Print("\nプレイヤーの移動量[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
+	pDebugProc->Print("\n目標の向き[%f,%f,%f]", GetRot().x, GetRot().y, GetRot().z);
 
 	int nMotion = GetMotion();
 

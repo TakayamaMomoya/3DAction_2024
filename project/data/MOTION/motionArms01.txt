@@ -588,7 +588,7 @@ MOTIONSET
     END_KEYSET
 END_MOTIONSET
 #===============================
-# [2]番目のモーション
+# [2] 射撃モーション
 #===============================
 MOTIONSET
     LOOP = 0
@@ -1797,6 +1797,8 @@ MOTIONSET
     EVENTSET
         KEY = 1
         FRAME = 2
+        PARENT = 16
+        POS = 0.00 -100.00 300.00
     END_EVENTSET
 
     KEYSET     #---<< 0 / 4 >>
