@@ -33,7 +33,7 @@ const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 50.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
-const float POW_STAMP = 15.0f;	// 踏みつけの推進力
+const float POW_STAMP = 20.0f;	// 踏みつけの推進力
 const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
@@ -297,33 +297,8 @@ void CPlayer::Lockon(void)
 		return;
 	}
 
-	// カメラ取得
-	CCamera *pCamera = CManager::GetCamera();
-
-	if (pCamera == nullptr)
-	{
-		return;
-	}
-
-	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
-
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 rotCamera = pInfoCamera->rot;
-
-	// ロックオンの位置設定
-	D3DXVECTOR3 vtx1, vtx2;
-
-	vtx1 = pos +
-		D3DXVECTOR3(sinf(rotCamera.y + ANGLE_LOCKON) * LENGTH_LOCKON,0.0f, cosf(rotCamera.y + ANGLE_LOCKON) * LENGTH_LOCKON);
-
-	vtx2 = pos +
-		D3DXVECTOR3(sinf(rotCamera.y - ANGLE_LOCKON) * LENGTH_LOCKON, 0.0f, cosf(rotCamera.y - ANGLE_LOCKON) * LENGTH_LOCKON);
-
 	// 敵をロックオン
-	pEnemyManager->Lockon(pos, vtx1, vtx2);
-
-	CEffect3D::Create(vtx1, 30.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-	CEffect3D::Create(vtx2, 30.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	pEnemyManager->Lockon();
 }
 
 //=====================================================
@@ -1013,6 +988,13 @@ void CPlayer::StartMelee(void)
 		if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr))
 		{
 			bNear = true;
+
+			// 移動を止める
+			D3DXVECTOR3 move = GetMove();
+
+			move *= 0.7f;
+
+			SetMove(move);
 		}
 	}
 

@@ -29,7 +29,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	CEnemy *Lockon(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3);
+	CEnemy *Lockon(void);
 	void EnableLockTarget(bool bLock);
 	bool IsLockTarget(void) { return m_bLockTarget; }
 	void CheckDeathLockon(CEnemy *pEnemy);

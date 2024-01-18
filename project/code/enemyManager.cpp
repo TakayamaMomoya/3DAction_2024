@@ -164,7 +164,7 @@ void CEnemyManager::Update(void)
 //=====================================================
 // ƒƒbƒNƒIƒ“ˆ—
 //=====================================================
-CEnemy *CEnemyManager::Lockon(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3)
+CEnemy *CEnemyManager::Lockon(void)
 {
 	bool bLock = IsLockTarget();
 
