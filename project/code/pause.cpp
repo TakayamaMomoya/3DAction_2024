@@ -109,9 +109,9 @@ HRESULT CPause::Init(void)
 
 	char *pPath[MENU_MAX] = 
 	{// メニュー項目のパス
-		"data\\TEXTURE\\UI\\pause_resume.png",
-		"data\\TEXTURE\\UI\\pause_restart.png",
-		"data\\TEXTURE\\UI\\pause_quit.png",
+		"data\\TEXTURE\\UI\\menu_resume.png",
+		"data\\TEXTURE\\UI\\menu_retry.png",
+		"data\\TEXTURE\\UI\\menu_quit.png",
 	};
 
 	int nIdxTexture;

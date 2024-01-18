@@ -15,6 +15,8 @@
 #include "inputkeyboard.h"
 #include "effect3D.h"
 #include "player.h"
+#include "object2D.h"
+#include "texture.h"
 
 //*****************************************************
 // 定数定義
@@ -23,6 +25,8 @@ namespace
 {
 const float TIME_SPAWN = 5.0f;	// 敵のスポーン
 const float DIST_LOCKON = 5000.0f;	// ロックオン距離
+const float SIZE_CURSOR = 60.0f;	// カーソルサイズ
+const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon01.png";	// カーソルのテクスチャ
 }
 
 //*****************************************************
@@ -124,6 +128,20 @@ HRESULT CEnemyManager::Init(void)
 	CreateEnemy(D3DXVECTOR3(-1200.0f, 400.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 	CreateEnemy(D3DXVECTOR3(1500.0f, 1000.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 
+	if (m_pCursor == nullptr)
+	{// カーソル生成
+		m_pCursor = CObject2D::Create(7);
+
+		if (m_pCursor != nullptr)
+		{
+			m_pCursor->SetSize(SIZE_CURSOR, SIZE_CURSOR);
+			m_pCursor->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+			int nIdx = CTexture::GetInstance()->Regist(CURSOR_PATH);
+			m_pCursor->SetIdxTexture(nIdx);
+			m_pCursor->SetVtx();
+		}
+	}
+
 	return S_OK;
 }
 
@@ -141,6 +159,12 @@ void CEnemyManager::Load(void)
 void CEnemyManager::Uninit(void)
 {
 	m_pEnemyManager = nullptr;
+
+	if (m_pCursor != nullptr)
+	{
+		m_pCursor->Uninit();
+		m_pCursor = nullptr;
+	}
 
 	Release();
 }
@@ -185,42 +209,53 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 
 	bool bLock = IsLockTarget();
 
-	if (bLock == false)
+	bool bInAny = false;
+	CEnemy *pEnemy = GetHead();
+	float fDistMax = FLT_MAX;
+	D3DXVECTOR3 posCenter = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
+	D3DXVECTOR3 posScreen = posCenter;
+
+	while (pEnemy != nullptr)
 	{
-		CEnemy *pEnemy = GetHead();
-		m_pEnemyLockon = nullptr;
-		float fDistMax = FLT_MAX;
-		D3DXVECTOR3 posCenter = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
+		CEnemy::STATE state = pEnemy->GetState();
 
-		while (pEnemy != nullptr)
+		CEnemy *pEnemyNext = pEnemy->GetNext();
+
+		pEnemy->EnableLock(false);
+
+		if (state != CEnemy::STATE::STATE_DEATH && pEnemyExclusive != pEnemy)
 		{
-			CEnemy::STATE state = pEnemy->GetState();
+			D3DXVECTOR3 pos = pEnemy->GetPosition();
+			D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+			D3DXMATRIX mtx = *pEnemy->GetMatrix();
 
-			CEnemy *pEnemyNext = pEnemy->GetNext();
+			D3DXVECTOR3 vecDiffPlayer = pos - posPlayer;
+			float fDistPlayer = D3DXVec3Length(&vecDiffPlayer);
 
-			if (state != CEnemy::STATE::STATE_DEATH && pEnemyExclusive != pEnemy)
+			// 距離制限
+			if (DIST_LOCKON > fDistPlayer)
 			{
-				D3DXVECTOR3 pos = pEnemy->GetPosition();
-				D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-				D3DXMATRIX mtx = *pEnemy->GetMatrix();
-				D3DXVECTOR3 posScreen;
+				D3DXVECTOR3 posScreenTemp;
 
-				D3DXVECTOR3 vecDiffPlayer = pos - posPlayer;
-				float fDistPlayer = D3DXVec3Length(&vecDiffPlayer);
-
-				// 距離制限
-				if (DIST_LOCKON > fDistPlayer)
+				// ロックオンする敵の決定
+				if (universal::IsInScreen(pos, mtx, &posScreenTemp))
 				{
-					// ロックオンする敵の決定
-					if (universal::IsInScreen(pos, mtx, &posScreen))
+					bInAny = true;
+
+					pEnemy->EnableLock(true);
+					pEnemy->SetPositionCursor(posScreenTemp);
+
+					if (bLock == false)
 					{
-						D3DXVECTOR3 vecDiff = posScreen - posCenter;
+						D3DXVECTOR3 vecDiff = posScreenTemp - posCenter;
 
 						// 画面中心からの距離を計算
 						float fDist = sqrtf(vecDiff.x * vecDiff.x + vecDiff.z * vecDiff.z);
 
 						if (fDist < fDistMax)
 						{
+							posScreen = posScreenTemp;
+
 							m_pEnemyLockon = pEnemy;
 
 							fDistMax = fDist;
@@ -228,9 +263,34 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 					}
 				}
 			}
-
-			pEnemy = pEnemyNext;
 		}
+
+		pEnemy = pEnemyNext;
+	}
+
+	D3DXVECTOR3 posDestCursor = posCenter;
+
+	if (bInAny == false)
+	{
+		if (bLock == false)
+		{
+			m_pEnemyLockon = nullptr;
+		}
+	}
+	else
+	{
+		posDestCursor = posScreen;
+	}
+
+	if (m_pCursor != nullptr)
+	{// カーソルの位置補正
+		D3DXVECTOR3 posCursor = m_pCursor->GetPosition();
+		D3DXVECTOR3 vecDiffCursor = posDestCursor - posCursor;
+
+		posCursor += vecDiffCursor * 0.1f;
+
+		m_pCursor->SetPosition(posCursor);
+		m_pCursor->SetVtx();
 	}
 
 	return m_pEnemyLockon;

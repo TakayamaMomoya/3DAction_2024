@@ -15,14 +15,8 @@
 //*****************************************************
 class CCollisionSphere;
 class CCollisionCube;
-class CArrow;
 class CBlock;
-
-//*****************************************************
-// マクロ定義
-//*****************************************************
-#define LOCKON_RANGE	(4000.0f)	// ロックオン距離
-#define AIM_LOCKON_RANGE	(LOCKON_RANGE * 2.0f)	// エイム時のロックオン距離
+class CObject2D;
 
 //*****************************************************
 // クラスの定義
@@ -66,31 +60,43 @@ public:
 	void Draw(void);
 	static int GetNumAll(void) { return m_nNumAll; }
 	void SetLife(float fLife);
-	float GetLife(void) { return m_fLife; }
+	float GetLife(void) { return m_info.fLife; }
 	void Hit(float fDamage);
 	void SetSpherePosition(D3DXVECTOR3 pos);
-	STATE GetState(void) { return m_state; }
-	void SetState(STATE state) { m_state = state; }
-	CCollisionSphere *GetClsnSphere(void) { return m_pCollisionSphere; }
+	STATE GetState(void) { return m_info.state; }
+	void SetState(STATE state) { m_info.state = state; }
+	CCollisionSphere *GetClsnSphere(void) { return m_info.pCollisionSphere; }
 	CEnemy *GetNext(void) { return m_pNext; }
-	int GetCntState(void) { return m_nTimerState; }
-	void SetCntState(int nCnt) { m_nTimerState = nCnt; }
-	float GetSpeed(void) { return m_fMoveSpeed; }
-	void SetMoveSpeed(float fSpeed) { m_fMoveSpeed = fSpeed; }
-	MOVESTATE GetMoveState(void) { return m_moveState; }
-	void SetPosDest(D3DXVECTOR3 pos) { m_posDest = pos; }
+	int GetCntState(void) { return m_info.nTimerState; }
+	void SetCntState(int nCnt) { m_info.nTimerState = nCnt; }
+	float GetSpeed(void) { return m_info.fMoveSpeed; }
+	void SetMoveSpeed(float fSpeed) { m_info.fMoveSpeed = fSpeed; }
+	MOVESTATE GetMoveState(void) { return m_info.moveState; }
+	void SetPosDest(D3DXVECTOR3 pos) { m_info.posDest = pos; }
 	void CreateCollision(void);
 	void DeleteCollision(void);
+	void EnableLock(bool bLock);
+	void SetPositionCursor(D3DXVECTOR3 pos);
 
 protected:
-	CArrow *GetShadow(void) { return m_pShadow; }
 	void ManageScore(void);
-	CBlock *GetTouchBlock(void) { return m_pBlock; }
 	virtual void ChaseTarget(void);
 	virtual void Death(void);
 	virtual void TransferChase(void);
 
 private:
+	struct SInfo
+	{
+		float fLife;	// 体力
+		float fMoveSpeed;	// 移動速度
+		int nTimerState;	// 状態遷移カウンター
+		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
+		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
+		STATE state;	// 状態
+		MOVESTATE moveState;	// 移動状態
+		D3DXVECTOR3 posDest;	// 目標位置
+		CObject2D *pCursor;	// 捕捉可能カーソル
+	};
 	void ManageState(void);
 	void ManageMoveState(void);
 	void ManageCollision(void);
@@ -98,16 +104,7 @@ private:
 	void CollisionThrown(void);
 
 	static int m_nNumAll;	// 総数
-	float m_fLife;	// 体力
-	float m_fMoveSpeed;	// 移動速度
-	int m_nTimerState;	// 状態遷移カウンター
-	CCollisionSphere *m_pCollisionSphere;	// 球の当たり判定
-	CCollisionCube *m_pCollisionCube;	// 立方体の当たり判定
-	CArrow *m_pShadow;	// 影のポインタ
-	CBlock *m_pBlock;	// ブロックのポインタ
-	STATE m_state;	// 状態
-	MOVESTATE m_moveState;	// 移動状態
-	D3DXVECTOR3 m_posDest;	// 目標位置
+	SInfo m_info;	// 情報
 
 	CEnemy *m_pPrev;	// 前のアドレス
 	CEnemy *m_pNext;	// 次のアドレス

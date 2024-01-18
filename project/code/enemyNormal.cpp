@@ -66,22 +66,6 @@ void CEnemyNormal::Update(void)
 	// 継承クラスの更新
 	CEnemy::Update();
 
-	CBlock *pBlock = GetTouchBlock();
-
-	if (pBlock != nullptr)
-	{
-		// 生存チェック
-		CBlock **ppBlock = CBlock::GetBlock();
-
-		for (int i = 0; i < NUM_OBJECT; i++)
-		{
-			if (ppBlock[i] == pBlock)
-			{
-				pBlock->Hit(5.0f);
-			}
-		}
-	}
-
 	CEnemy::STATE state = GetState();
 
 	if (state == CEnemy::STATE::STATE_DEATH)
