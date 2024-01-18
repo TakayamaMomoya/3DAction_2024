@@ -30,6 +30,8 @@ public:
 	void Update(void);
 	void Draw(void);
 	CEnemy *Lockon(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3);
+	void EnableLockTarget(bool bLock) { m_bLockTarget = bLock; }
+	bool IsLockTarget(void) { return m_bLockTarget; }
 	void CheckDeathLockon(CEnemy *pEnemy);
 	CEnemy *GetLockon(void) { return m_pEnemyLockon; }
 	CEnemy *GetHead(void) { return m_pHead; }
@@ -42,6 +44,7 @@ private:
 	void Load(void);
 
 	CEnemy *m_pEnemyLockon;	// ロックオンしてる敵
+	bool m_bLockTarget;	// ターゲットをロックしているかどうか
 	float m_fTimer;	// スポーンタイマー
 	CEnemy *m_pHead;	// 先頭のアドレス
 	CEnemy *m_pTail;	// 最後尾のアドレス

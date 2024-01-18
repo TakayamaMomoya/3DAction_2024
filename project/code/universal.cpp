@@ -198,8 +198,6 @@ bool IsInTriangle(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECT
 	if (IsCross(posTarget, vtx3, vtx1, nullptr) == false)
 		nHit++;
 
-	CDebugProc::GetInstance()->Print("\n”X”XF[%d]", nHit);
-
 	if (nHit == 3)
 	{
 		return true;
@@ -244,6 +242,44 @@ bool CubeCrossProduct(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DX
 	}
 
 	return bHit;
+}
+
+//========================================
+// ‰æ–Ê“à”»’è
+//========================================
+bool IsInScreen(const D3DXVECTOR3 pos, D3DXMATRIX mtx)
+{
+	CRenderer *pRenderer = CRenderer::GetInstance();
+
+	if (pRenderer == nullptr)
+	{
+		return false;
+	}
+
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
+
+	D3DVIEWPORT9 viewport;
+	pDevice->GetViewport(&viewport);
+
+	D3DXMATRIX projectionMatrix;
+	pDevice->GetTransform(D3DTS_PROJECTION, &projectionMatrix);
+
+	D3DXMATRIX viewMatrix;
+	pDevice->GetTransform(D3DTS_VIEW, &viewMatrix);
+
+	D3DXVECTOR3 screenPosition;
+	D3DXVec3Project(&screenPosition, &pos, &viewport, &projectionMatrix, &viewMatrix, D3DXMatrixIdentity(&mtx));
+
+	if (screenPosition.x >= viewport.X && 
+		screenPosition.x <= viewport.X + viewport.Width &&
+		screenPosition.y >= viewport.Y && 
+		screenPosition.y <= viewport.Y + viewport.Height &&
+		screenPosition.z >= 0.0f/* && screenPosition.z <= 1.0f*/)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //=====================================================

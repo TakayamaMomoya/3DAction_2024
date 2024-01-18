@@ -147,6 +147,9 @@ void CGame::Update(void)
 		// シーンの更新
 		CScene::Update();
 
+		// カーソルを中心に固定
+		SetCursorPos((int)(SCREEN_WIDTH * 0.5f), (int)(SCREEN_HEIGHT * 0.5f));
+
 		if (pInputManager != nullptr)
 		{
 			if (pInputManager->GetTrigger(CInputManager::BUTTON_PAUSE))

@@ -33,6 +33,8 @@ CEnemyManager *CEnemyManager::m_pEnemyManager = nullptr;	// 自身のポインタ
 //=====================================================
 CEnemyManager::CEnemyManager()
 {
+	m_pEnemyLockon = nullptr;
+	m_bLockTarget = false;
 	m_fTimer = 0.0f;
 	m_pHead = nullptr;
 	m_pTail = nullptr;
@@ -148,7 +150,7 @@ void CEnemyManager::Update(void)
 	{
 		if (pKeyboard->GetTrigger(DIK_C))
 		{
-			CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+			//CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 			CreateEnemy(D3DXVECTOR3(-1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 		}
 	}
@@ -163,20 +165,28 @@ void CEnemyManager::Update(void)
 //=====================================================
 CEnemy *CEnemyManager::Lockon(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3)
 {
-	CEnemy *pEnemy = GetHead();
-	m_pEnemyLockon = nullptr;
+	bool bLock = IsLockTarget();
 
-	while (pEnemy != nullptr)
+	if (bLock == false)
 	{
-		CEnemy *pEnemyNext = pEnemy->GetNext();
+		CEnemy *pEnemy = GetHead();
+		m_pEnemyLockon = nullptr;
 
-		D3DXVECTOR3 pos = pEnemy->GetPosition();
+		while (pEnemy != nullptr)
+		{
+			CEnemy *pEnemyNext = pEnemy->GetNext();
 
-		// ロックオンする敵の決定
-		if (universal::IsInTriangle(vtx1, vtx2, vtx3, pos))
-			m_pEnemyLockon = pEnemy;
+			D3DXVECTOR3 pos = pEnemy->GetPosition();
+			D3DXMATRIX mtx = *pEnemy->GetMatrix();
 
-		pEnemy = pEnemyNext;
+			// ロックオンする敵の決定
+			if (universal::IsInScreen(pos, mtx))
+				m_pEnemyLockon = pEnemy;
+
+			pEnemy = pEnemyNext;
+		}
+
+
 	}
 
 	return m_pEnemyLockon;
@@ -188,7 +198,10 @@ CEnemy *CEnemyManager::Lockon(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vt
 void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 {
 	if (pEnemy == m_pEnemyLockon)
+	{
 		m_pEnemyLockon = nullptr;
+		EnableLockTarget(false);
+	}
 }
 
 //=====================================================
