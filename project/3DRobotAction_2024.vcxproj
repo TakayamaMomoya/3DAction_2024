@@ -163,6 +163,7 @@
     <ClCompile Include="code\bullet.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\character.cpp" />
+    <ClCompile Include="code\checkPointManager.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\debris.cpp" />
     <ClCompile Include="code\debrisspawner.cpp" />
@@ -202,6 +203,7 @@
     <ClCompile Include="code\player.cpp" />
     <ClCompile Include="code\ranking.cpp" />
     <ClCompile Include="code\renderer.cpp" />
+    <ClCompile Include="code\saveDataManager.cpp" />
     <ClCompile Include="code\scene.cpp" />
     <ClCompile Include="code\skybox.cpp" />
     <ClCompile Include="code\slow.cpp" />
@@ -223,6 +225,7 @@
     <ClInclude Include="code\bullet.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\checkPointManager.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\debris.h" />
     <ClInclude Include="code\debrisSpawner.h" />
@@ -262,6 +265,7 @@
     <ClInclude Include="code\player.h" />
     <ClInclude Include="code\ranking.h" />
     <ClInclude Include="code\renderer.h" />
+    <ClInclude Include="code\saveDataManager.h" />
     <ClInclude Include="code\scene.h" />
     <ClInclude Include="code\skybox.h" />
     <ClInclude Include="code\slow.h" />

@@ -10,6 +10,8 @@
 //*****************************************************
 #include "ranking.h"
 #include "object.h"
+#include "fade.h"
+#include "inputManager.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -56,7 +58,20 @@ void CRanking::Uninit(void)
 //=====================================================
 void CRanking::Update(void)
 {
+	CInputManager *pInputManager = CInputManager::GetInstance();
 
+	if (pInputManager != nullptr)
+	{
+		if (pInputManager->GetTrigger(CInputManager::BUTTON_ENTER))
+		{
+			CFade *pFade = CFade::GetInstance();
+
+			if (pFade != nullptr)
+			{
+				pFade->SetFade(CScene::MODE_TITLE);
+			}
+		}
+	}
 }
 
 //=====================================================

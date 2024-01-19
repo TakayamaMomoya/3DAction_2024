@@ -31,6 +31,7 @@
 #include "pause.h"
 #include "player.h"
 #include "slow.h"
+#include "checkPointManager.h"
 
 //*****************************************************
 // マクロ定義
@@ -73,8 +74,8 @@ HRESULT CGame::Init(void)
 		int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\BG\\field00.jpg");
 		pObjectOut->SetPosition(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
 		pObjectOut->SetIdxTexture(nIdx);
-		pObjectOut->SetTex(D3DXVECTOR2(10.0f, 10.0f), D3DXVECTOR2(0.0f, 0.0f));
-		pObjectOut->SetSize(5000.0f, 5000.0f);
+		pObjectOut->SetTex(D3DXVECTOR2(100.0f, 100.0f), D3DXVECTOR2(0.0f, 0.0f));
+		pObjectOut->SetSize(50000.0f, 50000.0f);
 	}
 
 	// スカイボックスの生成
@@ -115,6 +116,9 @@ HRESULT CGame::Init(void)
 
 	// スロー管理の生成
 	CSlow::Create();
+
+	// チェックポイント管理の生成
+	CCheckPointManager::Create();
 
 	return S_OK;
 }

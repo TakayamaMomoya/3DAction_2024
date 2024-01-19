@@ -561,7 +561,7 @@ void CPlayer::InputCamera(void)
 	D3DXVECTOR3 axisCamera = axis.axisCamera;
 
 	// ƒJƒƒ‰‚Ì‰ñ“]
-	pInfoCamera->rot.x += axisCamera.y * SPEED_ROLL_CAMERA;
+	pInfoCamera->rot.x -= axisCamera.y * SPEED_ROLL_CAMERA;
 	pInfoCamera->rot.y += axisCamera.x * SPEED_ROLL_CAMERA;
 
 	universal::LimitValue(&pInfoCamera->rot.x, MAX_ANGLE_CAMERA, MIN_ANGLE_CAMERA);
