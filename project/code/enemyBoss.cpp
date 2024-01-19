@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// 通常敵の処理[enemyNormal.cpp]
+// ボス敵の処理[enemyBoss.cpp]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -8,12 +8,18 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "enemyNormal.h"
+#include "enemyBoss.h"
+#include "fade.h"
+
+//*****************************************************
+// 静的メンバ変数宣言
+//*****************************************************
+CEnemyBoss *CEnemyBoss::m_pEnemyBoss = nullptr;	// 自身のポインタ
 
 //=====================================================
 // コンストラクタ
 //=====================================================
-CEnemyNormal::CEnemyNormal()
+CEnemyBoss::CEnemyBoss()
 {
 
 }
@@ -21,16 +27,37 @@ CEnemyNormal::CEnemyNormal()
 //=====================================================
 // デストラクタ
 //=====================================================
-CEnemyNormal::~CEnemyNormal()
+CEnemyBoss::~CEnemyBoss()
 {
 
 }
 
 //=====================================================
+// 生成処理
+//=====================================================
+CEnemyBoss *CEnemyBoss::Create(void)
+{
+	if (m_pEnemyBoss == nullptr)
+	{
+		m_pEnemyBoss = new CEnemyBoss;
+
+		if (m_pEnemyBoss != nullptr)
+		{
+			m_pEnemyBoss->Init();
+		}
+	}
+
+	return m_pEnemyBoss;
+}
+
+//=====================================================
 // 初期化処理
 //=====================================================
-HRESULT CEnemyNormal::Init(void)
+HRESULT CEnemyBoss::Init(void)
 {
+	// モーション読込
+	Load("data\\MOTION\\motionArms00.txt");
+
 	// 継承クラスの初期化
 	CEnemy::Init();
 
@@ -40,8 +67,10 @@ HRESULT CEnemyNormal::Init(void)
 //=====================================================
 // 終了処理
 //=====================================================
-void CEnemyNormal::Uninit(void)
+void CEnemyBoss::Uninit(void)
 {
+	m_pEnemyBoss = nullptr;
+
 	// 継承クラスの終了
 	CEnemy::Uninit();
 }
@@ -49,7 +78,7 @@ void CEnemyNormal::Uninit(void)
 //=====================================================
 // 更新処理
 //=====================================================
-void CEnemyNormal::Update(void)
+void CEnemyBoss::Update(void)
 {
 	// 継承クラスの更新
 	CEnemy::Update();
@@ -72,9 +101,24 @@ void CEnemyNormal::Update(void)
 }
 
 //=====================================================
+// 死亡時の処理
+//=====================================================
+void CEnemyBoss::Death(void)
+{
+	CFade *pFade = CFade::GetInstance();
+
+	if (pFade != nullptr)
+	{
+		pFade->SetFade(CScene::MODE_RANKING);
+	}
+
+	CEnemy::Death();
+}
+
+//=====================================================
 // 目標の追跡
 //=====================================================
-void CEnemyNormal::ChaseTarget(void)
+void CEnemyBoss::ChaseTarget(void)
 {
 
 }
@@ -82,7 +126,7 @@ void CEnemyNormal::ChaseTarget(void)
 //=====================================================
 // 描画処理
 //=====================================================
-void CEnemyNormal::Draw(void)
+void CEnemyBoss::Draw(void)
 {
 	// 継承クラスの描画
 	CEnemy::Draw();

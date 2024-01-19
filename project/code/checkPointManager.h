@@ -26,7 +26,7 @@ class CCheckPointManager : public CObject
 public:
 	CCheckPointManager();	// コンストラクタ
 	~CCheckPointManager();	// デストラクタ
-
+	
 	static CCheckPointManager *Create(void);
 	HRESULT Init(void);
 	void Uninit(void);

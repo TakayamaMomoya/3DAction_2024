@@ -216,6 +216,9 @@
     <ClCompile Include="code\saveDataManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\enemyBoss.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -397,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="code\saveDataManager.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\enemyBoss.h">
+      <Filter>ソース ファイル\enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "enemyManager.h"
 #include "enemyNormal.h"
+#include "enemyBoss.h"
 #include "inputkeyboard.h"
 #include "effect3D.h"
 #include "player.h"
@@ -80,7 +81,7 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 	{
 		nullptr,
 		"data\\MOTION\\motionHeli.txt",
-		"data\\MOTION\\motionEnemy01.txt",
+		"data\\MOTION\\motionArms00.txt",
 	};
 
 	CEnemy *pEnemy = nullptr;
@@ -225,7 +226,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 
 		if (state != CEnemy::STATE::STATE_DEATH && pEnemyExclusive != pEnemy)
 		{
-			D3DXVECTOR3 pos = pEnemy->GetPosition();
+			D3DXVECTOR3 pos = pEnemy->GetMtxPos(0);
 			D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 			D3DXMATRIX mtx = *pEnemy->GetMatrix();
 

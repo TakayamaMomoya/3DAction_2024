@@ -14,6 +14,7 @@
 #include "player.h"
 #include "fade.h"
 #include "manager.h"
+#include "enemyBoss.h"
 #include <stdio.h>
 
 //*****************************************************
@@ -40,6 +41,7 @@ CCheckPointManager::CCheckPointManager()
 	m_nProgress = 0;
 	m_nNumCheckPoint = 0;
 	m_pPosCheckPoint = nullptr;
+	m_pCursor = nullptr;
 }
 
 //=====================================================
@@ -224,12 +226,18 @@ void CCheckPointManager::Uninit(void)
 //=====================================================
 void CCheckPointManager::Update(void)
 {
-	if (m_nProgress > m_nNumCheckPoint - 1)
+	if (m_nProgress >= m_nNumCheckPoint - 1)
 	{
-		if (m_pCursor != nullptr)
+		CFade *pFade = CFade::GetInstance();
+
+		if (pFade != nullptr)
 		{
-			m_pCursor->Uninit();
-			m_pCursor = nullptr;
+			CFade::FADE state = pFade->GetState();
+
+			if (state == CFade::FADE::FADE_OUT)
+			{// ボス敵の生成
+				CEnemyBoss *pEnemyBoss = CEnemyBoss::Create();
+			}
 		}
 
 		return;
@@ -278,12 +286,18 @@ void CCheckPointManager::Update(void)
 			m_nProgress++;
 
 			if (m_nProgress >= m_nNumCheckPoint - 1)
-			{
+			{// 最後のチェックポイントに到着
 				CFade *pFade = CFade::GetInstance();
 
 				if (pFade != nullptr)
 				{
-					pFade->SetFade(CScene::MODE_RANKING);
+					pFade->SetFade(CScene::MODE_RANKING,false);
+
+					if (m_pCursor != nullptr)
+					{
+						m_pCursor->Uninit();
+						m_pCursor = nullptr;
+					}
 				}
 			}
 		}

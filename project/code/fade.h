@@ -37,12 +37,12 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	void SetFade(CScene::MODE modeNext);
+	void SetFade(CScene::MODE modeNext,bool bTrans = true);
 	FADE GetState(void);
 	static CFade *GetInstance(void) { return m_pFade; }
 
 private:
-	//グローバル変数宣言
+	bool m_bTrans;	// 遷移するかどうか
 	FADE m_fade;									//フェードの状態
 	CScene::MODE m_modeNext;								//次の画面
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ

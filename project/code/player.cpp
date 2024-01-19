@@ -375,7 +375,9 @@ void CPlayer::InputMove(void)
 				D3DXVECTOR3 pos = GetPosition();
 				pos.y += 200.0f;
 
-				D3DXVECTOR3 vecDiff = pEnemyLockon->GetPosition() - pos;
+				D3DXVECTOR3 posEnemy = pEnemyLockon->GetMtxPos(0);
+
+				D3DXVECTOR3 vecDiff = posEnemy - pos;
 
 				m_info.rotDest = universal::VecToRot(vecDiff);
 				m_info.rotDest.x -= D3DX_PI * 0.5f;

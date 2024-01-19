@@ -32,6 +32,7 @@ CFade::CFade()
 	m_modeNext = CScene::MODE_TITLE;
 	m_pVtxBuff = nullptr;
 	m_col = { 0.0f,0.0f,0.0f,0.0f };
+	m_bTrans = false;
 }
 
 //=====================================================
@@ -137,8 +138,11 @@ void CFade::Update(void)
 				m_col.a = 1.0f;
 				m_fade = FADE_OUT;
 
-				//モード設定
-				CManager::SetMode(m_modeNext);
+				if (m_bTrans)
+				{
+					//モード設定
+					CManager::SetMode(m_modeNext);
+				}
 			}
 		}
 		else if (m_fade == FADE_OUT)
@@ -193,13 +197,15 @@ void CFade::Draw(void)
 //=====================================================
 // 設定処理
 //=====================================================
-void CFade::SetFade(CScene::MODE modeNext)
+void CFade::SetFade(CScene::MODE modeNext, bool bTrans)
 {
 	if (m_fade == FADE_NONE)
 	{
 		m_fade = FADE_IN;
 		m_modeNext = modeNext;
 		m_col = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+		m_bTrans = bTrans;
 	}
 }
 
