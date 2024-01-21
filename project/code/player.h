@@ -89,6 +89,7 @@ private:
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
+		bool bLockTarget;	// ターゲットロックするかどうか
 		bool bLand;	// 着地しているかどうか
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
@@ -112,6 +113,7 @@ private:
 	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
 	CEnemy *GetLockOn(void);
 	void EndMelee(void);
+	void ToggleLockTarget(void);
 	void Debug(void);
 
 	SInfo m_info;	// 自身の情報

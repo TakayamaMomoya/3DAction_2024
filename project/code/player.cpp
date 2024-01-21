@@ -563,7 +563,7 @@ void CPlayer::InputCamera(void)
 	D3DXVECTOR3 axisCamera = axis.axisCamera;
 
 	// カメラの回転
-	pInfoCamera->rot.x -= axisCamera.y * SPEED_ROLL_CAMERA;
+	pInfoCamera->rot.x += axisCamera.y * SPEED_ROLL_CAMERA;
 	pInfoCamera->rot.y += axisCamera.x * SPEED_ROLL_CAMERA;
 
 	universal::LimitValue(&pInfoCamera->rot.x, MAX_ANGLE_CAMERA, MIN_ANGLE_CAMERA);
@@ -1299,6 +1299,14 @@ void CPlayer::EndMelee(void)
 	{
 		pEnemyManager->EnableLockTarget(false);
 	}
+}
+
+//=====================================================
+// ターゲットロックの切り替え
+//=====================================================
+void CPlayer::ToggleLockTarget(void)
+{
+
 }
 
 //=====================================================

@@ -318,6 +318,23 @@ void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 }
 
 //=====================================================
+// ‘S“G‚ğíœ‚·‚é
+//=====================================================
+void CEnemyManager::DeleteAll(void)
+{
+	CEnemy *pEnemy = GetHead();
+
+	while (pEnemy != nullptr)
+	{
+		CEnemy *pEnemyNext = pEnemy->GetNext();
+
+		pEnemy->Uninit();
+
+		pEnemy = pEnemyNext;
+	}
+}
+
+//=====================================================
 // •`‰æˆ—
 //=====================================================
 void CEnemyManager::Draw(void)

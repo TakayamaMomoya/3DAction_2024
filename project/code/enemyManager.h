@@ -39,6 +39,7 @@ public:
 	bool IsLockTarget(void) { return m_bLockTarget; }
 	void CheckDeathLockon(CEnemy *pEnemy);
 	CEnemy *GetLockon(void) { return m_pEnemyLockon; }
+	void DeleteAll(void);
 	CEnemy *GetHead(void) { return m_pHead; }
 	CEnemy *GetTail(void) { return m_pTail; }
 	void SetHead(CEnemy *pEnemy) { m_pHead = pEnemy; }

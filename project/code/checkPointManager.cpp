@@ -15,6 +15,7 @@
 #include "fade.h"
 #include "manager.h"
 #include "enemyBoss.h"
+#include "enemyManager.h"
 #include <stdio.h>
 
 //*****************************************************
@@ -26,6 +27,7 @@ const char* FILE_PATH = "data\\TEXT\\checkPoint.txt";	// ファイルのパス
 const float SIZE_CURSOR = 20.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\checkPoint00.png";	// カーソルのテクスチャ
 const float DIST_PROGRESS = 1000.0f;	// 進行する距離
+const D3DXVECTOR3 BOSSBATTLE_POS_PLAYER = { 0.0f,0.0f,-2000.0f };	// ボス戦移行時のプレイヤー位置
 }
 
 //*****************************************************
@@ -235,8 +237,8 @@ void CCheckPointManager::Update(void)
 			CFade::FADE state = pFade->GetState();
 
 			if (state == CFade::FADE::FADE_OUT)
-			{// ボス敵の生成
-				CEnemyBoss *pEnemyBoss = CEnemyBoss::Create();
+			{// ボス敵へ移行
+				TransBossBattle();
 			}
 		}
 
@@ -301,6 +303,36 @@ void CCheckPointManager::Update(void)
 				}
 			}
 		}
+	}
+}
+
+//=====================================================
+// ボス戦へ移行
+//=====================================================
+void CCheckPointManager::TransBossBattle(void)
+{
+	// ボスの生成
+	CEnemyBoss *pEnemyBoss = CEnemyBoss::GetInstance();
+
+	if (pEnemyBoss == nullptr)
+	{
+		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+		if (pEnemyManager != nullptr)
+		{
+			pEnemyManager->DeleteAll();
+		}
+
+		pEnemyBoss = CEnemyBoss::Create();
+	}
+
+	// プレイヤーの位置設定
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr)
+	{
+		pPlayer->SetPosition(BOSSBATTLE_POS_PLAYER);
+		pPlayer->SetPositionOld(BOSSBATTLE_POS_PLAYER);
 	}
 }
 

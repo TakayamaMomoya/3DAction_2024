@@ -35,6 +35,7 @@ public:
 private:
 	void Load(void);
 	void LoadInfoCheckPoint(void);
+	void TransBossBattle(void);
 
 	int m_nProgress;	// 現在の進行状況
 	int m_nNumCheckPoint;	// チェックポイントの数

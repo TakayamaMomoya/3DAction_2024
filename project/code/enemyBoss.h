@@ -23,6 +23,7 @@ public:
 	~CEnemyBoss();	// デストラクタ
 
 	static CEnemyBoss *Create(void);
+	static CEnemyBoss *GetInstance(void) { return m_pEnemyBoss; }
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);

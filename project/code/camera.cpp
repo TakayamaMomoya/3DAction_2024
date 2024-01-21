@@ -202,9 +202,7 @@ void CCamera::FollowPlayer(void)
 		return;
 	}
 
-	D3DXVECTOR3 pos = pPlayer->GetPosition();
-
-	pos.y += 150.0f;
+	D3DXVECTOR3 pos = pPlayer->GetMtxPos(0);
 
 	m_camera.posRDest = pos;
 
