@@ -124,6 +124,25 @@ void FactingRot(float *pfRot, float fRotDest, float rotateFact)
 }
 
 //========================================
+// –Ú•W•ûŒü‚ðŒü‚­ˆ—
+//========================================
+void FactingRotTarget(D3DXVECTOR3 *pRot, D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fFact)
+{
+	if (pRot == nullptr)
+	{
+		return;
+	}
+
+	// ·•ªŠp“x‚ÌŽæ“¾
+	D3DXVECTOR3 vecDiff = posTarget - posOwn;
+
+	D3DXVECTOR3 rotDest = VecToRot(vecDiff);
+
+	FactingRot(&pRot->x, rotDest.x, fFact);
+	FactingRot(&pRot->y, rotDest.y, fFact);
+}
+
+//========================================
 // ‹——£‚Ì”äŠr
 //========================================
 D3DXVECTOR3 VecToRot(D3DXVECTOR3 vec)

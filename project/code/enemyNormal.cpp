@@ -9,6 +9,7 @@
 // インクルード
 //*****************************************************
 #include "enemyNormal.h"
+#include "player.h"
 
 //=====================================================
 // コンストラクタ
@@ -68,6 +69,25 @@ void CEnemyNormal::Update(void)
 	else
 	{
 
+	}
+
+	CPlayer *pPlayer = CPlayer::GetInstance();
+	D3DXVECTOR3 rot = GetRot();
+
+	if (pPlayer != nullptr)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+
+		// 差分角度の取得
+		D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
+
+		universal::FactingRot(&rot.x, -rotDest.x + D3DX_PI * 0.5f, 0.1f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.1f);
+
+		SetRot(rot);
 	}
 }
 

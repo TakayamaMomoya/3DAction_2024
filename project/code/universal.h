@@ -19,6 +19,7 @@ void LimitRot(float *fRot);	//回転制御処理
 void LimitSpeed(D3DXVECTOR3 *pVec, float fSpeedMax);
 void SetOffSet(D3DXMATRIX *pMtxWorldOffset, D3DXMATRIX mtxWorldOwner, D3DXVECTOR3 posOffset, D3DXVECTOR3 rot = { 0.0f,0.0f,0.0f });	//オフセット設定処理
 void FactingRot(float *pfRot, float fRotDest, float rotateFact);	//向き補正処理
+void FactingRotTarget(D3DXVECTOR3 *pRot, D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget,float fFact);	// ターゲットの方を向く処理
 D3DXVECTOR3 VecToRot(D3DXVECTOR3 vec);
 bool DistCmp(D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fLengthMax, float *fDiff);
 int RandRange(int nMax, int nMin);
