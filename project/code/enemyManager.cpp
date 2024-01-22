@@ -332,8 +332,6 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY)
 
 		CEnemy *pEnemyNext = pEnemy->GetNext();
 
-		pEnemy->EnableLock(false);
-
 		if (state != CEnemy::STATE::STATE_DEATH && m_pEnemyLockon != pEnemy)
 		{
 			D3DXVECTOR3 pos = pEnemy->GetMtxPos(0);
