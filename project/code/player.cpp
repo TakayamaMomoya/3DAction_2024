@@ -29,6 +29,8 @@
 namespace
 {
 const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
+const float INITIAL_BOOST = 200.0f;	// ブースト残量の初期値
+const float REGEN_BOOST = 0.5f;	// ブースト回復量
 const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 50.0f;	// 弾速
@@ -140,8 +142,11 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 
+	// パラメーターに初期値を入れる
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
+	m_param.fInitialBoost = INITIAL_BOOST;
+	m_info.fBoost = m_param.fInitialBoost;
 
 	// 影の有効化
 	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
@@ -279,6 +284,9 @@ void CPlayer::Update(void)
 		m_info.pEnemyGrab->SetMatrix(mtxParent);
 	}
 
+	// ブースト回復
+	AddBoost(REGEN_BOOST);
+
 // デバッグ処理
 #if _DEBUG
 
@@ -362,7 +370,7 @@ void CPlayer::InputMove(void)
 		pDebugProc->Print("\n通常移動");
 	}
 
-	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW)
+	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW || m_info.bLockTarget)
 	{// 敵の方向を向く処理
 		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
@@ -408,7 +416,7 @@ void CPlayer::InputMove(void)
 
 		fLengthAxis *= SPEED_MOVE;
 
-		if (nMotion == MOTION_SHOT)
+		if (nMotion == MOTION_SHOT || m_info.bLockTarget)
 		{// 視点固定時
 			D3DXVECTOR3 rotCamera = pInfoCamera->rot;
 
@@ -446,6 +454,8 @@ void CPlayer::InputMove(void)
 			if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
 			{// ブースト上昇
 				vecMove.y += 1.0f;
+
+				AddBoost(-1.0f);
 			};
 
 			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
@@ -557,6 +567,18 @@ void CPlayer::InputCamera(void)
 	}
 
 	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+	
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_LOCK))
+	{// ターゲットロック切り替え
+		m_info.bLockTarget = m_info.bLockTarget ? false : true;
+
+		ToggleLockTarget();
+	}
+	
+	if (m_info.bLockTarget)
+	{// ロックしてる敵の切り替え
+		SwitchLockEnemy();
+	}
 
 	// 方向入力の取得
 	CInputManager::SAxis axis = pInputManager->GetAxis();
@@ -570,6 +592,39 @@ void CPlayer::InputCamera(void)
 
 	universal::LimitRot(&pInfoCamera->rot.x);
 	universal::LimitRot(&pInfoCamera->rot.y);
+}
+
+//=====================================================
+// ロックしてる敵の切り替え
+//=====================================================
+void CPlayer::SwitchLockEnemy(void)
+{
+	CInputManager *pInputManager = CInputManager::GetInstance();
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pInputManager == nullptr || pEnemyManager == nullptr)
+	{
+		return;
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_RIGHT))
+	{// 右方向
+		pEnemyManager->SwitchTarget(1, 0);
+	}
+	else if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_LEFT))
+	{// 左方向
+		pEnemyManager->SwitchTarget(-1, 0);
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_UP))
+	{// 上方向
+		pEnemyManager->SwitchTarget(0, 1);
+	}
+	else if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_DOWN))
+	{// 下方向
+		pEnemyManager->SwitchTarget(0, -1);
+	}
+
 }
 
 //=====================================================
@@ -1306,7 +1361,24 @@ void CPlayer::EndMelee(void)
 //=====================================================
 void CPlayer::ToggleLockTarget(void)
 {
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
+	if (pEnemyManager == nullptr)
+	{
+		return;
+	}
+
+	pEnemyManager->EnableLockTarget(m_info.bLockTarget);
+}
+
+//=====================================================
+// ブースト加算
+//=====================================================
+void CPlayer::AddBoost(float fValue)
+{
+	m_info.fBoost += fValue;
+
+	universal::LimitValue(&m_info.fBoost, m_param.fInitialBoost, 0.0f);
 }
 
 //=====================================================
@@ -1330,13 +1402,10 @@ void CPlayer::Debug(void)
 	pDebugProc->Print("\nプレイヤーの位置[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
 	pDebugProc->Print("\nプレイヤーの移動量[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
 	pDebugProc->Print("\n目標の向き[%f,%f,%f]", GetRot().x, GetRot().y, GetRot().z);
+	pDebugProc->Print("\nブースト残量[%f]", m_info.fBoost);
 
 	int nMotion = GetMotion();
 
 	pDebugProc->Print("\nモーション[%d]", nMotion);
-	pDebugProc->Print("\n着地[%d]", m_info.bLand);
-	pDebugProc->Print("\n移動[%d]", m_fragMotion.bMove);
-	pDebugProc->Print("\n射撃[%d]", m_fragMotion.bShot);
-	pDebugProc->Print("\n追撃[%d]", m_fragMotion.bAddAttack);
-	pDebugProc->Print("\n空中[%d]", m_fragMotion.bAir);
+	pDebugProc->Print("\nターゲットロック[%d]", m_info.bLockTarget);
 }

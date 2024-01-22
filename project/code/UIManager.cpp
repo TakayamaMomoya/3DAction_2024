@@ -10,6 +10,7 @@
 //*****************************************************
 #include "main.h"
 #include "UIManager.h"
+#include "inputkeyboard.h"
 
 //*****************************************************
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
@@ -73,7 +74,15 @@ void CUIManager::Uninit(void)
 //=====================================================
 void CUIManager::Update(void)
 {
+	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
 
+	if (pKeyboard != nullptr)
+	{
+		if (pKeyboard->GetTrigger(DIK_1))
+		{
+			m_bDisp = m_bDisp ? false : true;
+		}
+	}
 }
 
 //=====================================================

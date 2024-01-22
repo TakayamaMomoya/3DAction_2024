@@ -81,7 +81,8 @@ public:
 	float GetJoyStickLY(int nPlayer);
 	float GetJoyStickRX(int nPlayer);
 	float GetJoyStickRY(int nPlayer);
-	bool GetLStickTrigger(DIRECTION direction,int nPlayer);
+	bool GetLStickTrigger(DIRECTION direction, int nPlayer);
+	bool GetRStickTrigger(DIRECTION direction,int nPlayer);
 	D3DXVECTOR3 GetVecStickL(void);
 	void Vibration(int nPlayer, PADVIB state, float fVib, int nTime);
 	static CInputJoypad *GetInstance(void) { return m_pJoyPad; }
@@ -99,6 +100,7 @@ private:
 	int m_aVibTimer[MAX_PLAYER];		// バイブレーションのタイマー
 	int m_aCntRepeat[MAX_PLAYER][PADBUTTONS_MAX];	// リピートカウンター
 	bool m_abTrigggerLStick[MAX_PLAYER][DIRECTION_MAX];	// スティックのトリガー判定
+	bool m_abTrigggerRStick[MAX_PLAYER][DIRECTION_MAX];	// スティックのトリガー判定
 	bool m_abTriggerTB[MAX_PLAYER][TRIGGER_MAX];	// トリガーの判定
 
 	static CInputJoypad *m_pJoyPad;	// 自身のポインタ

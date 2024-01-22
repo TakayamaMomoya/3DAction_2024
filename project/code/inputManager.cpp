@@ -183,6 +183,13 @@ void CInputManager::Update(void)
 		pKeyboard->GetTrigger(DIK_LSHIFT)
 	);
 
+	// ターゲットロック
+	m_info.abTrigger[BUTTON_LOCK] =
+	(
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_RSTICK, 0) ||
+		pMouse->GetTrigger(CInputMouse::BUTTON_WHEEL)
+	);
+
 	// ポーズ
 	m_info.abTrigger[BUTTON_PAUSE] =
 	(
@@ -204,6 +211,34 @@ void CInputManager::Update(void)
 		pJoypad->GetLStickTrigger(CInputJoypad::DIRECTION_DOWN, 0) ||
 		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_DOWN, 0) ||
 		pKeyboard->GetTrigger(DIK_S)
+	);
+
+	// 上方向弾き
+	m_info.abTrigger[BUTTON_TRIGGER_UP] =
+	(
+		pJoypad->GetRStickTrigger(CInputJoypad::DIRECTION_UP, 0) ||
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_UP, 0)
+	);
+
+	// 下方向弾き
+	m_info.abTrigger[BUTTON_TRIGGER_DOWN] =
+	(
+		pJoypad->GetRStickTrigger(CInputJoypad::DIRECTION_DOWN, 0) ||
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_DOWN, 0)
+	);
+
+	// 右方向弾き
+	m_info.abTrigger[BUTTON_TRIGGER_RIGHT] =
+	(
+		pJoypad->GetRStickTrigger(CInputJoypad::DIRECTION_RIGHT, 0) ||
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_RIGHT, 0)
+	);
+
+	// 左方向弾き
+	m_info.abTrigger[BUTTON_TRIGGER_LEFT] =
+	(
+		pJoypad->GetRStickTrigger(CInputJoypad::DIRECTION_LEFT, 0) ||
+		pJoypad->GetTrigger(CInputJoypad::PADBUTTONS_LEFT, 0)
 	);
 
 	// 方向のリセット

@@ -17,7 +17,7 @@
 //*****************************************************
 // 前方宣言
 //*****************************************************
-class CObject2D;
+class CUI;
 
 //*****************************************************
 // クラスの定義
@@ -37,6 +37,7 @@ public:
 	CEnemy *Lockon(CEnemy *pEnemyExclusive = nullptr);
 	void EnableLockTarget(bool bLock);
 	bool IsLockTarget(void) { return m_bLockTarget; }
+	CEnemy *SwitchTarget(int nAxisX, int nAxisY);
 	void CheckDeathLockon(CEnemy *pEnemy);
 	CEnemy *GetLockon(void) { return m_pEnemyLockon; }
 	void DeleteAll(void);
@@ -52,7 +53,7 @@ private:
 	CEnemy *m_pEnemyLockon;	// ロックオンしてる敵
 	bool m_bLockTarget;	// ターゲットをロックしているかどうか
 	float m_fTimer;	// スポーンタイマー
-	CObject2D *m_pCursor;	// ロックオンカーソル
+	CUI *m_pCursor;	// ロックオンカーソル
 	CEnemy *m_pHead;	// 先頭のアドレス
 	CEnemy *m_pTail;	// 最後尾のアドレス
 

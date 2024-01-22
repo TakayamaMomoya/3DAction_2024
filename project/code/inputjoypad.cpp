@@ -206,9 +206,9 @@ void CInputJoypad::CheckStickTrigger(XINPUT_STATE state, int nPlayer)
 	// 左右
 	float fDiff = (float)state.Gamepad.sThumbLX / USHRT_MAX * 2 - (float)m_aState[nPlayer].Gamepad.sThumbLX / USHRT_MAX * 2;
 	
-	m_abTrigggerLStick[nPlayer][DIRECTION_LEFT] = fDiff < -0.4f;
-	
-	m_abTrigggerLStick[nPlayer][DIRECTION_RIGHT] = fDiff > 0.4f;
+	m_abTrigggerLStick[nPlayer][DIRECTION_RIGHT] = fDiff > 0.5f && (float)m_aState[nPlayer].Gamepad.sThumbLX >= 0.0f;
+
+	m_abTrigggerLStick[nPlayer][DIRECTION_LEFT] = fDiff < -0.5f && (float)m_aState[nPlayer].Gamepad.sThumbLX <= 0.0f;
 
 	// 上下
 	fDiff = (float)state.Gamepad.sThumbLY / USHRT_MAX * 2 - (float)m_aState[nPlayer].Gamepad.sThumbLY / USHRT_MAX * 2;
@@ -216,6 +216,21 @@ void CInputJoypad::CheckStickTrigger(XINPUT_STATE state, int nPlayer)
 	m_abTrigggerLStick[nPlayer][DIRECTION_UP] = fDiff > 0.5f && (float)m_aState[nPlayer].Gamepad.sThumbLY >= 0.0f;
 
 	m_abTrigggerLStick[nPlayer][DIRECTION_DOWN] = fDiff < -0.5f && (float)m_aState[nPlayer].Gamepad.sThumbLY <= 0.0f;
+
+	// 左スティック==========================================
+	// 左右
+	fDiff = (float)state.Gamepad.sThumbRX / USHRT_MAX * 2 - (float)m_aState[nPlayer].Gamepad.sThumbRX / USHRT_MAX * 2;
+
+	m_abTrigggerRStick[nPlayer][DIRECTION_RIGHT] = fDiff > 0.5f && (float)m_aState[nPlayer].Gamepad.sThumbRX >= 0.0f;
+
+	m_abTrigggerRStick[nPlayer][DIRECTION_LEFT] = fDiff < -0.5f && (float)m_aState[nPlayer].Gamepad.sThumbRX <= 0.0f;
+
+	// 上下
+	fDiff = (float)state.Gamepad.sThumbRY / USHRT_MAX * 2 - (float)m_aState[nPlayer].Gamepad.sThumbRY / USHRT_MAX * 2;
+
+	m_abTrigggerRStick[nPlayer][DIRECTION_UP] = fDiff > 0.5f && (float)m_aState[nPlayer].Gamepad.sThumbRY >= 0.0f;
+
+	m_abTrigggerRStick[nPlayer][DIRECTION_DOWN] = fDiff < -0.5f && (float)m_aState[nPlayer].Gamepad.sThumbRY <= 0.0f;
 }
 
 //====================================================
@@ -224,6 +239,14 @@ void CInputJoypad::CheckStickTrigger(XINPUT_STATE state, int nPlayer)
 bool CInputJoypad::GetLStickTrigger(DIRECTION direction, int nPlayer)
 {
 	return m_abTrigggerLStick[nPlayer][direction];
+}
+
+//====================================================
+// ジョイスティックトリガー情報
+//====================================================
+bool CInputJoypad::GetRStickTrigger(DIRECTION direction, int nPlayer)
+{
+	return m_abTrigggerRStick[nPlayer][direction];
 }
 
 //====================================================

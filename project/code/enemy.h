@@ -16,7 +16,7 @@
 class CCollisionSphere;
 class CCollisionCube;
 class CBlock;
-class CObject2D;
+class CUI;
 
 //*****************************************************
 // クラスの定義
@@ -95,7 +95,7 @@ private:
 		STATE state;	// 状態
 		MOVESTATE moveState;	// 移動状態
 		D3DXVECTOR3 posDest;	// 目標位置
-		CObject2D *pCursor;	// 捕捉可能カーソル
+		CUI *pCursor;	// 捕捉可能カーソル
 	};
 	void ManageState(void);
 	void ManageMoveState(void);

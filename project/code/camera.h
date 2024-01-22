@@ -57,6 +57,7 @@ public:
 	void SetEventTimer(float fTime) { m_camera.fTimeEvent = fTime; }
 
 private:
+	void LockEnemy(void);
 	void SetPosV(void);
 	void SetPosR(void);
 

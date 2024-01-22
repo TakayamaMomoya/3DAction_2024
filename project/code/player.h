@@ -36,11 +36,6 @@ public:
 		STATE_DEATH,	// 死亡状態
 		STATE_MAX
 	};
-	struct SParam
-	{
-		float fSpeedMove;		// 移動速度
-		float fInitialLife;	// 初期体力
-	};
 
 	CPlayer(int nPriority = 4);	// コンストラクタ
 	~CPlayer();	// デストラクタ
@@ -52,6 +47,8 @@ public:
 	void Update(void);
 	void Draw(void);
 	void Hit(float fDamage);
+	bool IsTargetLock(void) { return m_info.bLockTarget; }
+	void EnableLock(bool bLock) { m_info.bLockTarget = bLock; }
 
 private:
 	enum MOTION
@@ -85,6 +82,7 @@ private:
 	struct SInfo
 	{
 		float fLife;	// 体力
+		float fBoost;	// ブースト残量
 		STATE state;	// 状態
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
@@ -94,12 +92,19 @@ private:
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
 	};
+	struct SParam
+	{
+		float fSpeedMove;		// 移動速度
+		float fInitialBoost;		// ブースト残量初期値
+		float fInitialLife;	// 初期体力
+	};
 
 	void Lockon(void);
 	void Input(void);
 	void InputMove(void);
 	void Stamp(void);
 	void InputCamera(void);
+	void SwitchLockEnemy(void);
 	void InputAttack(void);
 	void Rotation(void);
 	void ManageCollision(void);
@@ -113,6 +118,7 @@ private:
 	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
 	CEnemy *GetLockOn(void);
 	void EndMelee(void);
+	void AddBoost(float fValue);
 	void ToggleLockTarget(void);
 	void Debug(void);
 

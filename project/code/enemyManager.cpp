@@ -16,8 +16,9 @@
 #include "inputkeyboard.h"
 #include "effect3D.h"
 #include "player.h"
-#include "object2D.h"
+#include "UI.h"
 #include "texture.h"
+#include "debugproc.h"
 
 //*****************************************************
 // 定数定義
@@ -45,7 +46,6 @@ CEnemyManager::CEnemyManager()
 	m_fTimer = 0.0f;
 	m_pHead = nullptr;
 	m_pTail = nullptr;
-	m_pEnemyLockon = nullptr;
 }
 
 //=====================================================
@@ -131,7 +131,7 @@ HRESULT CEnemyManager::Init(void)
 
 	if (m_pCursor == nullptr)
 	{// カーソル生成
-		m_pCursor = CObject2D::Create(7);
+		m_pCursor = CUI::Create();
 
 		if (m_pCursor != nullptr)
 		{
@@ -232,21 +232,20 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 
 			D3DXVECTOR3 vecDiffPlayer = pos - posPlayer;
 			float fDistPlayer = D3DXVec3Length(&vecDiffPlayer);
+			D3DXVECTOR3 posScreenTemp;
 
-			// 距離制限
-			if (DIST_LOCKON > fDistPlayer)
+			// ロックオンする敵の決定
+			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
 			{
-				D3DXVECTOR3 posScreenTemp;
-
-				// ロックオンする敵の決定
-				if (universal::IsInScreen(pos, mtx, &posScreenTemp))
+				// 距離制限
+				if (DIST_LOCKON > fDistPlayer)
 				{
 					bInAny = true;
 
 					pEnemy->EnableLock(true);
 					pEnemy->SetPositionCursor(posScreenTemp);
 
-					if (bLock == false)
+					if (bLock == false || (m_pEnemyLockon == nullptr && bLock == true))
 					{
 						D3DXVECTOR3 vecDiff = posScreenTemp - posCenter;
 
@@ -261,6 +260,14 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 
 							fDistMax = fDist;
 						}
+					}
+				}
+				else if (m_pEnemyLockon == pEnemy)
+				{
+					if (SwitchTarget(1, 1) == nullptr &&
+						SwitchTarget(-1, -1) == nullptr)
+					{
+						m_pEnemyLockon = nullptr;
 					}
 				}
 			}
@@ -298,6 +305,111 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 }
 
 //=====================================================
+// ターゲットの切り替え
+//=====================================================
+CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (m_pEnemyLockon == nullptr)
+	{
+		return nullptr;
+	}
+
+	CEnemy *pEnemy = GetHead();
+	CEnemy *pEnemyLock = nullptr;
+	float fLengthDiff = FLT_MAX;
+
+	// 現在ロックしている敵のスクリーン座標
+	D3DXMATRIX mtx = *m_pEnemyLockon->GetMatrix();
+	D3DXVECTOR3 posScreenLockEnemy;
+	D3DXVECTOR3 posLockEnemy = m_pEnemyLockon->GetMtxPos(0);
+	universal::IsInScreen(posLockEnemy, mtx, &posScreenLockEnemy);
+
+	while (pEnemy != nullptr)
+	{
+		CEnemy::STATE state = pEnemy->GetState();
+
+		CEnemy *pEnemyNext = pEnemy->GetNext();
+
+		pEnemy->EnableLock(false);
+
+		if (state != CEnemy::STATE::STATE_DEATH && m_pEnemyLockon != pEnemy)
+		{
+			D3DXVECTOR3 pos = pEnemy->GetMtxPos(0);
+
+			D3DXVECTOR3 vecDiff = pos - pPlayer->GetPosition();
+			float fDistLockon = D3DXVec3Length(&vecDiff);
+
+			D3DXVECTOR3 posScreenTemp;
+
+			// ロックオンする敵の決定
+			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
+			{
+				// 距離制限
+				if (DIST_LOCKON > fDistLockon)
+				{
+					bool bOk = false;
+
+					// 今ロックしてる敵との位置を比べる
+					if (nAxisX > 0)
+					{
+						if (posScreenTemp.x > posScreenLockEnemy.x)
+						{// 今のより右にいたら
+							bOk = true;
+						}
+					}
+					if (nAxisX < 0)
+					{
+						if (posScreenTemp.x < posScreenLockEnemy.x)
+						{// 今のより左にいたら
+							bOk = true;
+						}
+					}
+					if (nAxisY < 0)
+					{
+						if (posScreenTemp.y > posScreenLockEnemy.y)
+						{// 今のより下にいたら
+							bOk = true;
+						}
+					}
+					if (nAxisY > 0)
+					{
+						if (posScreenTemp.y < posScreenLockEnemy.y)
+						{// 今のより上にいたら
+							bOk = true;
+						}
+					}
+
+					if (bOk)
+					{
+						// 差分距離を取得
+						D3DXVECTOR3 vecDIffScreen = posScreenTemp - posScreenLockEnemy;
+
+						float fLengthScreen = D3DXVec3Length(&vecDIffScreen);
+
+						if (fLengthScreen < fLengthDiff)
+						{// 最大距離より短かったら次のロックオンにする
+							pEnemyLock = pEnemy;
+							fLengthDiff = fLengthScreen;
+						}
+					}
+				}
+			}
+		}
+
+		pEnemy = pEnemyNext;
+	}
+
+	if (pEnemyLock != nullptr)
+	{
+		m_pEnemyLockon = pEnemyLock;
+	}
+
+	return pEnemyLock;
+}
+
+//=====================================================
 // ターゲットのロック
 //=====================================================
 void CEnemyManager::EnableLockTarget(bool bLock)
@@ -313,7 +425,12 @@ void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 	if (pEnemy == m_pEnemyLockon)
 	{
 		m_pEnemyLockon = nullptr;
-		EnableLockTarget(false);
+
+		if (SwitchTarget(1, 1) == nullptr &&
+			SwitchTarget(-1, -1) == nullptr)
+		{
+			m_pEnemyLockon = nullptr;
+		}
 	}
 }
 
@@ -340,6 +457,10 @@ void CEnemyManager::DeleteAll(void)
 void CEnemyManager::Draw(void)
 {
 #ifdef _DEBUG
-	//CDebugProc::GetInstance()->Print("\n敵の位置：[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
+
+	if (m_pEnemyLockon != nullptr)
+	{
+		CDebugProc::GetInstance()->Print("\nロックオンしてる敵いるよ");
+	}
 #endif
 }

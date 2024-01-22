@@ -25,7 +25,7 @@
 #include "sound.h"
 #include "particle.h"
 #include "texture.h"
-#include "object2D.h"
+#include "UI.h"
 
 //*****************************************************
 // 定数定義
@@ -647,7 +647,7 @@ void CEnemy::EnableLock(bool bLock)
 	{
 		if (m_info.pCursor == nullptr)
 		{// カーソル生成
-			m_info.pCursor = CObject2D::Create(7);
+			m_info.pCursor = CUI::Create();
 
 			if (m_info.pCursor != nullptr)
 			{

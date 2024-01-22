@@ -28,11 +28,16 @@ public:
 		BUTTON_MELEE,	// 近接攻撃
 		BUTTON_GRAB,	// 掴み
 		BUTTON_DODGE,	// 回避
+		BUTTON_LOCK,	// ターゲットロック
 		BUTTON_PAUSE,	// ポーズ
 		BUTTON_AXIS_UP,	// 上方向キー
 		BUTTON_AXIS_DOWN,	// 下方向キー
 		BUTTON_AXIS_RIGHT,	// 右方向キー
 		BUTTON_AXIS_LEFT,	// 左方向キー
+		BUTTON_TRIGGER_UP,	// 上方向弾き
+		BUTTON_TRIGGER_DOWN,	// 下方向弾き
+		BUTTON_TRIGGER_RIGHT,	// 右方向弾き
+		BUTTON_TRIGGER_LEFT,	// 左方向弾き
 		BUTTON_MAX
 	};
 	struct SAxis
