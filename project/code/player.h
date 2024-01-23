@@ -36,6 +36,13 @@ public:
 		STATE_DEATH,	// 死亡状態
 		STATE_MAX
 	};
+	enum STATEBOOST
+	{
+		STATEBOOST_NONE = 0,	// 何でもない状態
+		STATEBOOST_NORMAL,	// 通常状態
+		STATEBOOST_OVERHEAT,	// オーバーヒート状態
+		STATEBOOST_MAX
+	};
 	struct SParam
 	{
 		float fSpeedMove;		// 移動速度
@@ -57,6 +64,7 @@ public:
 	void EnableLock(bool bLock) { m_info.bLockTarget = bLock; }
 	float GetBoost(void) { return m_info.fBoost; }
 	SParam GetParam(void) { return m_param; }
+	STATEBOOST GetStateBoost(void) { return m_info.stateBoost; }
 
 private:
 	enum MOTION
@@ -92,6 +100,7 @@ private:
 		float fLife;	// 体力
 		float fBoost;	// ブースト残量
 		STATE state;	// 状態
+		STATEBOOST stateBoost;	// ブーストの状態
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定

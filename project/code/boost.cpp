@@ -21,6 +21,8 @@ namespace
 const D3DXVECTOR3 GAUGE_POS = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };	// ゲージの位置
 const char* TEXTURE_PATH = "data\\TEXTURE\\UI\\boost00.png";	// テクスチャパス
 const float RADIUS_GAUGE = 100.0f;	// ゲージの半径
+const float INITIAL_ROT = D3DX_PI * 0.35f;
+const float ANGLE_MAX = D3DX_PI * 0.3f;
 }
 
 //=====================================================
@@ -51,8 +53,8 @@ HRESULT CBoost::Init(void)
 		if (m_pObjectGauge != nullptr)
 		{
 			m_pObjectGauge->SetPosition(D3DXVECTOR3(GAUGE_POS.x, GAUGE_POS.y, 0.0f));
-			m_pObjectGauge->SetAngleMax(D3DX_PI * 0.3f);
-			m_pObjectGauge->SetRot(D3DX_PI * 0.35f);
+			m_pObjectGauge->SetAngleMax(ANGLE_MAX);
+			m_pObjectGauge->SetRot(INITIAL_ROT);
 			m_pObjectGauge->SetRadius(RADIUS_GAUGE);
 			m_pObjectGauge->SetVtx();
 
@@ -86,7 +88,7 @@ void CBoost::Update(void)
 {
 	// 変数宣言
 	float fBoost = 0.0f;
-	float fHeight;
+	float fRate;
 	D3DXVECTOR3 pos;
 
 	// プレイヤーの取得
@@ -102,12 +104,17 @@ void CBoost::Update(void)
 	CPlayer::SParam param = pPlayer->GetParam();
 
 	// ブーストの割合を算出
-	fHeight = fBoost / param.fInitialBoost;
+	fRate = fBoost / param.fInitialBoost;
 
 	if (m_pObjectGauge != nullptr)
 	{// ゲージの設定
+		// 向きの設定
+		float fRot = INITIAL_ROT + ANGLE_MAX * (1.0f - fRate);
+
+		m_pObjectGauge->SetRot(fRot);
+
 		// サイズ設定
-		m_pObjectGauge->SetRateAngle(fHeight);
+		m_pObjectGauge->SetRateAngle(fRate);
 		m_pObjectGauge->SetVtx();
 	}
 }

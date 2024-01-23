@@ -10,13 +10,28 @@
 //*****************************************************
 #include "enemyNormal.h"
 #include "player.h"
+#include "effect3D.h"
+#include "debugproc.h"
+#include "bullet.h"
+#include "manager.h"
+#include "slow.h"
+
+//*****************************************************
+// 定数定義
+//*****************************************************
+namespace
+{
+const float DIST_FIRE = 500.0f;	// 発射するまでの視線とプレイヤーの差分距離
+const float SPEED_BULLET = 70.0f;	// 弾の速度
+const float TIME_FIRE = 1.0f;	// 発射間隔
+}
 
 //=====================================================
 // コンストラクタ
 //=====================================================
 CEnemyNormal::CEnemyNormal()
 {
-
+	m_fTimeFire = 0;
 }
 
 //=====================================================
@@ -72,6 +87,7 @@ void CEnemyNormal::Update(void)
 
 	if (pPlayer != nullptr)
 	{
+		// プレイヤーの方を向く
 		D3DXVECTOR3 pos = GetPosition();
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
 
@@ -84,6 +100,50 @@ void CEnemyNormal::Update(void)
 		universal::FactingRot(&rot.y, rotDest.y, 0.1f);
 
 		SetRot(rot);
+
+		// プレイヤーに向かって弾を撃つ
+		float fDist = D3DXVec3Length(&vecDiff);
+
+		D3DXMATRIX mtxEye;
+		D3DXMATRIX mtx = *GetMatrix();
+
+		universal::SetOffSet(&mtxEye, mtx,D3DXVECTOR3(0.0f,0.0f, fDist));
+
+		D3DXVECTOR3 vecEye = { mtxEye._41,mtxEye._42 ,mtxEye._43 };
+
+		D3DXVECTOR3 vecDiffEye = posPlayer - vecEye;
+
+		float fDistEyeToPlayer = D3DXVec3Length(&vecDiffEye);
+
+		// 狙いが近かったら発射
+		if (fDistEyeToPlayer < DIST_FIRE)
+		{
+			float fDeltaTime = CManager::GetDeltaTime();
+
+			CSlow *pSlow = CSlow::GetInstance();
+
+			if (pSlow != nullptr)
+			{// タイムスケールをかける
+				float fScale = pSlow->GetScale();
+
+				fDeltaTime *= fScale;
+			}
+
+			// タイマー加算
+			m_fTimeFire += fDeltaTime;
+
+			if (m_fTimeFire > TIME_FIRE)
+			{// 弾の発射
+				D3DXVECTOR3 posMazzle = GetMtxPos(0);
+				D3DXVECTOR3 moveBullet;
+				D3DXVec3Normalize(&vecDiff, &vecDiff);
+				moveBullet = vecDiff * SPEED_BULLET;
+
+				CBullet::Create(posMazzle, moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f);
+
+				m_fTimeFire = 0;
+			}
+		}
 	}
 }
 

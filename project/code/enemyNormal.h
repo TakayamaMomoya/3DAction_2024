@@ -37,6 +37,8 @@ private:
 		MOTION_DEATH,	// 死亡モーション
 		MOTION_MAX
 	};
+
+	float m_fTimeFire;	// 射射撃タイマー
 };
 
 #endif

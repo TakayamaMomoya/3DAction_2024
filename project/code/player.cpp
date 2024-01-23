@@ -99,7 +99,7 @@ CPlayer *CPlayer::Create(void)
 //=====================================================
 HRESULT CPlayer::Init(void)
 {
-	// IDに対応したモデルの設定
+	// モデルの設定
 	CMotion::Load((char*)BODY_PATH);
 
 	// 継承クラスの初期化
@@ -112,7 +112,7 @@ HRESULT CPlayer::Init(void)
 
 		if (m_info.pCollisionSphere != nullptr)
 		{
-			m_info.pCollisionSphere->SetRadius(20.0f);
+			m_info.pCollisionSphere->SetRadius(50.0f);
 		}
 	}
 
@@ -147,14 +147,14 @@ HRESULT CPlayer::Init(void)
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
 	m_info.fBoost = m_param.fInitialBoost;
+	m_info.stateBoost = STATEBOOST_NORMAL;
+	m_info.bLand = true;
 
 	// 影の有効化
 	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
 	EnableShadow(true);
 
 	SetMotion(MOTION_WALK_FRONT);
-
-	m_info.bLand = true;
 
 	return S_OK;
 }
@@ -451,12 +451,15 @@ void CPlayer::InputMove(void)
 		}
 		else
 		{
-			if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
-			{// ブースト上昇
-				vecMove.y += 1.0f;
+			if (m_info.stateBoost != STATEBOOST_OVERHEAT)
+			{
+				if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
+				{// ブースト上昇
+					vecMove.y += 1.0f;
 
-				AddBoost(-1.0f);
-			};
+					AddBoost(-3.0f);
+				};
+			}
 
 			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
 			{// 踏みつけ
@@ -466,14 +469,19 @@ void CPlayer::InputMove(void)
 		
 		float fAngleInput = atan2f(axisMove.x, axisMove.z);
 
-		if (pInputManager->GetTrigger(CInputManager::BUTTON_DODGE))
-		{// ブースト回避
-			vecMove +=
-			{
-				sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
-				0.0f,
-				cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
-			};
+		if (m_info.stateBoost != STATEBOOST_OVERHEAT)
+		{
+			if (pInputManager->GetTrigger(CInputManager::BUTTON_DODGE))
+			{// ブースト回避
+				vecMove +=
+				{
+					sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+					0.0f,
+					cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+				};
+
+				AddBoost(-50.0f);
+			}
 		}
 
 		move += vecMove;
@@ -801,22 +809,15 @@ void CPlayer::ManageCollision(void)
 	{
 		D3DXVECTOR3 pos = GetPosition();
 		D3DXVECTOR3 posWaist = GetMtxPos(0);
+		D3DXVECTOR3 move = GetMove();
 
 		// 敵との接触判定
-		m_info.pCollisionSphere->SetPosition(posWaist);
-
-		bool bHit = m_info.pCollisionSphere->OnEnter(CCollision::TAG_ENEMY);
-
-		if (bHit)
-		{
-			//Hit(5.0f);
-		}
+		m_info.pCollisionSphere->SetPosition(posWaist + move);
 
 		if (m_info.pCollisionCube != nullptr)
 		{
 			D3DXVECTOR3 pos = GetPosition();
 			D3DXVECTOR3 posCollision = m_info.pCollisionCube->GetPosition();
-			D3DXVECTOR3 move = GetMove();
 
 			// 判定の追従
 			m_info.pCollisionCube->SetPositionOld(posCollision);
@@ -853,18 +854,6 @@ void CPlayer::ManageCollision(void)
 			}
 
 			SetMove(move);
-		}
-
-		if (m_info.pCollisionSphere != nullptr)
-		{
-			pos = GetPosition();
-
-			// 敵との押し出し判定
-			m_info.pCollisionSphere->SetPosition(pos);
-
-			m_info.pCollisionSphere->PushCollision(&pos, CCollision::TAG_ENEMY);
-
-			SetPosition(pos);
 		}
 	}
 }
@@ -1377,6 +1366,21 @@ void CPlayer::ToggleLockTarget(void)
 void CPlayer::AddBoost(float fValue)
 {
 	m_info.fBoost += fValue;
+
+	if (m_info.fBoost < 0.0f)
+	{// オーバーヒート判定
+		m_info.stateBoost = STATEBOOST_OVERHEAT;
+	}
+
+	if (m_info.stateBoost == STATEBOOST_OVERHEAT)
+	{// オーバーヒートからの復帰
+		float fRate = m_info.fBoost / m_param.fInitialBoost;
+
+		if (fRate > 0.5f)
+		{
+			m_info.stateBoost = STATEBOOST_NORMAL;
+		}
+	}
 
 	universal::LimitValue(&m_info.fBoost, m_param.fInitialBoost, 0.0f);
 }
