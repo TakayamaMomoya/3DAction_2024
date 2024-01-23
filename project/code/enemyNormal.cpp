@@ -136,10 +136,15 @@ void CEnemyNormal::Update(void)
 			{// ’e‚Ì”­ŽË
 				D3DXVECTOR3 posMazzle = GetMtxPos(0);
 				D3DXVECTOR3 moveBullet;
-				D3DXVec3Normalize(&vecDiff, &vecDiff);
-				moveBullet = vecDiff * SPEED_BULLET;
+				D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 
-				CBullet::Create(posMazzle, moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f);
+				D3DXVECTOR3 posPrediction = universal::LinePridiction(posMazzle, SPEED_BULLET, posPlayer, movePlayer);
+				D3DXVECTOR3 vecDiffBullet = pos - posPrediction;
+				D3DXVec3Normalize(&vecDiffBullet, &vecDiffBullet);
+
+				moveBullet = vecDiffBullet * SPEED_BULLET;
+
+				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f,0.2f);
 
 				m_fTimeFire = 0;
 			}

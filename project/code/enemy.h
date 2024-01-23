@@ -28,6 +28,7 @@ public:
 	{// “G‚ÌŽí—Þ
 		TYPE_NONE = 0,	// ‰½‚Å‚à‚È‚¢
 		TYPE_NORMAL,	// ’Êí“G
+		TYPE_BOMB,	// ”š’e“G
 		TYPE_BOSS,		// ƒ{ƒX“G
 		TYPE_MAX
 	};

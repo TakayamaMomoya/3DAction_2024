@@ -530,11 +530,11 @@ void CEnemy::Hit(float fDamage)
 			// ƒgƒ}ƒg`
 			CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_TOMATO_JUICE);
 
-			// “–‚½‚è”»’èíœ
-			DeleteCollision();
-
 			// €–Sˆ—
 			Death();
+
+			// “–‚½‚è”»’èíœ
+			DeleteCollision();
 		}
 		else
 		{

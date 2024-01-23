@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "enemyManager.h"
 #include "enemyNormal.h"
+#include "enemyBomb.h"
 #include "enemyBoss.h"
 #include "inputkeyboard.h"
 #include "effect3D.h"
@@ -43,6 +44,7 @@ CEnemyManager::CEnemyManager()
 {
 	m_pEnemyLockon = nullptr;
 	m_bLockTarget = false;
+	m_pCursor = nullptr;
 	m_fTimer = 0.0f;
 	m_pHead = nullptr;
 	m_pTail = nullptr;
@@ -81,6 +83,7 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 	{
 		nullptr,
 		"data\\MOTION\\motionHeli.txt",
+		"data\\MOTION\\motionBomb.txt",
 		"data\\MOTION\\motionArms00.txt",
 	};
 
@@ -93,6 +96,11 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 		case CEnemy::TYPE_NORMAL:
 
 			pEnemy = new CEnemyNormal;
+
+			break;
+		case CEnemy::TYPE_BOMB:
+
+			pEnemy = new CEnemyBomb;
 
 			break;
 		default:
@@ -127,7 +135,7 @@ HRESULT CEnemyManager::Init(void)
 	CreateEnemy(D3DXVECTOR3(0.0f, 500.0f, 500.0f), CEnemy::TYPE::TYPE_NORMAL);
 	CreateEnemy(D3DXVECTOR3(-1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
 	CreateEnemy(D3DXVECTOR3(-1200.0f, 400.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
-	CreateEnemy(D3DXVECTOR3(1500.0f, 1000.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
+	CreateEnemy(D3DXVECTOR3(1500.0f, 1000.0f, 0.0f), CEnemy::TYPE::TYPE_BOMB);
 
 	if (m_pCursor == nullptr)
 	{// ÉJÅ[É\Éãê∂ê¨

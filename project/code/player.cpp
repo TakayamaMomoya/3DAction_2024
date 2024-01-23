@@ -142,11 +142,13 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 
+	m_param.fInitialLife = 50.0f;
 	// パラメーターに初期値を入れる
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
 	m_info.fBoost = m_param.fInitialBoost;
+	m_info.state = STATE_NORMAL;
 	m_info.stateBoost = STATEBOOST_NORMAL;
 	m_info.bLand = true;
 
@@ -1296,7 +1298,7 @@ void CPlayer::Draw(void)
 //=====================================================
 void CPlayer::Hit(float fDamage)
 {
-	if (m_info.state == STATE_NORMAL)
+	if (m_info.state != STATE_DEATH)
 	{
 		m_info.fLife -= fDamage;
 
@@ -1407,6 +1409,7 @@ void CPlayer::Debug(void)
 	pDebugProc->Print("\nプレイヤーの移動量[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
 	pDebugProc->Print("\n目標の向き[%f,%f,%f]", GetRot().x, GetRot().y, GetRot().z);
 	pDebugProc->Print("\nブースト残量[%f]", m_info.fBoost);
+	pDebugProc->Print("\n体力[%f]", m_info.fLife);
 
 	int nMotion = GetMotion();
 
