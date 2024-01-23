@@ -37,10 +37,11 @@ public:
 	CEnemy *Lockon(CEnemy *pEnemyExclusive = nullptr);
 	void EnableLockTarget(bool bLock);
 	bool IsLockTarget(void) { return m_bLockTarget; }
-	CEnemy *SwitchTarget(int nAxisX, int nAxisY);
+	CEnemy *SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclusive = nullptr);
 	void CheckDeathLockon(CEnemy *pEnemy);
 	CEnemy *GetLockon(void) { return m_pEnemyLockon; }
 	void DeleteAll(void);
+	void SetEnemyLock(CEnemy *pEnemy) { m_pEnemyLockon = pEnemy; }
 	CEnemy *GetHead(void) { return m_pHead; }
 	CEnemy *GetTail(void) { return m_pTail; }
 	void SetHead(CEnemy *pEnemy) { m_pHead = pEnemy; }

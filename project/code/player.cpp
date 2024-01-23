@@ -619,20 +619,20 @@ void CPlayer::SwitchLockEnemy(void)
 
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_RIGHT))
 	{// ‰E•ûŒü
-		pEnemyManager->SwitchTarget(1, 0);
+		pEnemyManager->SwitchTarget(1, 0,m_info.pEnemyGrab);
 	}
 	else if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_LEFT))
 	{// ¶•ûŒü
-		pEnemyManager->SwitchTarget(-1, 0);
+		pEnemyManager->SwitchTarget(-1, 0, m_info.pEnemyGrab);
 	}
 
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_UP))
 	{// ã•ûŒü
-		pEnemyManager->SwitchTarget(0, 1);
+		pEnemyManager->SwitchTarget(0, 1, m_info.pEnemyGrab);
 	}
 	else if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_DOWN))
 	{// ‰º•ûŒü
-		pEnemyManager->SwitchTarget(0, -1);
+		pEnemyManager->SwitchTarget(0, -1, m_info.pEnemyGrab);
 	}
 
 }
@@ -1191,6 +1191,16 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 				// ’Í‚Þ“G‚ÌŒˆ’è
 				m_info.pEnemyGrab = pEnemyGrab;
+
+				if (m_info.pEnemyGrab != nullptr)
+				{// ’Í‚ñ‚Å‚¢‚é“G‚©‚çƒƒbƒN‚ðŠO‚·
+					CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+					if (pEnemyManager != nullptr)
+					{
+						pEnemyManager->SetEnemyLock(nullptr);
+					}
+				}
 			}
 		}
 	}

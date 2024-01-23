@@ -315,7 +315,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 //=====================================================
 // ターゲットの切り替え
 //=====================================================
-CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY)
+CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclusive)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -340,7 +340,7 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY)
 
 		CEnemy *pEnemyNext = pEnemy->GetNext();
 
-		if (state != CEnemy::STATE::STATE_DEATH && m_pEnemyLockon != pEnemy)
+		if (state != CEnemy::STATE::STATE_DEATH && m_pEnemyLockon != pEnemy && pEnemyExclusive != pEnemy)
 		{
 			D3DXVECTOR3 pos = pEnemy->GetMtxPos(0);
 
