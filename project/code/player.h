@@ -36,6 +36,12 @@ public:
 		STATE_DEATH,	// 死亡状態
 		STATE_MAX
 	};
+	struct SParam
+	{
+		float fSpeedMove;		// 移動速度
+		float fInitialBoost;		// ブースト残量初期値
+		float fInitialLife;	// 初期体力
+	};
 
 	CPlayer(int nPriority = 4);	// コンストラクタ
 	~CPlayer();	// デストラクタ
@@ -49,6 +55,8 @@ public:
 	void Hit(float fDamage);
 	bool IsTargetLock(void) { return m_info.bLockTarget; }
 	void EnableLock(bool bLock) { m_info.bLockTarget = bLock; }
+	float GetBoost(void) { return m_info.fBoost; }
+	SParam GetParam(void) { return m_param; }
 
 private:
 	enum MOTION
@@ -91,12 +99,6 @@ private:
 		bool bLand;	// 着地しているかどうか
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
-	};
-	struct SParam
-	{
-		float fSpeedMove;		// 移動速度
-		float fInitialBoost;		// ブースト残量初期値
-		float fInitialLife;	// 初期体力
 	};
 
 	void Lockon(void);

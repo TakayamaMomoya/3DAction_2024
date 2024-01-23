@@ -66,10 +66,6 @@ void CEnemyNormal::Update(void)
 			SetMotion(MOTION_DEATH);
 		}
 	}
-	else
-	{
-
-	}
 
 	CPlayer *pPlayer = CPlayer::GetInstance();
 	D3DXVECTOR3 rot = GetRot();

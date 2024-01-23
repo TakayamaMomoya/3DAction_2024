@@ -11,6 +11,7 @@
 #include "main.h"
 #include "UIManager.h"
 #include "inputkeyboard.h"
+#include "boost.h"
 
 //*****************************************************
 // 静的メンバ変数宣言
@@ -55,6 +56,9 @@ CUIManager *CUIManager::Create(void)
 HRESULT CUIManager::Init(void)
 {
 	m_bDisp = true;
+
+	// ブースト表示の生成
+	CBoost::Create();
 
 	return S_OK;
 }

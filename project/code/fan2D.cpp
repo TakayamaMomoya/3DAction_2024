@@ -35,7 +35,8 @@ CFan2D::CFan2D(int nPriority) : CObject(nPriority)
 	m_fRot = 0.0f;
 	m_fRadius = 0.0f;
 	m_nNumVtx = 0;
-	m_fAngleMax = 1.0f;
+	m_fRateAngle = 1.0f;
+	m_fAngleMax = 0.0f;
 	m_col = { 1.0f,1.0f,1.0f,1.0f };
 	m_nIdxTexture = -1;
 }
@@ -96,6 +97,7 @@ HRESULT CFan2D::Init(void)
 	SetIdxTexture(nIdx);
 
 	m_fRadius = INITIAL_RADIUS;
+	m_fAngleMax = D3DX_PI * 2;
 	m_pos = D3DXVECTOR3{ SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
 
 	// êFèâä˙âª
@@ -151,7 +153,7 @@ void CFan2D::SetVtx(void)
 
 		for (int i = 1;i < m_nNumVtx + 2;i++)
 		{// â~é¸ÇÃí∏ì_ÇÃê›íË
-			float fAngle = (6.28f * m_fAngleMax) * ((float)(i - 1) / (float)m_nNumVtx);
+			float fAngle = (m_fAngleMax * m_fRateAngle) * ((float)(i - 1) / (float)m_nNumVtx) + m_fRot;
 
 			universal::LimitRot(&fAngle);
 
@@ -216,6 +218,8 @@ void CFan2D::SetPosition(D3DXVECTOR3 pos)
 void CFan2D::SetRot(float fRot)
 {
 	m_fRot = fRot;
+
+	universal::LimitRot(&m_fRot);
 }
 
 //=====================================================
