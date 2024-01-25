@@ -634,7 +634,6 @@ void CPlayer::SwitchLockEnemy(void)
 	{// ‰º•ûŒü
 		pEnemyManager->SwitchTarget(0, -1, m_info.pEnemyGrab);
 	}
-
 }
 
 //=====================================================

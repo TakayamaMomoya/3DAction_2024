@@ -40,6 +40,7 @@ public:
 	static void Init(int nIdx);
 	static Model *GetModel(int nIdx) { return m_apModel[nIdx]; }
 	static int GetNumAll(void) { return m_nNumAll; }
+	static char *GetPath(int nIdx) { return &m_aPath[nIdx][0]; }
 
 private:
 	static Model *m_apModel[NUM_MODEL];	// モデルへのポインタ

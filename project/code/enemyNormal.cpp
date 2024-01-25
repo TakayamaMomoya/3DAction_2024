@@ -82,6 +82,29 @@ void CEnemyNormal::Update(void)
 		}
 	}
 
+}
+
+//=====================================================
+// ë“ã@
+//=====================================================
+void CEnemyNormal::Wait(void)
+{
+
+}
+
+//=====================================================
+// ñ⁄ïWÇÃí«ê’
+//=====================================================
+void CEnemyNormal::Chase(void)
+{
+
+}
+
+//=====================================================
+// çUåÇ
+//=====================================================
+void CEnemyNormal::Attack(void)
+{
 	CPlayer *pPlayer = CPlayer::GetInstance();
 	D3DXVECTOR3 rot = GetRot();
 
@@ -107,7 +130,7 @@ void CEnemyNormal::Update(void)
 		D3DXMATRIX mtxEye;
 		D3DXMATRIX mtx = *GetMatrix();
 
-		universal::SetOffSet(&mtxEye, mtx,D3DXVECTOR3(0.0f,0.0f, fDist));
+		universal::SetOffSet(&mtxEye, mtx, D3DXVECTOR3(0.0f, 0.0f, fDist));
 
 		D3DXVECTOR3 vecEye = { mtxEye._41,mtxEye._42 ,mtxEye._43 };
 
@@ -144,20 +167,12 @@ void CEnemyNormal::Update(void)
 
 				moveBullet = vecDiffBullet * SPEED_BULLET;
 
-				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f,0.2f);
+				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.2f);
 
 				m_fTimeFire = 0;
 			}
 		}
 	}
-}
-
-//=====================================================
-// ñ⁄ïWÇÃí«ê’
-//=====================================================
-void CEnemyNormal::ChaseTarget(void)
-{
-
 }
 
 //=====================================================

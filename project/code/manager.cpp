@@ -102,9 +102,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// テクスチャ管理の生成
 	CTexture::Create();
 
-	// ブロックの読込
-	CBlock::LoadModel();
-
 	// フェードの生成
 	CFade::Create();
 

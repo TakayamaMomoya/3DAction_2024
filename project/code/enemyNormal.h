@@ -38,6 +38,10 @@ private:
 		MOTION_MAX
 	};
 
+	virtual void Wait(void);
+	virtual void Chase(void);
+	virtual void Attack(void);
+
 	float m_fTimeFire;	// 射射撃タイマー
 };
 

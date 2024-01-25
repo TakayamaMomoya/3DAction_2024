@@ -46,8 +46,9 @@ public:
 	enum MOVESTATE
 	{// 移動状態
 		MOVESTATE_NONE = 0,	// 何でもない状態
-		MOVESTATE_INTRUSION,	// 侵入しようとしてる状態
+		MOVESTATE_WAIT,	// 待機状態
 		MOVESTATE_CHASE,	// 追跡状態
+		MOVESTATE_ATTACK,	// 攻撃状態
 		MOVESTATE_MAX
 	};
 
@@ -78,10 +79,13 @@ public:
 	void DeleteCollision(void);
 	void EnableLock(bool bLock);
 	void SetPositionCursor(D3DXVECTOR3 pos);
+	void SetDistMoveState(float fValue, MOVESTATE moveState) { m_info.aDistMoveState[moveState] = fValue; }
 
 protected:
 	void ManageScore(void);
-	virtual void ChaseTarget(void);
+	virtual void Wait(void);
+	virtual void Chase(void);
+	virtual void Attack(void);
 	virtual void Death(void);
 	virtual void TransferChase(void);
 
@@ -97,6 +101,7 @@ private:
 		MOVESTATE moveState;	// 移動状態
 		D3DXVECTOR3 posDest;	// 目標位置
 		CUI *pCursor;	// 捕捉可能カーソル
+		float aDistMoveState[MOVESTATE_MAX];	// 移動状態がかわる距離
 	};
 	void ManageState(void);
 	void ManageMoveState(void);

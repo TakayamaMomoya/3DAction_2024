@@ -24,7 +24,6 @@
 #include "texture.h"
 #include "skybox.h"
 #include "enemyManager.h"
-#include "edit.h"
 #include "block.h"
 #include "renderer.h"
 #include "animEffect3D.h"
@@ -32,6 +31,7 @@
 #include "player.h"
 #include "slow.h"
 #include "checkPointManager.h"
+#include "blockManager.h"
 
 //*****************************************************
 // マクロ定義
@@ -81,8 +81,8 @@ HRESULT CGame::Init(void)
 	// スカイボックスの生成
 	CSkybox::Create();
 
-	// ブロックの読み込み
-	//CBlock::Load("data\\MAP\\map01.bin");
+	// ブロック管理の生成
+	CBlockManager::Create();
 
 	// 敵マネージャーの生成
 	CEnemyManager *pEnemyManager = CEnemyManager::Create();
@@ -97,11 +97,6 @@ HRESULT CGame::Init(void)
 	{
 		//pSound->Play(pSound->LABEL_BGM_GAME);
 	}
-
-#ifdef _DEBUG
-	// エディットの生成
-	//CEdit::Create();
-#endif
 
 	// フォグをかける
 	CRenderer *pRenderer = CRenderer::GetInstance();
@@ -130,9 +125,6 @@ void CGame::Uninit(void)
 {
 	// オブジェクト全棄
 	CObject::ReleaseAll();
-
-	// ブロックの破棄
-	CBlock::DeleteAll();
 
 	m_pGame = nullptr;
 }
@@ -166,14 +158,6 @@ void CGame::Update(void)
 	{
 		// 停止しないオブジェクトの更新
 		CObject::UpdateNotStop();
-
-		// エディットの更新
-		CEdit* pEdit = CEdit::GetInstatnce();
-
-		if (pEdit != nullptr)
-		{
-			pEdit->Update();
-		}
 
 		CPause *pPause = CPause::GetInstance();
 

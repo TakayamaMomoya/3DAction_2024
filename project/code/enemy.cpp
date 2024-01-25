@@ -40,6 +40,13 @@ const int TIME_DEATH = 60;	// 死亡までの時間
 const float DAMAGE_THROWN = 10.0f;	// 投げでのダメージ
 const float SIZE_CURSOR = 30.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon00.png";	// カーソルのテクスチャ
+const float INITIAL_DIST_MOVESTATE[CEnemy::MOVESTATE_MAX] =
+{// 移動状態が切り替わる距離
+	0.0f,
+	1000.0f,
+	2000.0f,
+	3000.0f
+};
 }
 
 //*****************************************************
@@ -202,13 +209,18 @@ HRESULT CEnemy::Init(void)
 
 	// 通常状態にする
 	m_info.state = STATE_NORMAL;
-	m_info.moveState = MOVESTATE_INTRUSION;
+	m_info.moveState = MOVESTATE_WAIT;;
 
 	SetPositionOld(GetPosition());
 
 	// 影の有効可
 	EnableShadow(true);
 	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
+
+	for (int i = 0; i < MOVESTATE_MAX; i++)
+	{
+		m_info.aDistMoveState[i] = INITIAL_DIST_MOVESTATE[i];
+	}
 
 	return S_OK;
 }
@@ -363,17 +375,16 @@ void CEnemy::ManageMoveState(void)
 {
 	switch (m_info.moveState)
 	{
-	case MOVESTATE_INTRUSION:
-		// 侵入しようとしている状態
-		if (IsInArea())
-		{// エリア内に入ったら、追跡へ移行
-			TransferChase();
-		}
-
+	case MOVESTATE_WAIT:
 		break;
 	case MOVESTATE_CHASE:
-		// 対象を追跡している状態
-		
+		// 追跡
+		Chase();
+
+		break;
+	case MOVESTATE_ATTACK:
+		// 攻撃
+		Attack();
 
 		break;
 	}
@@ -425,51 +436,39 @@ void CEnemy::CollisionThrown(void)
 }
 
 //=====================================================
-// 目標の追跡
+// 待機
 //=====================================================
-void CEnemy::ChaseTarget(void)
+void CEnemy::Wait(void)
 {
-	// 状態によって追跡させない
-	CGame *pGame = CGame::GetInstance();
-	CEnemy::STATE state = GetState();
+	CPlayer *pPlayer = CPlayer::GetInstance();
 
-	if (state == CEnemy::STATE::STATE_DEATH)
+	if (pPlayer == nullptr)
 	{
 		return;
 	}
 
-	if (pGame != nullptr)
-	{
-		CGame::STATE state = pGame->GetState();
+	float fDist = 0.0f;
 
-		if (state != CGame::STATE::STATE_NORMAL)
-		{
-			return;
-		}
+	if (m_info.aDistMoveState[MOVESTATE_CHASE] > fDist)
+	{// 追跡に移行
+
 	}
+}
 
-	// 移動量の設定
-	D3DXVECTOR3 pos = GetPosition();
-	D3DXVECTOR3 vecDiff = m_info.posDest - pos;
-	D3DXVECTOR3 move = GetMove();
+//=====================================================
+// 目標の追跡
+//=====================================================
+void CEnemy::Chase(void)
+{
 
-	D3DXVec3Normalize(&vecDiff, &vecDiff);
+}
 
-	vecDiff *= m_info.fMoveSpeed;
+//=====================================================
+// 攻撃
+//=====================================================
+void CEnemy::Attack(void)
+{
 
-	move += vecDiff;
-
-	SetMove(move);
-
-	// 向きを目標方向に補正
-	float fAngleDist = atan2f(vecDiff.x, vecDiff.z);
-	D3DXVECTOR3 rot = GetRot();
-
-	fAngleDist += D3DX_PI;
-
-	universal::FactingRot(&rot.y, fAngleDist, 0.1f);
-
-	SetRot(rot);
 }
 
 //=====================================================
