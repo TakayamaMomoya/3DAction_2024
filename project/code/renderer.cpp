@@ -211,14 +211,14 @@ void CRenderer::Draw(void)
 	m_pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 	m_pD3DDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-	float fStart = 100;
-	float fEnd = 7000;
+	float fStart = 5000;
+	float fEnd = 20000;
 
 	// フォグを有効化
 	m_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, m_fogInfo.bEnable);
 
 	// フォグの色を設定
-	m_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, D3DXCOLOR(0.2f, 0.0f, 0.2f, 1.0f));
+	m_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
 
 	// フォグの状態を設定
 	m_pD3DDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_NONE);

@@ -196,7 +196,6 @@ void CObject::UpdateAll(void)
 
 		while (pObject != nullptr)
 		{
-
 			// 次のアドレスを保存
 			CObject *pObjectNext = pObject->m_pNext;
 
@@ -208,6 +207,33 @@ void CObject::UpdateAll(void)
 		}
 	}
 
+	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
+	{
+		// 先頭オブジェクトを代入
+		CObject *pObject = m_apTop[nCntPri];
+
+		while (pObject != nullptr)
+		{
+			// 次のアドレスを保存
+			CObject *pObjectNext = pObject->m_pNext;
+
+			if (pObject->m_bDeath)
+			{
+				// 終了処理
+				pObject->Delete();
+			}
+
+			// 次のアドレスを代入
+			pObject = pObjectNext;
+		}
+	}
+}
+
+//=====================================================
+// オブジェクトの削除
+//=====================================================
+void CObject::DeleteAll(void)
+{
 	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
 	{
 		// 先頭オブジェクトを代入

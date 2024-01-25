@@ -460,7 +460,7 @@ void CPlayer::InputMove(void)
 				{// ブースト上昇
 					vecMove.y += 1.0f;
 
-					AddBoost(-3.0f);
+					//AddBoost(-3.0f);
 				};
 			}
 

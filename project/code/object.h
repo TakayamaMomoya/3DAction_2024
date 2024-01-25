@@ -52,6 +52,7 @@ public:
 	static void ReleaseAll(void);	// 全てリリース
 	static void UpdateAll(void);	// 全て更新
 	static void UpdateNotStop(void);	// 動かないオブジェクトの更新
+	static void DeleteAll(void);	// 全削除処理
 	static void DrawAll(void);	// 全て描画
 	virtual void Hit(float fDamage){}	// ヒット処理
 	void SetType(TYPE type);

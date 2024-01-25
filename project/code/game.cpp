@@ -67,18 +67,6 @@ HRESULT CGame::Init(void)
 	// UIマネージャーの追加
 	CUIManager::Create();
 
-	// 床の生成
-	CObject3D *pObjectOut = CObject3D::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-
-	if (pObjectOut != nullptr)
-	{
-		int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\BG\\field00.jpg");
-		pObjectOut->SetPosition(D3DXVECTOR3(0.0f, -5.0f, 0.0f));
-		pObjectOut->SetIdxTexture(nIdx);
-		pObjectOut->SetTex(D3DXVECTOR2(100.0f, 100.0f), D3DXVECTOR2(0.0f, 0.0f));
-		pObjectOut->SetSize(50000.0f, 50000.0f);
-	}
-
 	// スカイボックスの生成
 	//CSkybox::Create();
 
@@ -104,7 +92,7 @@ HRESULT CGame::Init(void)
 
 	if (pRenderer != nullptr)
 	{
-		//pRenderer->EnableFog(true);
+		pRenderer->EnableFog(true);
 	}
 
 	// プレイヤーの生成

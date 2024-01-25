@@ -199,8 +199,8 @@ void CEnemyManager::Update(void)
 		}
 	}
 
-	if(m_pEnemyLockon != nullptr)
-		CEffect3D::Create(m_pEnemyLockon->GetPosition(), 30.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	/*if(m_pEnemyLockon != nullptr)
+		CEffect3D::Create(m_pEnemyLockon->GetPosition(), 30.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));*/
 #endif
 }
 
@@ -445,16 +445,21 @@ void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 //=====================================================
 void CEnemyManager::DeleteAll(void)
 {
-	CEnemy *pEnemy = GetHead();
+	//CEnemy *pEnemy = GetHead();
 
-	while (pEnemy != nullptr)
-	{
-		CEnemy *pEnemyNext = pEnemy->GetNext();
+	//while (pEnemy != nullptr)
+	//{
+	//	CEnemy *pEnemyNext = pEnemy->GetNext();
 
-		pEnemy->Uninit();
+	//	pEnemy->Uninit();
 
-		pEnemy = pEnemyNext;
-	}
+	//	delete pEnemy;
+	//	pEnemy = nullptr;
+
+	//	pEnemy = pEnemyNext;
+	//}
+
+	//m_pEnemyLockon = nullptr;
 }
 
 //=====================================================
