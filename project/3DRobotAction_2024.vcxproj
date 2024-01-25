@@ -192,6 +192,7 @@
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
     <ClCompile Include="code\meshcylinder.cpp" />
+    <ClCompile Include="code\meshfield.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
     <ClCompile Include="code\number.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
     <ClInclude Include="code\meshcylinder.h" />
+    <ClInclude Include="code\meshfield.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
     <ClInclude Include="code\number.h" />

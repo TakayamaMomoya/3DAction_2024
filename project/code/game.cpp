@@ -32,6 +32,7 @@
 #include "slow.h"
 #include "checkPointManager.h"
 #include "blockManager.h"
+#include "meshfield.h"
 
 //*****************************************************
 // マクロ定義
@@ -79,7 +80,7 @@ HRESULT CGame::Init(void)
 	}
 
 	// スカイボックスの生成
-	CSkybox::Create();
+	//CSkybox::Create();
 
 	// ブロック管理の生成
 	CBlockManager::Create();
@@ -114,6 +115,9 @@ HRESULT CGame::Init(void)
 
 	// チェックポイント管理の生成
 	CCheckPointManager::Create();
+
+	// メッシュフィールド生成
+	CMeshField::Create();
 
 	return S_OK;
 }

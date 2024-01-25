@@ -129,6 +129,9 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 
 	//サンプステートの設定
 	m_pD3DDevice->SetSamplerState(0,
+		D3DSAMP_MIPFILTER,
+		D3DTEXF_LINEAR);
+	m_pD3DDevice->SetSamplerState(0,
 		D3DSAMP_MINFILTER,
 		D3DTEXF_LINEAR);
 	m_pD3DDevice->SetSamplerState(0,

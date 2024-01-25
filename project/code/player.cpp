@@ -22,6 +22,7 @@
 #include "manager.h"
 #include "bullet.h"
 #include "effect3D.h"
+#include "meshfield.h"
 
 //*****************************************************
 // 定数定義
@@ -817,7 +818,7 @@ void CPlayer::ManageCollision(void)
 
 		if (m_info.pCollisionCube != nullptr)
 		{
-			D3DXVECTOR3 pos = GetPosition();
+			pos = GetPosition();
 			D3DXVECTOR3 posCollision = m_info.pCollisionCube->GetPosition();
 
 			// 判定の追従
@@ -827,31 +828,39 @@ void CPlayer::ManageCollision(void)
 			// ブロックとの押し出し判定
 			m_info.pCollisionCube->CubeCollision(CCollision::TAG_BLOCK, &move);
 
+			// メッシュフィールドとの当たり判定
 			pos = GetPosition();
 			D3DXVECTOR3 posOld = GetPositionOld();
 
-			if (pos.y <= 0.0f && posOld.y >= 0.0f)
+			CMeshField *pMesh = CMeshField::GetInstance();
+
+			if (pMesh != nullptr)
 			{
-				pos.y = 0.0f;
-				move.y = 0.0f;
+				float fHeight = pMesh->GetHeight(pos,&move);
 
-				SetPosition(pos);
-				
-				int nMotion = GetMotion();
-				bool bFinish = IsFinish();
-
-				if (nMotion == MOTION_AIR)
+				if (pos.y <= fHeight)
 				{
-					m_info.bLand = true;
-					m_fragMotion.bAir = false;
-					m_fragMotion.bJump = false;
-				}
-			}
-			else
-			{
-				m_info.bLand = false;
+					pos.y = fHeight;
+					move.y = 0.0f;
 
-				m_fragMotion.bAir = true;
+					SetPosition(pos);
+
+					int nMotion = GetMotion();
+					bool bFinish = IsFinish();
+
+					if (nMotion == MOTION_AIR)
+					{
+						m_info.bLand = true;
+						m_fragMotion.bAir = false;
+						m_fragMotion.bJump = false;
+					}
+				}
+				else
+				{
+					m_info.bLand = false;
+
+					m_fragMotion.bAir = true;
+				}
 			}
 
 			SetMove(move);

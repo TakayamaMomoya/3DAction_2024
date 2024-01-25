@@ -225,6 +225,9 @@
     <ClCompile Include="code\blockManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\meshfield.cpp">
+      <Filter>ソース ファイル\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -415,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="code\blockManager.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\meshfield.h">
+      <Filter>ソース ファイル\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
