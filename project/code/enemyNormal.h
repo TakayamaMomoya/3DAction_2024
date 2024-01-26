@@ -41,6 +41,7 @@ private:
 	virtual void Wait(void);
 	virtual void Chase(void);
 	virtual void Attack(void);
+	void KeepDistance(void);
 
 	float m_fTimeFire;	// 射射撃タイマー
 };

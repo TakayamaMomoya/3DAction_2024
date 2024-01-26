@@ -31,12 +31,12 @@ namespace
 {
 const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
 const float INITIAL_BOOST = 200.0f;	// ブースト残量の初期値
-const float REGEN_BOOST = 0.5f;	// ブースト回復量
+const float REGEN_BOOST = 2.5f;	// ブースト回復量
 const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 50.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
-const float POW_STAMP = 20.0f;	// 踏みつけの推進力
+const float POW_STAMP = 40.0f;	// 踏みつけの推進力
 const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
@@ -287,8 +287,11 @@ void CPlayer::Update(void)
 		m_info.pEnemyGrab->SetMatrix(mtxParent);
 	}
 
-	// ブースト回復
-	AddBoost(REGEN_BOOST);
+	if (m_info.bLand)
+	{
+		// ブースト回復
+		AddBoost(REGEN_BOOST);
+	}
 
 // デバッグ処理
 #if _DEBUG
@@ -460,14 +463,11 @@ void CPlayer::InputMove(void)
 				{// ブースト上昇
 					vecMove.y += 1.0f;
 
-					//AddBoost(-3.0f);
+					AddBoost(-3.0f);
 				};
 			}
 
-			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
-			{// 踏みつけ
-				Stamp();
-			}
+			Stamp();
 		}
 		
 		float fAngleInput = atan2f(axisMove.x, axisMove.z);
@@ -532,7 +532,7 @@ void CPlayer::InputMove(void)
 //=====================================================
 void CPlayer::Stamp(void)
 {
-	if (m_info.pClsnAttack == nullptr)
+	if (m_info.pClsnAttack == nullptr || m_fragMotion.bStamp)
 	{// 判定のエラー
 		return;
 	}
@@ -542,7 +542,7 @@ void CPlayer::Stamp(void)
 	m_info.pClsnAttack->SetRadius(100.0f);
 	m_info.pClsnAttack->SetPosition(pos);
 
-	if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
+	if (m_info.pClsnAttack->IsTriggerEnter(CCollision::TAG::TAG_ENEMY))
 	{// 対象との当たり判定
 		CObject *pObj = m_info.pClsnAttack->GetOther();
 
@@ -553,6 +553,12 @@ void CPlayer::Stamp(void)
 		}
 
 		m_fragMotion.bStamp = true;
+
+		D3DXVECTOR3 move = GetMove();
+
+		move *= 0.0;
+
+		SetMove(move);
 	}
 }
 
@@ -1295,6 +1301,21 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 		if (pObj != nullptr)
 		{
 			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 5.0f);
+
+			// ヒットストップ
+			CSlow *pSlow = CSlow::GetInstance();
+
+			if (pSlow != nullptr)
+			{
+				pSlow->SetSlowTime(0.2f, 0.01f);
+			}
+
+			CCamera *pCamera = CManager::GetCamera();
+
+			if (pCamera != nullptr)
+			{
+				pCamera->SetQuake(1.01f, 1.01f, 10);
+			}
 		}
 	}
 }

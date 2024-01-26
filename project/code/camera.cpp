@@ -228,6 +228,8 @@ void CCamera::FollowPlayer(void)
 		};
 	}
 
+	Quake();
+
 #ifdef _DEBUG
 	CEffect3D::Create(m_camera.posRDest, 20.0f, 1, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 #endif

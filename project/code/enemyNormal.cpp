@@ -24,6 +24,8 @@ namespace
 const float DIST_FIRE = 500.0f;	// 発射するまでの視線とプレイヤーの差分距離
 const float SPEED_BULLET = 150.0f;	// 弾の速度
 const float TIME_FIRE = 1.0f;	// 発射間隔
+const float DIST_KEEP = 3000.0f;	// 戦闘時に保つ距離
+const float SPEED_MOVE = 0.4f;	// 移動速度
 }
 
 //=====================================================
@@ -81,7 +83,6 @@ void CEnemyNormal::Update(void)
 			SetMotion(MOTION_DEATH);
 		}
 	}
-
 }
 
 //=====================================================
@@ -107,6 +108,9 @@ void CEnemyNormal::Attack(void)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
 	D3DXVECTOR3 rot = GetRot();
+
+	// 距離を保つ
+	KeepDistance();
 
 	if (pPlayer != nullptr)
 	{
@@ -175,6 +179,48 @@ void CEnemyNormal::Attack(void)
 	}
 
 	CEnemy::Attack();
+}
+
+//=====================================================
+// 距離を保つ処理
+//=====================================================
+void CEnemyNormal::KeepDistance(void)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 move = GetMove();
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+
+		// 差分角度の取得
+		D3DXVECTOR3 vecDiff = pos - posPlayer;
+
+		D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+		vecDiff *= DIST_KEEP;
+
+		D3DXVECTOR3 posDest = posPlayer + vecDiff;
+
+		posDest.y = pos.y;
+
+		// 移動量を補正する
+		vecDiff = (posDest - pos);
+
+		D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+		vecDiff *= SPEED_MOVE;
+
+		move += vecDiff;
+
+		SetMove(move);
+
+#ifdef _DEBUG
+		CEffect3D::Create(posDest, 20.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+#endif
+
+	}
 }
 
 //=====================================================

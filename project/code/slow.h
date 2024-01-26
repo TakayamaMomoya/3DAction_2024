@@ -30,9 +30,11 @@ public:
 	void Draw(void);
 	float GetScale(void) { return m_fScale; }
 	void SetScale(float fScale);
+	void SetSlowTime(float fTime, float fScale);
 
 private:
-	float m_fScale;
+	float m_fScale;	// スローのスケール
+	float m_fTimeSlow;	// スローにする時間
 
 	static CSlow *m_pSlow;	// 自身のポインタ
 };

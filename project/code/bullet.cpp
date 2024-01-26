@@ -20,6 +20,7 @@
 #include "universal.h"
 #include "object3D.h"
 #include "debugproc.h"
+#include "slow.h"
 
 //*****************************************************
 // 定数定義
@@ -143,8 +144,20 @@ void CBullet::Update(void)
 
 	m_posOld = m_pos;
 
-	// 位置の更新
-	m_pos += m_move;
+	CSlow *pSlow = CSlow::GetInstance();
+
+	if (pSlow != nullptr)
+	{
+		float fScale = pSlow->GetScale();
+
+		// 位置の更新
+		m_pos += m_move * fScale;
+	}
+	else
+	{
+		// 位置の更新
+		m_pos += m_move;
+	}
 
 	if (m_pCollisionSphere != nullptr)
 	{// 当たり判定の管理

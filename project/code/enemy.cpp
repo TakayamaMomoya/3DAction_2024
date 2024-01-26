@@ -26,6 +26,7 @@
 #include "particle.h"
 #include "texture.h"
 #include "UI.h"
+#include "slow.h"
 #include "meshfield.h"
 
 //*****************************************************
@@ -33,7 +34,7 @@
 //*****************************************************
 namespace
 {
-const float INITIAL_LIFE = 10.0f;	// 初期体力
+const float INITIAL_LIFE = 5.0f;	// 初期体力
 const float INITIAL_SPEED = 1.0f;	// 初期速度
 const float LINE_CHASE = 470;	// 追跡状態に移行するエリア
 const int DAMAGE_FRAME = 10;	// ダメージ状態のフレーム数
@@ -44,9 +45,9 @@ const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon00.png";	// カーソルのテクス
 const float INITIAL_DIST_MOVESTATE[CEnemy::MOVESTATE_MAX] =
 {// 移動状態が切り替わる距離
 	0.0f,
-	1000.0f,
-	2000.0f,
-	3000.0f
+	3000.0f,
+	5000.0f,
+	7000.0f
 };
 }
 
@@ -272,7 +273,21 @@ void CEnemy::Update(void)
 
 	SetPositionOld(pos);
 
-	pos += move;
+	CSlow *pSlow = CSlow::GetInstance();
+
+	if (pSlow != nullptr)
+	{
+		float fScale = pSlow->GetScale();
+
+		// 位置の更新
+		pos += move * fScale;
+	}
+	else
+	{
+		// 位置の更新
+		pos += move;
+	}
+
 	SetPosition(pos);
 
 	// 移動量の減衰
@@ -587,7 +602,7 @@ void CEnemy::Hit(float fDamage)
 		{
 			D3DXVECTOR3 pos = GetPosition();
 
-			pAnim3D->CreateEffect(pos,CAnimEffect3D::TYPE::TYPE_BLOOD);
+			pAnim3D->CreateEffect(pos,CAnimEffect3D::TYPE::TYPE_HIT00);
 		}
 
 		if (m_info.fLife <= 0.0f)
@@ -603,11 +618,11 @@ void CEnemy::Hit(float fDamage)
 			{
 				D3DXVECTOR3 pos = GetPosition();
 
-				pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_BLOOD1);
+				pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_HIT00);
 			}
 
 			// トマト汁
-			CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_TOMATO_JUICE);
+			CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_EXPLOSION);
 
 			// 死亡処理
 			Death();

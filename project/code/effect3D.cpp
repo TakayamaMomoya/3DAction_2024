@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
+#include "slow.h"
 
 //*****************************************************
 // マクロ定義
@@ -95,8 +96,25 @@ void CEffect3D::Update(void)
 	}
 	else
 	{
+		D3DXVECTOR3 pos = GetPosition();
+
+		CSlow *pSlow = CSlow::GetInstance();
+
+		if (pSlow != nullptr)
+		{
+			float fScale = pSlow->GetScale();
+
+			// 位置の更新
+			pos += m_move * fScale;
+		}
+		else
+		{
+			// 位置の更新
+			pos += m_move;
+		}
+
 		// 位置更新
-		SetPosition(GetPosition() + m_move);
+		SetPosition(pos);
 	}
 
 	if (m_nLife < 0)

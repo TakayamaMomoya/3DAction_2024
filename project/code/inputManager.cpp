@@ -269,7 +269,7 @@ void CInputManager::Update(void)
 	D3DXVec3Normalize(&m_axis.axisMove, &m_axis.axisMove);
 
 	// ƒJƒƒ‰‚ÌŒü‚­•ûŒüÝ’è=============
-	m_axis.axisCamera += D3DXVECTOR3(pJoypad->GetJoyStickRX(0), pJoypad->GetJoyStickRY(0), 0.0f);
+	m_axis.axisCamera += D3DXVECTOR3(pJoypad->GetJoyStickRX(0), -pJoypad->GetJoyStickRY(0), 0.0f);
 	m_axis.axisCamera += D3DXVECTOR3(pMouse->GetMoveIX(), pMouse->GetMoveIY(), 0.0f);
 
 	D3DXVec3Normalize(&m_axis.axisCamera, &m_axis.axisCamera);

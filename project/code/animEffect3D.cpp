@@ -277,6 +277,7 @@ CAnim3D *CAnimEffect3D::CreateEffect(D3DXVECTOR3 pos, TYPE type)
 		pAnim3D->SetColor(m_apAnimEffect[type]->col);
 
 		pAnim3D->SetSize(m_apAnimEffect[type]->fSize, m_apAnimEffect[type]->fSize);
+		pAnim3D->EnableAdd(m_apAnimEffect[type]->bAdd);
 
 		CTexture *pTexture = CTexture::GetInstance();
 

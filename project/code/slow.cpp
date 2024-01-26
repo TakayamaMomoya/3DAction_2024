@@ -10,6 +10,7 @@
 //*****************************************************
 #include "slow.h"
 #include "debugproc.h"
+#include "manager.h"
 
 //*****************************************************
 // 定数定義
@@ -32,6 +33,7 @@ CSlow::CSlow()
 	m_pSlow = this;
 
 	m_fScale = 0.0f;
+	m_fTimeSlow = 0.0f;
 }
 
 //=====================================================
@@ -85,7 +87,17 @@ void CSlow::Uninit(void)
 //=====================================================
 void CSlow::Update(void)
 {
+	if (m_fTimeSlow > 0.0f)
+	{
+		float fDeltaTime = CManager::GetDeltaTime();
 
+		m_fTimeSlow -= fDeltaTime;
+
+		if (m_fTimeSlow <= 0.0f)
+		{
+			SetScale(1.0f);
+		}
+	}
 }
 
 //=====================================================
@@ -112,4 +124,16 @@ void CSlow::SetScale(float fScale)
 	{
 		m_fScale = fScale;
 	}
+}
+
+//=====================================================
+// スロータイムの設定
+//=====================================================
+void CSlow::SetSlowTime(float fTime, float fScale)
+{
+	m_fTimeSlow = fTime;
+
+	universal::LimitValue(&m_fTimeSlow, FLT_MAX, 0.0f);
+	
+	SetScale(fScale);
 }
