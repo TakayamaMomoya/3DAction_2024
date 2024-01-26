@@ -92,7 +92,8 @@ HRESULT CBullet::Init(void)
 
 		if (m_pObject3D != nullptr)
 		{
-			m_pObject3D->SetSize(m_fSize, m_fSize * 5.0f);
+			m_pObject3D->SetSize(m_fSize, 0.0f);
+			m_fLengthDest = m_fSize * 5.0f;
 			m_pObject3D->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
 			m_pObject3D->SetVtx();
 
@@ -197,7 +198,11 @@ void CBullet::Update(void)
 	{// Œ©‚½–Ú‚Ì’Ç]
 		D3DXVECTOR3 pos = GetPosition();
 		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR2 size = D3DXVECTOR2(m_pObject3D->GetWidth(), m_pObject3D->GetHeight());
 
+		size.y += (m_fLengthDest - size.y) * 0.2f;
+
+		m_pObject3D->SetSize(size.x, size.y);
 		m_pObject3D->SetPosition(pos);
 		m_pObject3D->SetRot(rot);
 		m_pObject3D->SetVtx();

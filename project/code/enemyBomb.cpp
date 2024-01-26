@@ -23,7 +23,7 @@
 //*****************************************************
 namespace
 {
-const float RADIUS_EXPLOSION = 500.0f;	// 爆発範囲
+const float RADIUS_EXPLOSION = 1300.0f;	// 爆発範囲
 }
 
 //=====================================================
@@ -60,6 +60,29 @@ void CEnemyBomb::Uninit(void)
 {
 	// 継承クラスの終了
 	CEnemy::Uninit();
+}
+
+//=====================================================
+// 地面にぶつかったときの処理
+//=====================================================
+void CEnemyBomb::HitField(void)
+{
+	CEnemy::STATE state = GetState();
+
+	if (state == CEnemy::STATE::STATE_THROWN)
+	{
+		// 死亡
+		Hit(20.0f);
+
+		// 移動量を減衰
+		D3DXVECTOR3 move = GetMove();
+
+		move *= 0.1f;
+
+		SetMove(move);
+	}
+
+	CEnemy::HitField();
 }
 
 //=====================================================

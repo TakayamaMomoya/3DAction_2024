@@ -9,9 +9,10 @@
 // インクルード
 //*****************************************************
 #include "ranking.h"
-#include "object.h"
 #include "fade.h"
 #include "inputManager.h"
+#include "object2D.h"
+#include "object.h"
 
 //*****************************************************
 // 定数定義
@@ -42,6 +43,8 @@ CRanking::~CRanking()
 //=====================================================
 HRESULT CRanking::Init(void)
 {
+	CObject2D::Create();
+
 	return S_OK;
 }
 
@@ -50,7 +53,7 @@ HRESULT CRanking::Init(void)
 //=====================================================
 void CRanking::Uninit(void)
 {
-
+	CObject::ReleaseAll();
 }
 
 //=====================================================

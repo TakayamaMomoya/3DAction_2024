@@ -88,6 +88,7 @@ protected:
 	virtual void Attack(void);
 	virtual void Death(void);
 	virtual void TransferChase(void);
+	virtual void HitField(void);
 
 private:
 	struct SInfo

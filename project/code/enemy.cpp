@@ -26,6 +26,7 @@
 #include "particle.h"
 #include "texture.h"
 #include "UI.h"
+#include "meshfield.h"
 
 //*****************************************************
 // 定数定義
@@ -259,6 +260,9 @@ void CEnemy::Update(void)
 	// 状態管理
 	ManageState();
 
+	// 移動状態管理
+	ManageMoveState();
+
 	// 当たり判定の管理
 	ManageCollision();
 
@@ -314,6 +318,35 @@ void CEnemy::ManageCollision(void)
 		m_info.pCollisionCube->CubeCollision(CCollision::TAG_BLOCK, &move);
 		SetMove(move);
 	}
+
+	// メッシュフィールドとの当たり判定
+	CMeshField *pMesh = CMeshField::GetInstance();
+
+	if (pMesh != nullptr)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		D3DXVECTOR3 move = GetMove();
+
+		float fHeight = pMesh->GetHeight(pos, &move);
+
+		if (pos.y <= fHeight)
+		{
+			move.y = 0.0f;
+
+			SetPosition(pos);
+			SetMove(move);
+
+			HitField();
+		}
+	}
+}
+
+//=====================================================
+// 地面に当たったときの処理
+//=====================================================
+void CEnemy::HitField(void)
+{
+
 }
 
 //=====================================================
@@ -376,6 +409,9 @@ void CEnemy::ManageMoveState(void)
 	switch (m_info.moveState)
 	{
 	case MOVESTATE_WAIT:
+		// 待機状態
+		Wait();
+
 		break;
 	case MOVESTATE_CHASE:
 		// 追跡
@@ -449,9 +485,15 @@ void CEnemy::Wait(void)
 
 	float fDist = 0.0f;
 
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+	D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+	fDist = D3DXVec3Length(&vecDiff);
+
 	if (m_info.aDistMoveState[MOVESTATE_CHASE] > fDist)
 	{// 追跡に移行
-
+		m_info.moveState = MOVESTATE_CHASE;
 	}
 }
 
@@ -460,7 +502,25 @@ void CEnemy::Wait(void)
 //=====================================================
 void CEnemy::Chase(void)
 {
+	CPlayer *pPlayer = CPlayer::GetInstance();
 
+	if (pPlayer == nullptr)
+	{
+		return;
+	}
+
+	float fDist = 0.0f;
+
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+	D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+	fDist = D3DXVec3Length(&vecDiff);
+
+	if (m_info.aDistMoveState[MOVESTATE_ATTACK] > fDist)
+	{// 攻撃に移行
+		m_info.moveState = MOVESTATE_ATTACK;
+	}
 }
 
 //=====================================================
@@ -468,7 +528,27 @@ void CEnemy::Chase(void)
 //=====================================================
 void CEnemy::Attack(void)
 {
+	CPlayer *pPlayer = CPlayer::GetInstance();
 
+	if (pPlayer == nullptr)
+	{
+		return;
+	}
+
+	float fDist = 0.0f;
+
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+	D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+	fDist = D3DXVec3Length(&vecDiff);
+
+	CDebugProc::GetInstance()->Print("\n距離：[%f]", fDist);
+
+	if (m_info.aDistMoveState[MOVESTATE_CHASE] < fDist)
+	{// 待機に移行
+		m_info.moveState = MOVESTATE_WAIT;
+	}
 }
 
 //=====================================================

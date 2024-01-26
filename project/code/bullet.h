@@ -72,6 +72,7 @@ private:
 	D3DXCOLOR m_col;	// 色
 	float m_fDamage;	// 与ダメージ
 	float m_fSize;	// 弾のサイズ
+	float m_fLengthDest;	// 目標の長さ
 	int m_nIdxPlayer;	// プレイヤー番号
 };
 

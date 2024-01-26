@@ -44,7 +44,7 @@ const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
 const float SPEED_DODGE = 50.0f;	// 回避推進力
 const float POW_GRAB = 50.0f;	// 掴みの推進力
 const float RADIUS_GRAB = 500.0f;	// 掴みの判定
-const float POW_THROW = 100.0f;	// 投げの力
+const float POW_THROW = 200.0f;	// 投げの力
 const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
 const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
 const float MELEE_DIST = 800.0f;	// 格闘に移る距離
@@ -732,7 +732,7 @@ void CPlayer::Rotation(void)
 			universal::LimitRot(&rotCamera.x);
 			universal::LimitRot(&rotCamera.y);
 
-			universal::FactingRot(&m_info.rotDest.x, rotCamera.x, 0.15f);
+			universal::FactingRot(&m_info.rotDest.x, -rotCamera.x, 0.15f);
 			universal::FactingRot(&m_info.rotDest.y, rotCamera.y, 0.15f);
 		}
 	}

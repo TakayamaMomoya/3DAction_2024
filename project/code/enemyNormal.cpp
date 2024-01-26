@@ -22,7 +22,7 @@
 namespace
 {
 const float DIST_FIRE = 500.0f;	// 発射するまでの視線とプレイヤーの差分距離
-const float SPEED_BULLET = 70.0f;	// 弾の速度
+const float SPEED_BULLET = 150.0f;	// 弾の速度
 const float TIME_FIRE = 1.0f;	// 発射間隔
 }
 
@@ -89,7 +89,7 @@ void CEnemyNormal::Update(void)
 //=====================================================
 void CEnemyNormal::Wait(void)
 {
-
+	CEnemy::Wait();
 }
 
 //=====================================================
@@ -97,7 +97,7 @@ void CEnemyNormal::Wait(void)
 //=====================================================
 void CEnemyNormal::Chase(void)
 {
-
+	CEnemy::Chase();
 }
 
 //=====================================================
@@ -173,6 +173,31 @@ void CEnemyNormal::Attack(void)
 			}
 		}
 	}
+
+	CEnemy::Attack();
+}
+
+//=====================================================
+// 地面にぶつかったときの処理
+//=====================================================
+void CEnemyNormal::HitField(void)
+{
+	CEnemy::STATE state = GetState();
+
+	if (state == CEnemy::STATE::STATE_THROWN)
+	{
+		// 死亡
+		Hit(20.0f);
+
+		// 移動量を減衰
+		D3DXVECTOR3 move = GetMove();
+
+		move *= 0.1f;
+
+		SetMove(move);
+	}
+
+	CEnemy::HitField();
 }
 
 //=====================================================

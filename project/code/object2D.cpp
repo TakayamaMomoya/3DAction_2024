@@ -76,6 +76,9 @@ HRESULT CObject2D::Init(void)
 			pVtx[nCnt].tex = D3DXVECTOR2(0.0f, 0.0f);
 		}
 
+		m_width = 50.0f;
+		m_heigth = 50.0f;
+
 		// ‘ÎŠpü‚ÌŠp“xæ“¾
 		float fAngleUp = atan2f(m_width, m_heigth);
 		// ’·‚³‚Ìæ“¾

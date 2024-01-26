@@ -26,6 +26,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void HitField(void) override;
 	void Death(void);
 
 private:
