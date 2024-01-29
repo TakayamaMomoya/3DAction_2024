@@ -245,16 +245,15 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 			// ロックオンする敵の決定
 			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
 			{
-				// 距離制限
 				if (DIST_LOCKON > fDistPlayer)
-				{
+				{// 距離内に敵がいたら
 					bInAny = true;
 
 					pEnemy->EnableLock(true);
 					pEnemy->SetPositionCursor(posScreenTemp);
 
 					if (bLock == false || (m_pEnemyLockon == nullptr && bLock == true))
-					{
+					{// 自動でロックオン対象が切り替わるかどうか
 						D3DXVECTOR3 vecDiff = posScreenTemp - posCenter;
 
 						// 画面中心からの距離を計算
@@ -445,21 +444,18 @@ void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 //=====================================================
 void CEnemyManager::DeleteAll(void)
 {
-	//CEnemy *pEnemy = GetHead();
+	CEnemy *pEnemy = GetHead();
 
-	//while (pEnemy != nullptr)
-	//{
-	//	CEnemy *pEnemyNext = pEnemy->GetNext();
+	while (pEnemy != nullptr)
+	{
+		CEnemy *pEnemyNext = pEnemy->GetNext();
 
-	//	pEnemy->Uninit();
+		pEnemy->Uninit();
 
-	//	delete pEnemy;
-	//	pEnemy = nullptr;
+		pEnemy = pEnemyNext;
+	}
 
-	//	pEnemy = pEnemyNext;
-	//}
-
-	//m_pEnemyLockon = nullptr;
+	m_pEnemyLockon = nullptr;
 }
 
 //=====================================================
