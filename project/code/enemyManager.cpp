@@ -14,18 +14,21 @@
 #include "enemyNormal.h"
 #include "enemyBomb.h"
 #include "enemyBoss.h"
+#include "checkPointManager.h"
 #include "inputkeyboard.h"
 #include "effect3D.h"
 #include "player.h"
 #include "UI.h"
 #include "texture.h"
 #include "debugproc.h"
+#include <stdio.h>
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
+const char* FILE_PATH = "data\\TEXT\\checkPoint.txt";	// ファイルのパス
 const float TIME_SPAWN = 5.0f;	// 敵のスポーン
 const float DIST_LOCKON = 5000.0f;	// ロックオン距離
 const float SIZE_CURSOR = 60.0f;	// カーソルサイズ
@@ -42,6 +45,7 @@ CEnemyManager *CEnemyManager::m_pEnemyManager = nullptr;	// 自身のポインタ
 //=====================================================
 CEnemyManager::CEnemyManager()
 {
+	m_pInfoGroup = nullptr;
 	m_pEnemyLockon = nullptr;
 	m_bLockTarget = false;
 	m_pCursor = nullptr;
@@ -128,14 +132,24 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 //=====================================================
 HRESULT CEnemyManager::Init(void)
 {
+	// チェックポイントの情報取得
+	CCheckPointManager *pCheckPointManager = CCheckPointManager::GetInstance();
+
+	if (pCheckPointManager != nullptr)
+	{
+		int nNumCheckPoint = pCheckPointManager->GetNumCheckPoint();
+
+		if (m_pInfoGroup == nullptr)
+		{
+			m_pInfoGroup = new SInfoEnemyGroup[nNumCheckPoint];
+		}
+	}
+
 	// 読込処理
 	Load();
 
-	CreateEnemy(D3DXVECTOR3(1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
-	CreateEnemy(D3DXVECTOR3(0.0f, 500.0f, 500.0f), CEnemy::TYPE::TYPE_NORMAL);
-	CreateEnemy(D3DXVECTOR3(-1000.0f, 150.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
-	CreateEnemy(D3DXVECTOR3(-1200.0f, 400.0f, 0.0f), CEnemy::TYPE::TYPE_NORMAL);
-	CreateEnemy(D3DXVECTOR3(1500.0f, 1000.0f, 0.0f), CEnemy::TYPE::TYPE_BOMB);
+	// 最初の敵をスポーン
+	SpawnGroup(0);
 
 	if (m_pCursor == nullptr)
 	{// カーソル生成
@@ -159,7 +173,98 @@ HRESULT CEnemyManager::Init(void)
 //=====================================================
 void CEnemyManager::Load(void)
 {
+	if (m_pInfoGroup == nullptr)
+	{
+		return;
+	}
 
+	// 変数宣言
+	char cTemp[256];
+	int nCntPos = 0;
+
+	// ファイルから読み込む
+	FILE *pFile = fopen(FILE_PATH, "r");
+
+	if (pFile != nullptr)
+	{// ファイルが開けた場合
+		while (true)
+		{
+			// 文字読み込み
+			(void)fscanf(pFile, "%s", &cTemp[0]);
+
+			if (strcmp(cTemp, "CHECKPOINTSET") == 0)
+			{// パラメーター読込開始
+				int nNumEnemy = 0;
+
+				while (true)
+				{
+					// 文字読み込み
+					(void)fscanf(pFile, "%s", &cTemp[0]);
+
+					if (strcmp(cTemp, "NUM_ENEMY") == 0)
+					{// 敵の数取得
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%d", &m_pInfoGroup[nCntPos].nNumEnemy);
+
+						if (m_pInfoGroup[nCntPos].nNumEnemy > 0)
+						{
+							m_pInfoGroup[nCntPos].pInfoEnemy = new SInfoEnemy[m_pInfoGroup[nCntPos].nNumEnemy];
+						}
+
+					}
+
+					if (strcmp(cTemp, "ENEMYSET") == 0)
+					{// 敵情報
+						SInfoEnemy *Info = &m_pInfoGroup[nCntPos].pInfoEnemy[nNumEnemy];
+
+						while (true)
+						{// 敵の情報読込
+							(void)fscanf(pFile, "%s", &cTemp[0]);
+
+							if (strcmp(cTemp, "POS") == 0)
+							{// 位置
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%f", &Info->pos.x);
+								(void)fscanf(pFile, "%f", &Info->pos.y);
+								(void)fscanf(pFile, "%f", &Info->pos.z);
+							}
+
+							if (strcmp(cTemp, "TYPE") == 0)
+							{// 種類
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%d", &Info->nType);
+							}
+
+							if (strcmp(cTemp, "END_ENEMYSET") == 0)
+							{// パラメーター読込終了
+								nNumEnemy++;
+
+								break;
+							}
+						}
+					}
+
+					if (strcmp(cTemp, "END_CHECKPOINTSET") == 0)
+					{// パラメーター読込終了
+						nCntPos++;
+
+						break;
+					}
+				}
+			}
+
+			if (strcmp(cTemp, "END_SCRIPT") == 0)
+			{// 終了条件
+				break;
+			}
+		}
+
+		// ファイルを閉じる
+		fclose(pFile);
+	}
 }
 
 //=====================================================
@@ -173,6 +278,12 @@ void CEnemyManager::Uninit(void)
 	{
 		m_pCursor->Uninit();
 		m_pCursor = nullptr;
+	}
+
+	if (m_pInfoGroup != nullptr)
+	{
+		delete[] m_pInfoGroup;
+		m_pInfoGroup = nullptr;
 	}
 
 	Release();
@@ -420,6 +531,26 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 void CEnemyManager::EnableLockTarget(bool bLock)
 {
 	m_bLockTarget = bLock;
+}
+
+//=====================================================
+// 集団のスポーン
+//=====================================================
+void CEnemyManager::SpawnGroup(int nIdx)
+{
+	if (m_pInfoGroup != nullptr)
+	{
+		if (m_pInfoGroup[nIdx].pInfoEnemy == nullptr)
+			return;
+
+		for (int i = 0; i < m_pInfoGroup[nIdx].nNumEnemy; i++)
+		{
+			D3DXVECTOR3 pos = m_pInfoGroup[nIdx].pInfoEnemy[i].pos;
+			int nType = m_pInfoGroup[nIdx].pInfoEnemy[i].nType;
+
+			CreateEnemy(pos, (CEnemy::TYPE)nType);
+		}
+	}
 }
 
 //=====================================================

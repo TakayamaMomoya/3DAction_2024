@@ -16,6 +16,7 @@
 #include "manager.h"
 #include "enemyBoss.h"
 #include "enemyManager.h"
+#include "debugproc.h"
 #include <stdio.h>
 
 //*****************************************************
@@ -73,6 +74,19 @@ CCheckPointManager *CCheckPointManager::Create(void)
 }
 
 //=====================================================
+// インスタンスの取得
+//=====================================================
+CCheckPointManager *CCheckPointManager::GetInstance(void)
+{
+	if (m_pCheckPointManager == nullptr)
+	{
+		Create();
+	}
+
+	return m_pCheckPointManager;
+}
+
+//=====================================================
 // 初期化処理
 //=====================================================
 HRESULT CCheckPointManager::Init(void)
@@ -80,7 +94,12 @@ HRESULT CCheckPointManager::Init(void)
 	// 読込
 	Load();
 
-	// 進行状況取得
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager != nullptr)
+	{
+		pEnemyManager->SpawnGroup(m_nProgress);
+	}
 
 
 	if (m_pCursor == nullptr)
@@ -173,6 +192,9 @@ void CCheckPointManager::LoadInfoCheckPoint(void)
 								{
 									fscanf(pFile, "%f", &m_pPosCheckPoint[nCntPos][i]);
 								}
+
+								nCntPos++;
+								break;
 							}
 
 							if (strcmp(cTemp, "END_CHECKPOINTSET") == 0)
@@ -287,6 +309,16 @@ void CCheckPointManager::Update(void)
 		{
 			m_nProgress++;
 
+			CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+			if (pEnemyManager != nullptr)
+			{
+				if (m_nProgress > 0)
+				{
+					pEnemyManager->SpawnGroup(m_nProgress - 1);
+				}
+			}
+
 			if (m_nProgress >= m_nNumCheckPoint - 1)
 			{// 最後のチェックポイントに到着
 				CFade *pFade = CFade::GetInstance();
@@ -346,5 +378,9 @@ void CCheckPointManager::TransBossBattle(void)
 //=====================================================
 void CCheckPointManager::Draw(void)
 {
+#ifdef _DEBUG
 
+	CDebugProc::GetInstance()->Print("\n進行状況[%d]", m_nProgress);
+
+#endif
 }

@@ -28,11 +28,15 @@ public:
 	~CCheckPointManager();	// デストラクタ
 	
 	static CCheckPointManager *Create(void);
+	static CCheckPointManager *GetInstance(void);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	int GetNumCheckPoint(void) { return m_nNumCheckPoint; }
+
 private:
+
 	void Load(void);
 	void LoadInfoCheckPoint(void);
 	void TransBossBattle(void);

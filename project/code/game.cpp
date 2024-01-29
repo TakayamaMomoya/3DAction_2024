@@ -73,6 +73,9 @@ HRESULT CGame::Init(void)
 	// ブロック管理の生成
 	CBlockManager::Create();
 
+	// チェックポイント管理の生成
+	CCheckPointManager::Create();
+
 	// 敵マネージャーの生成
 	CEnemyManager *pEnemyManager = CEnemyManager::Create();
 
@@ -100,9 +103,6 @@ HRESULT CGame::Init(void)
 
 	// スロー管理の生成
 	CSlow::Create();
-
-	// チェックポイント管理の生成
-	CCheckPointManager::Create();
 
 	// メッシュフィールド生成
 	CMeshField::Create();

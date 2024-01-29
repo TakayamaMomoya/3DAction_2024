@@ -42,6 +42,7 @@ public:
 	CEnemy *GetLockon(void) { return m_pEnemyLockon; }
 	void DeleteAll(void);
 	void SetEnemyLock(CEnemy *pEnemy) { m_pEnemyLockon = pEnemy; }
+	void SpawnGroup(int nIdx);
 	CEnemy *GetHead(void) { return m_pHead; }
 	CEnemy *GetTail(void) { return m_pTail; }
 	void SetHead(CEnemy *pEnemy) { m_pHead = pEnemy; }
@@ -49,8 +50,20 @@ public:
 	static CEnemyManager *GetInstance(void) { return m_pEnemyManager; }
 
 private:
+	struct SInfoEnemy
+	{// 敵の配置情報
+		D3DXVECTOR3 pos;	// 位置
+		int nType;	// 種類
+	};
+	struct SInfoEnemyGroup
+	{// 敵集団の情報
+		int nNumEnemy;	// 敵の数
+		SInfoEnemy *pInfoEnemy;	// 敵の情報
+	};
+
 	void Load(void);
 
+	SInfoEnemyGroup *m_pInfoGroup;	// 敵集団の情報
 	CEnemy *m_pEnemyLockon;	// ロックオンしてる敵
 	bool m_bLockTarget;	// ターゲットをロックしているかどうか
 	float m_fTimer;	// スポーンタイマー
