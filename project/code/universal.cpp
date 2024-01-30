@@ -73,6 +73,18 @@ void LimitSpeed(D3DXVECTOR3 *pVec, float fSpeedMax)
 }
 
 //========================================
+// 矩形内の位置制限
+//========================================
+void LimitPosInSq(float fWidth, float fHeight, D3DXVECTOR3 *pPos)
+{
+	if (pPos == nullptr)
+		return;
+	
+	LimitValue(&pPos->x, fWidth, -fWidth);
+	LimitValue(&pPos->z, fHeight, -fHeight);
+}
+
+//========================================
 // オフセット設定処理
 //========================================
 void SetOffSet(D3DXMATRIX *pMtxWorldOffset, D3DXMATRIX mtxWorldOwner, D3DXVECTOR3 posOffset, D3DXVECTOR3 rot)

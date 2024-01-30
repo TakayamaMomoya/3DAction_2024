@@ -358,7 +358,7 @@ void CCheckPointManager::TransBossBattle(void)
 
 		if (pEnemyBoss != nullptr)
 		{
-			pEnemyBoss->SetPosition(D3DXVECTOR3(22000.0f,0.0f,0.0f));
+			pEnemyBoss->SetPosition(D3DXVECTOR3(22000.0f,1000.0f,0.0f));
 		}
 	}
 
