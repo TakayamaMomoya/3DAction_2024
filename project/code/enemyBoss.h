@@ -41,6 +41,7 @@ public:
 	void Hit(float fDamage);
 	void ChangeState(CStateBoss *pNext);
 	void Event(EVENT_INFO *pEventInfo);
+	void AimPlayer(void);
 
 private:
 	enum IDXPARTS

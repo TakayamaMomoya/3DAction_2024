@@ -63,6 +63,8 @@ void CStateBossAttackBeam::Attack(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
+	pBoss->AimPlayer();
+
 	bool bFinish = pBoss->IsFinish();
 
 	if (bFinish)

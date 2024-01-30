@@ -158,6 +158,7 @@ void CEnemyBoss::Update(void)
 
 	// 当たり判定管理
 	ManageCollision();
+
 }
 
 //=====================================================
@@ -167,6 +168,39 @@ void CEnemyBoss::ManageCollision(void)
 {
 	// 当たり判定追従
 	FollowCollision();
+}
+
+//=====================================================
+// プレイヤーを狙う処理
+//=====================================================
+void CEnemyBoss::AimPlayer(void)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr)
+	{
+		// 目標向きの取得
+		D3DXVECTOR3 pos = GetMtxPos(15);
+
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
+
+		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, 500.0f, posPlayer, movePlayer);
+
+		D3DXVECTOR3 vecDiff = posPridiction - pos;
+
+		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
+		rotDest.x -= D3DX_PI * 0.5f;
+		rotDest.y -= D3DX_PI;
+
+		// 向きの補正
+		D3DXVECTOR3 rot = GetRot();
+
+		universal::FactingRot(&rot.x, rotDest.x, 0.15f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.15f);
+
+		SetRot(rot);
+	}
 }
 
 //=====================================================
