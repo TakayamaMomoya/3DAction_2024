@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// ボス敵の処理[enemyBoss.cpp]
+// ボス敵の処理[enemyboss.cpp]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -8,8 +8,45 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "enemyBoss.h"
-#include "fade.h"
+#include "main.h"
+#include "enemyboss.h"
+#include "renderer.h"
+#include "manager.h"
+#include "player.h"
+#include "universal.h"
+#include "debugproc.h"
+#include "game.h"
+#include "bullet.h"
+#include "effect3D.h"
+#include "sound.h"
+#include "frame.h"
+#include "particle.h"
+#include "stateEnemyBoss.h"
+
+//*****************************************************
+// 定数定義
+//*****************************************************
+namespace
+{
+const float INITIAL_LIFE = 60.0f;	// 初期体力
+const int INITIAL_SCORE = 30000;	// 初期スコア
+const int TIME_SHOT = 240;	// 射撃までのカウンター
+const float ROLL_FACT = 0.1f;	// 回転係数
+const float BULLET_SPEED = 2.0f;	// 弾の速度
+const float BULLET_SIZE = 2.5f;	// 弾の大きさ
+const float GRAVITY = 0.3f;	// 重力
+const int TIME_MISSILE = 20;	// ミサイル発射頻度
+const float MISSILE_UP = 3.0f;	// ミサイルの初速
+const int NUM_MISSILE = 3;	// ミサイルの発射数
+const float MOVE_FACT = 0.04f;	// 移動係数
+const float LINE_END = 5.0f;	// 移動終了のしきい値
+const float MID_POINT = 2740.0f;	// 真ん中の値
+const float WIDTH_STAGE = 160.0f;	// ステージの幅
+const int DAMAGE_FRAME = 10;	// ダメージ状態の時間
+const float FLOAT_HEIGTH = 180.0f;	// 高さ
+const int SHOT_TIME = 3;	// 射撃の頻度
+const float SHOT_HEIGHT = 30.0f;	// 射撃時の高度
+}
 
 //*****************************************************
 // 静的メンバ変数宣言
@@ -21,7 +58,8 @@ CEnemyBoss *CEnemyBoss::m_pEnemyBoss = nullptr;	// 自身のポインタ
 //=====================================================
 CEnemyBoss::CEnemyBoss()
 {
-
+	// 自身の情報をクリア
+	ZeroMemory(&m_info,sizeof(Sinfo));
 }
 
 //=====================================================
@@ -43,6 +81,8 @@ CEnemyBoss *CEnemyBoss::Create(void)
 
 		if (m_pEnemyBoss != nullptr)
 		{
+			m_pEnemyBoss->Load("data\\MOTION\\robot01.txt");
+
 			m_pEnemyBoss->Init();
 		}
 	}
@@ -55,11 +95,28 @@ CEnemyBoss *CEnemyBoss::Create(void)
 //=====================================================
 HRESULT CEnemyBoss::Init(void)
 {
-	// モーション読込
-	Load("data\\MOTION\\motionArms00.txt");
+	CSound *pSound = CSound::GetInstance();
+
+	if (pSound != nullptr)
+	{
+		pSound->Stop();
+
+		//pSound->Play(CSound::LABEL_BGM_BOSS);
+	}
+
+	// フレーム演出の生成
+	CFrame::Create(100, 240, 70);
 
 	// 継承クラスの初期化
 	CEnemy::Init();
+
+	// 初期の体力設定
+	SetLife(INITIAL_LIFE);
+
+	// 状態設定
+	ChangeState(new CStateBossApper);
+
+	FollowCollision();
 
 	return S_OK;
 }
@@ -71,6 +128,12 @@ void CEnemyBoss::Uninit(void)
 {
 	m_pEnemyBoss = nullptr;
 
+	if (m_info.pState != nullptr)
+	{
+		delete m_info.pState;
+		m_info.pState = nullptr;
+	}
+
 	// 継承クラスの終了
 	CEnemy::Uninit();
 }
@@ -80,47 +143,151 @@ void CEnemyBoss::Uninit(void)
 //=====================================================
 void CEnemyBoss::Update(void)
 {
+	// 位置を保存
+	SetPositionOld(GetPosition());
+
 	// 継承クラスの更新
 	CEnemy::Update();
 
-	CEnemy::STATE state = GetState();
+	if (m_info.pState != nullptr)
+	{// 状態ごとの行動
+		m_info.pState->Attack(this);
+		m_info.pState->Move(this);
+	}
 
-	if (state == CEnemy::STATE::STATE_DEATH)
-	{// 死亡モーション
-		int nMotion = GetMotion();
+	// 当たり判定管理
+	ManageCollision();
+}
 
-		if (nMotion != MOTION_DEATH)
-		{
-			SetMotion(MOTION_DEATH);
+//=====================================================
+// 当たり判定管理
+//=====================================================
+void CEnemyBoss::ManageCollision(void)
+{
+	// 当たり判定追従
+	FollowCollision();
+}
+
+//=====================================================
+// 当たり判定の追従
+//=====================================================
+void CEnemyBoss::FollowCollision(void)
+{
+	CCollisionSphere *pCollision = GetClsnSphere();
+
+	if (pCollision != nullptr)
+	{
+		D3DXVECTOR3 pos = GetMtxPos(IDX_WAIST);
+
+		pos.y -= 25.0f;
+
+#ifdef _DEBUG
+		//dCEffect3D::Create(pos, pCollision->GetRadius(), 10, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+#endif
+
+		pCollision->SetPositionOld(pCollision->GetPosition());
+		pCollision->SetPosition(pos);
+		pCollision->SetRadius(35.0f);
+	}
+}
+
+//=====================================================
+// 目標位置への移動
+//=====================================================
+bool CEnemyBoss::FollowDest(void)
+{
+	bool bEnd = false;
+
+	D3DXVECTOR3 pos = GetPosition();
+
+	D3DXVECTOR3 vecDiff = m_info.posDest - pos;
+
+	// 差分距離の取得
+	float fLength = D3DXVec3Length(&vecDiff);
+
+	if (LINE_END > fLength)
+	{
+		bEnd = true;
+	}
+
+	vecDiff *= MOVE_FACT;
+
+	pos += vecDiff;
+
+	SetPosition(pos);
+
+	return bEnd;
+}
+
+//=====================================================
+// 状態の切り替え
+//=====================================================
+void CEnemyBoss::ChangeState(CStateBoss *pNext)
+{
+	if (pNext == nullptr)
+		assert(("ボスの状態がnullptrで渡されました",false));
+
+	if (m_info.pState != nullptr)
+	{
+		delete m_info.pState;
+		m_info.pState = nullptr;
+	}
+
+	m_info.pState = pNext;
+	
+	if (m_info.pState != nullptr)
+	{
+		m_info.pState->Init(this);
+	}
+}
+
+//=====================================================
+// ヒット処理
+//=====================================================
+void CEnemyBoss::Hit(float fDamage)
+{
+	CEnemy::STATE state = CEnemy::GetState();
+
+	if (state == CEnemy::STATE_NORMAL)
+	{
+		float fLife = CEnemy::GetLife();
+
+		fLife -= fDamage;
+
+		CSound *pSound = CSound::GetInstance();
+
+		if (pSound != nullptr)
+		{// ヒットサウンド
+			//pSound->Play(CSound::LABEL_SE_HIT_BOSS);
 		}
+
+		if (fLife <= 0.0f)
+		{// 死亡状態
+			SetMotion(MOTION_DEATH);
+
+			//CParticle::Create(GetMtxPos(0), CParticle::TYPE_FIRE);
+
+			fLife = 0.0f;
+
+			CGame::SetState(CGame::STATE_END);
+
+			state = CEnemy::STATE_DEATH;
+
+			// スコア管理
+			ManageScore();
+
+			// 当たり判定削除
+			DeleteCollision();
+		}
+		else
+		{
+			state = CEnemy::STATE_DAMAGE;
+		}
+
+		CEnemy::SetLife(fLife);
 	}
-	else
-	{
 
-	}
-}
-
-//=====================================================
-// 死亡時の処理
-//=====================================================
-void CEnemyBoss::Death(void)
-{
-	CFade *pFade = CFade::GetInstance();
-
-	if (pFade != nullptr)
-	{
-		pFade->SetFade(CScene::MODE_RANKING);
-	}
-
-	CEnemy::Death();
-}
-
-//=====================================================
-// 目標の追跡
-//=====================================================
-void CEnemyBoss::ChaseTarget(void)
-{
-
+	CEnemy::SetState(state);
 }
 
 //=====================================================
@@ -130,4 +297,14 @@ void CEnemyBoss::Draw(void)
 {
 	// 継承クラスの描画
 	CEnemy::Draw();
+
+#ifdef _DEBUG
+	CDebugProc::GetInstance()->Print("\nボス位置：[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
+	CDebugProc::GetInstance()->Print("\nボス体力：[%f]", GetLife());
+	CDebugProc::GetInstance()->Print("\nボス状態：[%d]",CEnemy::GetState());
+	CDebugProc::GetInstance()->Print("\nボスモーション：[%d]", GetMotion());
+	CDebugProc::GetInstance()->Print("\nキー：[%d]", GetKey());
+	CDebugProc::GetInstance()->Print("\nフレーム：[%d]", GetFrame());
+	CDebugProc::GetInstance()->Print("\nIsFinish：[%d]", IsFinish());
+#endif
 }

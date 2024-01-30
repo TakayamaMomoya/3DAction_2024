@@ -295,11 +295,10 @@ void CCheckPointManager::Update(void)
 		m_pCursor->SetVtx();
 	}
 
-	// チェックポイント位置の更新
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
 	if (pPlayer != nullptr)
-	{// 距離から計算
+	{// 距離の計算
 		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 		D3DXVECTOR3 vecDiff = posNext - posPlayer;
 

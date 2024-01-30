@@ -34,6 +34,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\enemy\boss">
+      <UniqueIdentifier>{d263cdf7-6922-401b-a66e-69d8e2d3724e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\block.cpp">
@@ -213,9 +216,6 @@
     <ClCompile Include="code\saveDataManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="code\enemyBoss.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="code\boost.cpp">
       <Filter>ソース ファイル\UI</Filter>
     </ClCompile>
@@ -227,6 +227,15 @@
     </ClCompile>
     <ClCompile Include="code\meshfield.cpp">
       <Filter>ソース ファイル\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="code\frame.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\enemyBoss.cpp">
+      <Filter>ソース ファイル\enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="code\stateEnemyBoss.cpp">
+      <Filter>ソース ファイル\enemy\boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -407,9 +416,6 @@
     <ClInclude Include="code\saveDataManager.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="code\enemyBoss.h">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClInclude>
     <ClInclude Include="code\boost.h">
       <Filter>ソース ファイル\UI</Filter>
     </ClInclude>
@@ -421,6 +427,15 @@
     </ClInclude>
     <ClInclude Include="code\meshfield.h">
       <Filter>ソース ファイル\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="code\frame.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\enemyBoss.h">
+      <Filter>ソース ファイル\enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="code\stateEnemyBoss.h">
+      <Filter>ソース ファイル\enemy\boss</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

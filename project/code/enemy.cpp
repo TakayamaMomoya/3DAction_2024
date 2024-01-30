@@ -667,6 +667,7 @@ void CEnemy::Draw(void)
 	CMotion::Draw();
 
 #ifdef _DEBUG
+	CDebugProc::GetInstance()->Print("\n“G‚ÌˆÊ’uF[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
 	CDebugProc::GetInstance()->Print("\n“G‚ÌˆÚ“®—ÊF[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
 #endif
 }
