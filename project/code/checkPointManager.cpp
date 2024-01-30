@@ -314,7 +314,7 @@ void CCheckPointManager::Update(void)
 			{
 				if (m_nProgress > 0)
 				{
-					pEnemyManager->SpawnGroup(m_nProgress - 1);
+					pEnemyManager->SpawnGroup(m_nProgress);
 				}
 			}
 

@@ -10,13 +10,14 @@
 //*****************************************************
 #include "stateEnemyBoss.h"
 #include "enemyBoss.h"
+#include "manager.h"
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
-
+const float TIME_MISSILE = 5.0f;	// ミサイル発射の時間
 }
 
 //=====================================================
@@ -71,4 +72,21 @@ void CStateBossAttackBeam::Attack(CEnemyBoss *pBoss)
 	{// モーション終了で次の状態へ移る
 		pBoss->ChangeState(new CStateBossAttackBeam);
 	}
+}
+
+//=====================================================
+// ミサイル攻撃
+//=====================================================
+void CStateBossAttackMissile::Init(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
+
+	m_nTimerMissile = 0.0f;
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
+}
+
+void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
 }

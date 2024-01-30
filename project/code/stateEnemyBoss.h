@@ -44,5 +44,13 @@ class CStateBossAttackBeam : public CStateBoss
 	void Attack(CEnemyBoss *pBoss) override;
 };
 
+class CStateBossAttackMissile : public CStateBoss
+{// ミサイル攻撃
+	void Init(CEnemyBoss *pBoss) override;
+	void Attack(CEnemyBoss *pBoss) override;
+
+	// ミサイルタイマー
+	int m_nTimerMissile;
+};
 
 #endif

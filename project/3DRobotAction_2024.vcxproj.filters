@@ -237,6 +237,9 @@
     <ClCompile Include="code\stateEnemyBoss.cpp">
       <Filter>ソース ファイル\enemy\boss</Filter>
     </ClCompile>
+    <ClCompile Include="code\enemyDrone.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -436,6 +439,9 @@
     </ClInclude>
     <ClInclude Include="code\stateEnemyBoss.h">
       <Filter>ソース ファイル\enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="code\enemyDrone.h">
+      <Filter>ソース ファイル\enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
