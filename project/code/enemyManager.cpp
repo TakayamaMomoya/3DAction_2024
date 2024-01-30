@@ -149,6 +149,11 @@ HRESULT CEnemyManager::Init(void)
 		if (m_pInfoGroup == nullptr)
 		{
 			m_pInfoGroup = new SInfoEnemyGroup[nNumCheckPoint];
+
+			if (m_pInfoGroup != nullptr)
+			{
+				ZeroMemory(m_pInfoGroup, sizeof(SInfoEnemyGroup) * nNumCheckPoint);
+			}
 		}
 	}
 

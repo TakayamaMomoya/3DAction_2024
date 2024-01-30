@@ -11,6 +11,7 @@
 #include "stateEnemyBoss.h"
 #include "enemyBoss.h"
 #include "manager.h"
+#include "missile.h"
 
 //*****************************************************
 // 定数定義
@@ -18,6 +19,7 @@
 namespace
 {
 const float TIME_MISSILE = 0.25f;	// ミサイル発射の時間
+const int NUM_MISSILE = 10;	// ミサイルの発射数
 }
 
 //=====================================================
@@ -70,7 +72,7 @@ void CStateBossAttackBeam::Attack(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// モーション終了で次の状態へ移る
-		pBoss->ChangeState(new CStateBossAttackBeam);
+		pBoss->ChangeState(new CStateBossAttackMissile);
 	}
 }
 
@@ -91,10 +93,21 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
-	bool bFinish = pBoss->IsFinish();
+	float fDeltaTime = CManager::GetDeltaTime();
 
-	if (bFinish)
-	{
-		pBoss->ChangeState(new CStateBossAttackBeam);
+	m_fTimerMissile += fDeltaTime;
+
+	if (m_fTimerMissile > TIME_MISSILE)
+	{// ミサイルの発射
+		CMissile::Create(pBoss->GetPosition());
+
+		m_nCntMissile++;
+
+		if (m_nCntMissile > NUM_MISSILE)
+		{// 一定数撃ったら次の行動へ
+			pBoss->ChangeState(new CStateBossAttackBeam);
+		}
+
+		m_fTimerMissile = 0.0f;
 	}
 }

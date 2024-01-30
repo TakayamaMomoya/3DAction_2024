@@ -240,6 +240,9 @@
     <ClCompile Include="code\enemyDrone.cpp">
       <Filter>ソース ファイル\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="code\missile.cpp">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -441,6 +444,9 @@
       <Filter>ソース ファイル\enemy\boss</Filter>
     </ClInclude>
     <ClInclude Include="code\enemyDrone.h">
+      <Filter>ソース ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="code\missile.h">
       <Filter>ソース ファイル\enemy</Filter>
     </ClInclude>
   </ItemGroup>
