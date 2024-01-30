@@ -49,8 +49,8 @@ class CStateBossAttackMissile : public CStateBoss
 	void Init(CEnemyBoss *pBoss) override;
 	void Attack(CEnemyBoss *pBoss) override;
 
-	// ミサイルタイマー
-	int m_nTimerMissile;
+	float m_fTimerMissile;	// ミサイルタイマー	
+	int m_nCntMissile; // ミサイルカウンター
 };
 
 #endif

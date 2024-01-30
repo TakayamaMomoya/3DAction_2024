@@ -1354,11 +1354,19 @@ void CPlayer::Hit(float fDamage)
 		{// ダメージ判定
 			m_info.state = STATE_DAMAGE;
 
+			// カメラ揺れ
 			CCamera *pCamera = CManager::GetCamera();
 
 			if (pCamera != nullptr)
 			{
-				pCamera->SetQuake(1.0f, 1.0f, 10);
+				if (fDamage < 0.5f)
+				{
+					pCamera->SetQuake(0.2f, 0.2f, 10);
+				}
+				else if (fDamage < 1.0f)
+				{
+					pCamera->SetQuake(1.0f, 1.0f, 10);
+				}
 			}
 		}
 	}

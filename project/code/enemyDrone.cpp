@@ -123,7 +123,6 @@ void CEnemyDrone::Attack(void)
 
 		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
 
-		universal::FactingRot(&rot.x, -rotDest.x + D3DX_PI * 0.5f, 0.1f);
 		universal::FactingRot(&rot.y, rotDest.y, 0.1f);
 
 		SetRot(rot);

@@ -17,7 +17,7 @@
 //*****************************************************
 namespace
 {
-const float TIME_MISSILE = 5.0f;	// ミサイル発射の時間
+const float TIME_MISSILE = 0.25f;	// ミサイル発射の時間
 }
 
 //=====================================================
@@ -81,7 +81,8 @@ void CStateBossAttackMissile::Init(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
-	m_nTimerMissile = 0.0f;
+	m_fTimerMissile = 0.0f;
+	m_nCntMissile = 0;
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
 }
@@ -89,4 +90,11 @@ void CStateBossAttackMissile::Init(CEnemyBoss *pBoss)
 void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
+
+	bool bFinish = pBoss->IsFinish();
+
+	if (bFinish)
+	{
+		pBoss->ChangeState(new CStateBossAttackBeam);
+	}
 }

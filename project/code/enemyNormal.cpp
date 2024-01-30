@@ -23,9 +23,10 @@ namespace
 {
 const float DIST_FIRE = 500.0f;	// ”­ŽË‚·‚é‚Ü‚Å‚ÌŽ‹ü‚ÆƒvƒŒƒCƒ„[‚Ì·•ª‹——£
 const float SPEED_BULLET = 150.0f;	// ’e‚Ì‘¬“x
-const float TIME_FIRE = 1.0f;	// ”­ŽËŠÔŠu
+const float TIME_FIRE = 0.1f;	// ”­ŽËŠÔŠu
 const float DIST_KEEP = 3000.0f;	// í“¬Žž‚É•Û‚Â‹——£
 const float SPEED_MOVE = 0.4f;	// ˆÚ“®‘¬“x
+const int ACCURACY = 100;	// ¸“x
 }
 
 //=====================================================
@@ -166,12 +167,17 @@ void CEnemyNormal::Attack(void)
 				D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 
 				D3DXVECTOR3 posPrediction = universal::LinePridiction(posMazzle, SPEED_BULLET, posPlayer, movePlayer);
+
+				posPrediction.x += (float)universal::RandRange(ACCURACY, -ACCURACY);
+				posPrediction.y += (float)universal::RandRange(ACCURACY, -ACCURACY);
+				posPrediction.z += (float)universal::RandRange(ACCURACY, -ACCURACY);
+
 				D3DXVECTOR3 vecDiffBullet = pos - posPrediction;
 				D3DXVec3Normalize(&vecDiffBullet, &vecDiffBullet);
 
 				moveBullet = vecDiffBullet * SPEED_BULLET;
 
-				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.2f);
+				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.01f);
 
 				m_fTimeFire = 0;
 			}
