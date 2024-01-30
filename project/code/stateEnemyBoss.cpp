@@ -110,4 +110,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 		m_fTimerMissile = 0.0f;
 	}
+
+	// Œã‘Þˆ—
+	pBoss->Back();
 }

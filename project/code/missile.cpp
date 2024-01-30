@@ -19,12 +19,15 @@
 #include "orbit.h"
 
 //*****************************************************
-// マクロ定義
+// 定数定義
 //*****************************************************
-#define MAX_SPEED	(30.0f)	// 移動速度
-#define CHASE_SPEED	(3.0f)	// 追跡速度
-#define INITIAL_LIFE	(1)	// 初期体力
-#define DEATH_TIME	(180)	// 自滅までの時間
+namespace
+{
+const float MAX_SPEED = 30.0f;	// 移動速度
+const float CHASE_SPEED = 3.0f;	// 追跡速度
+const int INITIAL_LIFE = 1;	// 初期体力
+const int DEATH_TIME = 240;	// 自滅までの時間
+}
 
 //=====================================================
 // コンストラクタ

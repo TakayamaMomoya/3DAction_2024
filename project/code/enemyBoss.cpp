@@ -31,22 +31,10 @@ namespace
 {
 const float INITIAL_LIFE = 60.0f;	// 初期体力
 const int INITIAL_SCORE = 30000;	// 初期スコア
-const int TIME_SHOT = 240;	// 射撃までのカウンター
-const float ROLL_FACT = 0.1f;	// 回転係数
-const float BULLET_SPEED = 2.0f;	// 弾の速度
-const float BULLET_SIZE = 2.5f;	// 弾の大きさ
-const float GRAVITY = 0.3f;	// 重力
-const int TIME_MISSILE = 20;	// ミサイル発射頻度
-const float MISSILE_UP = 3.0f;	// ミサイルの初速
-const int NUM_MISSILE = 3;	// ミサイルの発射数
 const float MOVE_FACT = 0.04f;	// 移動係数
 const float LINE_END = 5.0f;	// 移動終了のしきい値
-const float MID_POINT = 2740.0f;	// 真ん中の値
-const float WIDTH_STAGE = 160.0f;	// ステージの幅
 const int DAMAGE_FRAME = 10;	// ダメージ状態の時間
-const float FLOAT_HEIGTH = 180.0f;	// 高さ
-const int SHOT_TIME = 3;	// 射撃の頻度
-const float SHOT_HEIGHT = 30.0f;	// 射撃時の高度
+const float SPEED_BACK = 1.8f;	// 後退の移動速度
 }
 
 //*****************************************************
@@ -159,6 +147,11 @@ void CEnemyBoss::Update(void)
 	// 当たり判定管理
 	ManageCollision();
 
+	D3DXVECTOR3 pos = GetPosition();
+
+	universal::LimitPosInSq(23000.0f, 23000.0f,&pos);
+
+	SetPosition(pos);
 }
 
 //=====================================================
@@ -201,6 +194,36 @@ void CEnemyBoss::AimPlayer(void)
 
 		SetRot(rot);
 	}
+}
+
+//=====================================================
+// 後退の処理
+//=====================================================
+void CEnemyBoss::Back(void)
+{
+	D3DXVECTOR3 move = GetMove();
+	D3DXVECTOR3 pos = GetPosition();
+
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+	{
+		return;
+	}
+
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 差分ベクトルを移動量に足す
+	D3DXVECTOR3 vecDiff = pos - posPlayer;
+
+	D3DXVec3Normalize(&vecDiff,&vecDiff);
+
+	vecDiff *= SPEED_BACK;
+	vecDiff.y = 0.0f;
+
+	move += vecDiff;
+
+	SetMove(move);
 }
 
 //=====================================================

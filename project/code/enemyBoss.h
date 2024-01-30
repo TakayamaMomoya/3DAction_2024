@@ -42,6 +42,7 @@ public:
 	void ChangeState(CStateBoss *pNext);
 	void Event(EVENT_INFO *pEventInfo);
 	void AimPlayer(void);
+	void Back(void);
 
 private:
 	enum IDXPARTS
