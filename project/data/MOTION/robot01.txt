@@ -1453,6 +1453,14 @@ END_MOTIONSET
 MOTIONSET
 	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
 	NUM_KEY = 7		# キー数
+    NUM_EVENT = 1
+
+    EVENTSET
+        KEY = 3
+        FRAME = 2
+        PARENT = 15
+        POS = 0.0 0.0 0.0
+    END_EVENTSET
 
 	KEYSET			# --- << 0 / 7 >> ---
 		FRAME = 28

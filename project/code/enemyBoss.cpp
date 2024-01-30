@@ -22,6 +22,7 @@
 #include "frame.h"
 #include "particle.h"
 #include "stateEnemyBoss.h"
+#include "beam.h"
 
 //*****************************************************
 // 定数定義
@@ -166,6 +167,49 @@ void CEnemyBoss::ManageCollision(void)
 {
 	// 当たり判定追従
 	FollowCollision();
+}
+
+//=====================================================
+// イベントの管理
+//=====================================================
+void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
+{
+	int nMotion = GetMotion();
+
+	D3DXVECTOR3 offset = pEventInfo->offset;
+	D3DXMATRIX mtxParent;
+	D3DXMATRIX mtxPart = *GetParts(pEventInfo->nIdxParent)->pParts->GetMatrix();
+
+	universal::SetOffSet(&mtxParent, mtxPart, offset);
+
+	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
+
+	if (nMotion == MOTION_SHOT_UNDER)
+	{
+		// ビームの生成
+		CBeam *pBeam = CBeam::Create();
+
+		D3DXMATRIX mtxBeam;
+
+		universal::SetOffSet(&mtxBeam, mtxParent, D3DXVECTOR3(0.0f, -1.0f, 1.0f));
+
+		if (pBeam != nullptr)
+		{
+			D3DXVECTOR3 posMazzle = { mtxBeam._41,mtxBeam._42 ,mtxBeam._43 };
+			D3DXVECTOR3 vecMazzle = posMazzle - pos;
+
+			D3DXVECTOR3 rot = GetRot();
+
+			pBeam->SetCol(D3DXCOLOR(0.6f, 0.6f, 1.0f, 1.0f));
+			pBeam->SetMtx(mtxBeam);
+			pBeam->SetRot(rot);
+			pBeam->SetPosition(posMazzle);
+			pBeam->SetAnimSize(1000.0f, 5000.0f);
+			pBeam->SetShrink(5.0f);
+			pBeam->SetExpand(80.0f);
+			pBeam->SetExtend(100.0f);
+		}
+	}
 }
 
 //=====================================================

@@ -40,6 +40,7 @@ public:
 	static CEnemyBoss *GetInstance(void) { return m_pEnemyBoss; }
 	void Hit(float fDamage);
 	void ChangeState(CStateBoss *pNext);
+	void Event(EVENT_INFO *pEventInfo);
 
 private:
 	enum IDXPARTS

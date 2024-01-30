@@ -1310,6 +1310,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 				pSlow->SetSlowTime(0.2f, 0.01f);
 			}
 
+			// カメラ揺れ
 			CCamera *pCamera = CManager::GetCamera();
 
 			if (pCamera != nullptr)
@@ -1352,6 +1353,13 @@ void CPlayer::Hit(float fDamage)
 		else
 		{// ダメージ判定
 			m_info.state = STATE_DAMAGE;
+
+			CCamera *pCamera = CManager::GetCamera();
+
+			if (pCamera != nullptr)
+			{
+				pCamera->SetQuake(1.0f, 1.0f, 10);
+			}
 		}
 	}
 }

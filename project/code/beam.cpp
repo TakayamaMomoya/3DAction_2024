@@ -12,6 +12,7 @@
 #include "anim3D.h"
 #include "animEffect3D.h"
 #include "universal.h"
+#include "collision.h"
 
 //*****************************************************
 // 定数定義
@@ -43,6 +44,27 @@ CBeam::~CBeam()
 }
 
 //=====================================================
+// 生成処理
+//=====================================================
+CBeam *CBeam::Create(void)
+{
+	CBeam *pBeam = nullptr;
+
+	if (pBeam == nullptr)
+	{
+		pBeam = new CBeam;
+
+		if (pBeam != nullptr)
+		{
+			// 初期化
+			pBeam->Init();
+		}
+	}
+
+	return pBeam;
+}
+
+//=====================================================
 // 初期化処理
 //=====================================================
 HRESULT CBeam::Init(void)
@@ -58,6 +80,7 @@ HRESULT CBeam::Init(void)
 			if (m_info.pAnim != nullptr)
 			{
 				m_info.pAnim->EnableZtest(false);
+				m_info.pAnim->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
 			}
 		}
 	}
@@ -68,6 +91,17 @@ HRESULT CBeam::Init(void)
 	m_info.fSpeedExpand = INITIAL_SPEED_EXPAND;
 	m_info.fSpeedShrink = INITIAL_SPEED_SHRINK;
 	m_info.fSpeedExtend = INITIAL_SPEED_EXTEND;
+
+	// 当たり判定の生成
+	if (m_info.pCollision == nullptr)
+	{
+		m_info.pCollision = CCollisionSphere::Create(CCollision::TAG_ENEMYBULLET, CCollision::TYPE_SPHERE, this);
+
+		if (m_info.pCollision != nullptr)
+		{
+			m_info.pCollision->SetRadius(500.0f);
+		}
+	}
 
 	return S_OK;
 }
@@ -81,6 +115,12 @@ void CBeam::Uninit(void)
 	{
 		m_info.pAnim->Uninit();
 		m_info.pAnim = nullptr;
+	}
+
+	if (m_info.pCollision != nullptr)
+	{
+		m_info.pCollision->Uninit();
+		m_info.pCollision = nullptr;
 	}
 
 	Release();
@@ -153,49 +193,37 @@ void CBeam::SetAnimVtx(void)
 		return;
 	}
 
-	// 頂点バッファの取得
 	CAnim3D *pAnim = m_info.pAnim;
 
-	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = pAnim->GetVtxBuff();
-
-	if (pVtxBuff == nullptr)
+	D3DXVECTOR3 pos =
 	{
-		return;
-	}
+		sinf(m_info.rot.x - D3DX_PI * 0.5f) * sinf(m_info.rot.y) * m_info.fLengthAnim,
+		cosf(m_info.rot.x - D3DX_PI * 0.5f) * m_info.fLengthAnim,
+		sinf(m_info.rot.x - D3DX_PI * 0.5f) * cosf(m_info.rot.y) * m_info.fLengthAnim
+	}; 
 
-	// 頂点情報のポインタ
-	VERTEX_3D *pVtx;
+	D3DXVECTOR3 posMiddle = m_info.pos + pos;
 
-	// 頂点バッファをロックし、頂点情報へのポインタを取得
-	pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	pAnim->SetSize(m_info.fWidthAnim, m_info.fLengthAnim);
+	pAnim->SetPosition(posMiddle);
+	pAnim->SetVtx();
 
-	// 頂点の設定
-	D3DXVECTOR3 aPosVtx[NUM_VTX];
-	D3DXMATRIX aMtxVtx[NUM_VTX];
-	D3DXVECTOR3 aOffset[NUM_VTX] =
+	if (m_info.pCollision != nullptr)
 	{
-		{ -m_info.fLengthAnim,0.0f,m_info.fWidthAnim },
-		{ 0.0f,0.0f,m_info.fWidthAnim },
-		{ -m_info.fLengthAnim,0.0f,-m_info.fWidthAnim },
-		{ 0.0f,0.0f,-m_info.fWidthAnim },
-	};
+		m_info.pCollision->SetPositionOld(m_info.pCollision->GetPosition());
+		m_info.pCollision->SetPosition(m_info.pos + pos * 2);
 
-	for (int i = 0; i < NUM_VTX; i++)
-	{
-		universal::SetOffSet(&aMtxVtx[i], m_info.mtxWorld, aOffset[i]);
-
-		aPosVtx[i] =
+		if (m_info.pCollision->IsTriggerEnter(CCollision::TAG_PLAYER))
 		{
-			aMtxVtx[i]._41,
-			aMtxVtx[i]._42,
-			aMtxVtx[i]._43,
-		};
+			CObject *pObj = m_info.pCollision->GetOther();
 
-		pVtx[i].pos = aPosVtx[i];
+			if (pObj != nullptr)
+			{
+				// 当たったオブジェクトのヒット処理
+				pObj->Hit(10.0f);
+			}
+		}
 	}
-
-	//頂点バッファをアンロック
-	pVtxBuff->Unlock();
 }
 
 //=====================================================
@@ -207,22 +235,38 @@ void CBeam::Draw(void)
 }
 
 //=====================================================
-// 生成処理
+// 位置設定
 //=====================================================
-CBeam *CBeam::Create(void)
+void CBeam::SetPosition(D3DXVECTOR3 pos)
 {
-	CBeam *pBeam = nullptr;
+	m_info.pos = pos;
 
-	if (pBeam == nullptr)
+	if (m_info.pAnim != nullptr)
 	{
-		pBeam = new CBeam;
-
-		if (pBeam != nullptr)
-		{
-			// 初期化
-			pBeam->Init();
-		}
+		m_info.pAnim->SetPosition(pos);
 	}
+}
 
-	return pBeam;
+//=====================================================
+// 向き設定
+//=====================================================
+void CBeam::SetRot(D3DXVECTOR3 rot)
+{
+	m_info.rot = rot;
+
+	if (m_info.pAnim != nullptr)
+	{
+		m_info.pAnim->SetRot(rot);
+	}
+}
+
+//=====================================================
+// 色設定
+//=====================================================
+void CBeam::SetCol(D3DXCOLOR col)
+{
+	if (m_info.pAnim != nullptr)
+	{
+		m_info.pAnim->SetColor(col);
+	}
 }
