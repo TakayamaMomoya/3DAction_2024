@@ -35,6 +35,7 @@ const float MOVE_FACT = 0.04f;	// 移動係数
 const float LINE_END = 5.0f;	// 移動終了のしきい値
 const int DAMAGE_FRAME = 10;	// ダメージ状態の時間
 const float SPEED_BACK = 1.8f;	// 後退の移動速度
+const float SPEED_DODGE = 1.1f;	// 後退時の横移動速度
 }
 
 //*****************************************************
@@ -222,6 +223,14 @@ void CEnemyBoss::Back(void)
 	vecDiff.y = 0.0f;
 
 	move += vecDiff;
+
+	// 横方向にも移動量を足す
+	float fAngle = atan2f(vecDiff.x, vecDiff.z) + D3DX_PI * 0.5f;
+
+	universal::LimitRot(&fAngle);
+
+	move += {sinf(fAngle + D3DX_PI * 0.5f) * SPEED_DODGE, 0.0f, cosf(fAngle + D3DX_PI * 0.5f) * SPEED_DODGE};
+	move += {sinf(fAngle) * SPEED_DODGE, 0.0f, cosf(fAngle) * SPEED_DODGE};
 
 	SetMove(move);
 }

@@ -173,6 +173,19 @@ void CBullet::Update(void)
 		case TYPE_PLAYER:
 			tag = CCollision::TAG_ENEMY;
 
+			if (m_pCollisionSphere->OnEnter(CCollision::TAG_ROCKET))
+			{// 対象との当たり判定
+				CObject *pObj = m_pCollisionSphere->GetOther();
+
+				if (pObj != nullptr)
+				{
+					bHit = true;
+
+					// 当たったオブジェクトのヒット処理
+					pObj->Hit(m_fDamage);
+				}
+			}
+
 			// 木箱との当たり判定
 			bHit = BulletHit(CCollision::TAG_BOX);
 			break;

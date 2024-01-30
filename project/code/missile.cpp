@@ -75,6 +75,14 @@ HRESULT CMissile::Init(void)
 	// 継承クラスの初期化
 	CEnemy::Init();
 
+	// 当たり判定をミサイルに変更
+	CCollisionSphere *pCollision = CEnemy::GetClsnSphere();
+
+	if (pCollision != nullptr)
+	{
+		pCollision->SetTag(CCollision::TAG::TAG_ROCKET);
+	}
+
 	return S_OK;
 }
 
@@ -131,6 +139,25 @@ void CMissile::Update(void)
 
 	// 傾きの制御
 	Tilt();
+
+	// 当たり判定をミサイルに変更
+	CCollisionSphere *pCollision = CEnemy::GetClsnSphere();
+
+	if (pCollision != nullptr)
+	{
+		if (pCollision->IsTriggerEnter(CCollision::TAG_PLAYER))
+		{
+			CObject *pObj = pCollision->GetOther();
+
+			if (pObj != nullptr)
+			{
+				// 当たったオブジェクトのヒット処理
+				pObj->Hit(0.3f);
+
+				Death();
+			}
+		}
+	}
 
 	// 継承クラスの更新
 	CEnemy::Update();
