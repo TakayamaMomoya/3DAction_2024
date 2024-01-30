@@ -174,6 +174,7 @@ void CMissile::ChasePlayer(void)
 	// 計算用変数
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 vecDiff;
+	D3DXVECTOR3 move = GetMove();
 
 	if (pPlayer == nullptr)
 	{// 死亡
@@ -184,15 +185,30 @@ void CMissile::ChasePlayer(void)
 
 	pos = pPlayer->GetMtxPos(0);
 
-	// 差分を取得
+	// 差分ベクトルの角度を取得
 	vecDiff = pos - GetPosition();
 
-	D3DXVec3Normalize(&vecDiff,&vecDiff);
+	D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
 
-	vecDiff *= CHASE_SPEED;
+	// 向きの補正
+	D3DXVECTOR3 rot = GetRot();
+
+	rotDest.y -= D3DX_PI;
+
+	universal::FactingRot(&rot.x, rotDest.x, 1.0f);
+	universal::FactingRot(&rot.y, rotDest.y, 1.0f);
+
+	SetRot(rot);
+
+	move -=
+	{
+		sinf(rot.x) * sinf(rot.y) * CHASE_SPEED,
+		cosf(rot.x) * CHASE_SPEED,
+		sinf(rot.x) * cosf(rot.y) * CHASE_SPEED
+	};
 
 	// 移動量設定
-	SetMove(GetMove() + vecDiff);
+	SetMove(move);
 }
 
 //=====================================================

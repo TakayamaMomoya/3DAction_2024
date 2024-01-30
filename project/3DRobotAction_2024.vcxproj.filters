@@ -434,9 +434,6 @@
     <ClInclude Include="code\meshfield.h">
       <Filter>ソース ファイル\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="code\frame.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="code\enemyBoss.h">
       <Filter>ソース ファイル\enemy\boss</Filter>
     </ClInclude>
@@ -448,6 +445,9 @@
     </ClInclude>
     <ClInclude Include="code\missile.h">
       <Filter>ソース ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="code\frame.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
