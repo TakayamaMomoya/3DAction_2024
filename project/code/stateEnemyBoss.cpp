@@ -99,7 +99,16 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 	if (m_fTimerMissile > TIME_MISSILE)
 	{// ƒ~ƒTƒCƒ‹‚Ì”­ŽË
-		CMissile::Create(pBoss->GetPosition());
+		CMissile *pMissile = CMissile::Create(pBoss->GetPosition());
+
+		if (pMissile != nullptr)
+		{
+			D3DXVECTOR3 rot = pBoss->GetRot();
+
+			rot.x = -D3DX_PI * 0.5f;
+
+			pMissile->SetRot(rot);
+		}
 
 		m_nCntMissile++;
 

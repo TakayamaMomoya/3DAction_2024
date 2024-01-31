@@ -346,8 +346,11 @@ void CEnemy::ManageCollision(void)
 
 		if (pos.y <= fHeight)
 		{
+			CDebugProc::GetInstance()->Print("\nメッシュに当たってるよ[%f]",fHeight);
+
 			move.y = 0.0f;
 
+			pos.y = fHeight;
 			SetPosition(pos);
 			SetMove(move);
 
@@ -557,8 +560,6 @@ void CEnemy::Attack(void)
 	D3DXVECTOR3 vecDiff = posPlayer - pos;
 
 	fDist = D3DXVec3Length(&vecDiff);
-
-	CDebugProc::GetInstance()->Print("\n距離：[%f]", fDist);
 
 	if (m_info.aDistMoveState[MOVESTATE_CHASE] < fDist)
 	{// 待機に移行

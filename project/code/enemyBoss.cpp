@@ -104,7 +104,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(INITIAL_LIFE);
 
 	// 状態設定
-	ChangeState(new CStateBossApper);
+	ChangeState(new CStateBossAttackMissile);
 
 	FollowCollision();
 
@@ -133,9 +133,6 @@ void CEnemyBoss::Uninit(void)
 //=====================================================
 void CEnemyBoss::Update(void)
 {
-	// 位置を保存
-	SetPositionOld(GetPosition());
-
 	// 継承クラスの更新
 	CEnemy::Update();
 
@@ -324,7 +321,7 @@ bool CEnemyBoss::FollowDest(void)
 
 	pos += vecDiff;
 
-	SetPosition(pos);
+	//SetPosition(pos);
 
 	return bEnd;
 }

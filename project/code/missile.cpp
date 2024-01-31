@@ -168,47 +168,46 @@ void CMissile::Update(void)
 //=====================================================
 void CMissile::ChasePlayer(void)
 {
-	// 情報取得
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
-	// 計算用変数
-	D3DXVECTOR3 pos;
-	D3DXVECTOR3 vecDiff;
-	D3DXVECTOR3 move = GetMove();
-
-	if (pPlayer == nullptr)
-	{// 死亡
-		Uninit();
-
-		return;
-	}
-
-	pos = pPlayer->GetMtxPos(0);
-
-	// 差分ベクトルの角度を取得
-	vecDiff = pos - GetPosition();
-
-	D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
-
-	// 向きの補正
-	D3DXVECTOR3 rot = GetRot();
-
-	rotDest.y -= D3DX_PI;
-
-	universal::FactingRot(&rot.x, rotDest.x, 1.0f);
-	universal::FactingRot(&rot.y, rotDest.y, 1.0f);
-
-	SetRot(rot);
-
-	move -=
+	if (pPlayer != nullptr)
 	{
-		sinf(rot.x) * sinf(rot.y) * CHASE_SPEED,
-		cosf(rot.x) * CHASE_SPEED,
-		sinf(rot.x) * cosf(rot.y) * CHASE_SPEED
-	};
+		// 目標向きの取得
+		D3DXVECTOR3 pos = GetMtxPos(0);
+		D3DXVECTOR3 move = GetMove();
 
-	// 移動量設定
-	SetMove(move);
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
+
+		float fSpeed = D3DXVec3Length(&move);
+		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
+		
+		D3DXVECTOR3 vecDiff = posPridiction - pos;
+
+		vecDiff.y *= -1;
+
+		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
+		//rotDest.x += D3DX_PI * 0.5f;
+		//rotDest.y -= D3DX_PI;
+
+		// 向きの補正
+		D3DXVECTOR3 rot = GetRot();
+
+		universal::FactingRot(&rot.x, rotDest.x, 0.20f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.20f);
+
+		SetRot(rot);
+
+		// 移動量を正面に足す
+		move +=
+		{
+			sinf(rot.x) * sinf(rot.y) * CHASE_SPEED,
+			cosf(rot.x) * CHASE_SPEED,
+			sinf(rot.x) * cosf(rot.y) * CHASE_SPEED
+		};
+
+		SetMove(move);
+	}
 }
 
 //=====================================================

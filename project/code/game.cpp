@@ -33,6 +33,7 @@
 #include "checkPointManager.h"
 #include "blockManager.h"
 #include "meshfield.h"
+#include "enemyBoss.h"
 
 //*****************************************************
 // マクロ定義
@@ -106,6 +107,8 @@ HRESULT CGame::Init(void)
 
 	// メッシュフィールド生成
 	CMeshField::Create();
+
+	CEnemyBoss::Create();
 
 	return S_OK;
 }
