@@ -10,6 +10,7 @@
 //*****************************************************
 #include "stateEnemyBoss.h"
 #include "enemyBoss.h"
+#include "enemyDrone.h"
 #include "manager.h"
 #include "missile.h"
 
@@ -20,6 +21,10 @@ namespace
 {
 const float TIME_MISSILE = 0.25f;	// ミサイル発射の時間
 const int NUM_MISSILE = 10;	// ミサイルの発射数
+const float TIME_DRONE = 1.0f;	// ドローン発射の時間
+const int NUM_DRONE = 10;	// ドローンの発射数
+const int RANGE_HEIGHT_DRONE = 200;	// ドローンの高さの幅
+const float MOVE_DRONE = 20.0f;	// ドローンの射出時の移動量
 }
 
 //=====================================================
@@ -72,7 +77,7 @@ void CStateBossAttackBeam::Attack(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// モーション終了で次の状態へ移る
-		pBoss->ChangeState(new CStateBossAttackMissile);
+		pBoss->ChangeState(new CStateBossLaunchDrone);
 	}
 }
 
@@ -83,8 +88,7 @@ void CStateBossAttackMissile::Init(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
-	m_fTimerMissile = 0.0f;
-	m_nCntMissile = 0;
+	m_nCnt = 0;
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
 }
@@ -93,11 +97,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
-	float fDeltaTime = CManager::GetDeltaTime();
-
-	m_fTimerMissile += fDeltaTime;
-
-	if (m_fTimerMissile > TIME_MISSILE)
+	if (pBoss->AttackTimer(TIME_MISSILE))
 	{// ミサイルの発射
 		CMissile *pMissile = CMissile::Create(pBoss->GetPosition());
 
@@ -110,14 +110,62 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 			pMissile->SetRot(rot);
 		}
 
-		m_nCntMissile++;
+		m_nCnt++;
 
-		if (m_nCntMissile > NUM_MISSILE)
+		if (m_nCnt > NUM_MISSILE)
+		{// 一定数撃ったら次の行動へ
+			pBoss->ChangeState(new CStateBossLaunchDrone);
+		}
+	}
+
+	// 後退処理
+	pBoss->Back();
+}
+
+//=====================================================
+// 子機の射出
+//=====================================================
+void CStateBossLaunchDrone::Init(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
+
+	m_nCnt = 0;
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
+}
+
+void CStateBossLaunchDrone::Attack(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
+
+	if (pBoss->AttackTimer(TIME_DRONE))
+	{// 射出する
+		CEnemyDrone *pDrone = new CEnemyDrone;
+
+		if (pDrone != nullptr)
+		{
+			pDrone->Init();
+
+			D3DXVECTOR3 pos = pBoss->GetPosition();
+
+			pDrone->SetPosition(pos);
+
+			pos.y += universal::RandRange(RANGE_HEIGHT_DRONE, -RANGE_HEIGHT_DRONE);
+
+			// 射出してからの位置設定
+			pDrone->SetPositionDest(pos);
+
+			// 移動量を足す
+			D3DXVECTOR3 move = { 0.0f,MOVE_DRONE,0.0f };
+			pDrone->SetMove(move);
+		}
+
+		m_nCnt++;
+
+		if (m_nCnt > NUM_DRONE)
 		{// 一定数撃ったら次の行動へ
 			pBoss->ChangeState(new CStateBossAttackBeam);
 		}
-
-		m_fTimerMissile = 0.0f;
 	}
 
 	// 後退処理

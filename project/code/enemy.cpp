@@ -28,6 +28,7 @@
 #include "UI.h"
 #include "slow.h"
 #include "meshfield.h"
+#include "effect3D.h"
 
 //*****************************************************
 // 定数定義
@@ -37,6 +38,7 @@ namespace
 const float INITIAL_LIFE = 5.0f;	// 初期体力
 const float INITIAL_SPEED = 1.0f;	// 初期速度
 const float LINE_CHASE = 470;	// 追跡状態に移行するエリア
+const float LINE_ARRIVAL = 20.0f;	// 目標位置に到達した判定のしきい値
 const int DAMAGE_FRAME = 10;	// ダメージ状態のフレーム数
 const int TIME_DEATH = 60;	// 死亡までの時間
 const float DAMAGE_THROWN = 10.0f;	// 投げでのダメージ
@@ -542,6 +544,57 @@ void CEnemy::Chase(void)
 }
 
 //=====================================================
+// 目標に向かう
+//=====================================================
+bool CEnemy::MoveToDest(D3DXVECTOR3 posDest, float fSpeed)
+{
+	CEffect3D::Create(posDest, 20.0f, 1, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
+	bool bArrival = false;
+
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 vecDiff = posDest - pos;
+
+	// 移動終了の判定
+	float fLength = D3DXVec3Length(&vecDiff);
+	bArrival = fLength < LINE_ARRIVAL;
+
+	// 移動量の加算
+	D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+	vecDiff *= fSpeed;
+
+	D3DXVECTOR3 move = GetMove();
+
+	move += vecDiff;
+
+	SetMove(move);
+
+	return bArrival;
+}
+
+//=====================================================
+// 攻撃のタイマー
+//=====================================================
+bool CEnemy::AttackTimer(float fTime)
+{
+	float fDeltaTime = CManager::GetDeltaTime();
+
+	m_info.fCntAttack += fDeltaTime;
+
+	if (m_info.fCntAttack > fTime)
+	{
+		m_info.fCntAttack = 0.0f;
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//=====================================================
 // 攻撃
 //=====================================================
 void CEnemy::Attack(void)
@@ -668,8 +721,8 @@ void CEnemy::Draw(void)
 	CMotion::Draw();
 
 #ifdef _DEBUG
-	CDebugProc::GetInstance()->Print("\n敵の位置：[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
-	CDebugProc::GetInstance()->Print("\n敵の移動量：[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
+	//CDebugProc::GetInstance()->Print("\n敵の位置：[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
+	//CDebugProc::GetInstance()->Print("\n敵の移動量：[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
 #endif
 }
 

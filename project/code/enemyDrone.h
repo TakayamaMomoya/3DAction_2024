@@ -26,6 +26,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void SetPositionDest(D3DXVECTOR3 pos) { m_posDest = pos; }
 	void HitField(void) override;
 
 private:
@@ -41,9 +42,9 @@ private:
 	virtual void Wait(void);
 	virtual void Chase(void);
 	virtual void Attack(void);
-	void KeepDistance(void);
 
-	float m_fTimeFire;	// 射射撃タイマー
+	float m_fTimeFire;	// 射撃タイマー
+	D3DXVECTOR3 m_posDest;	// 目標位置
 };
 
 #endif

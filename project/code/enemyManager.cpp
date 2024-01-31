@@ -84,15 +84,6 @@ CEnemyManager *CEnemyManager::Create(void)
 //=====================================================
 CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 {
-	char *apPath[CEnemy::TYPE_MAX] = 
-	{
-		nullptr,
-		"data\\MOTION\\motionHeli.txt",
-		"data\\MOTION\\motionBomb.txt",
-		"data\\MOTION\\motionDrone01.txt",
-		"data\\MOTION\\motionArms00.txt",
-	};
-
 	CEnemy *pEnemy = nullptr;
 
 	if (pEnemy == nullptr)
@@ -124,7 +115,7 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 			pEnemy->SetPosition(pos);
 
 			// ƒ‚[ƒVƒ‡ƒ““Çž
-			pEnemy->Load(apPath[type]);
+			pEnemy->Load((char*)PATH_BODY_ENEMY[type]);
 
 			// ‰Šú‰»ˆ—
 			pEnemy->Init();

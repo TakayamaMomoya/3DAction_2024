@@ -14,8 +14,8 @@
 #include "player.h"
 #include "fade.h"
 #include "manager.h"
-#include "enemyBoss.h"
 #include "enemyManager.h"
+#include "enemyBoss.h"
 #include "debugproc.h"
 #include <stdio.h>
 

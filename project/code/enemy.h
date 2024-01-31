@@ -33,7 +33,6 @@ public:
 		TYPE_BOSS,		// ボス敵
 		TYPE_MAX
 	};
-
 	enum STATE
 	{// 状態
 		STATE_NONE = 0,	// 何でもない状態
@@ -43,7 +42,6 @@ public:
 		STATE_DEATH,	// 死亡状態
 		STATE_MAX
 	};
-
 	enum MOVESTATE
 	{// 移動状態
 		MOVESTATE_NONE = 0,	// 何でもない状態
@@ -81,6 +79,7 @@ public:
 	void EnableLock(bool bLock);
 	void SetPositionCursor(D3DXVECTOR3 pos);
 	void SetDistMoveState(float fValue, MOVESTATE moveState) { m_info.aDistMoveState[moveState] = fValue; }
+	bool AttackTimer(float fTime);
 
 protected:
 	void ManageScore(void);
@@ -90,6 +89,7 @@ protected:
 	virtual void Death(void);
 	virtual void TransferChase(void);
 	virtual void HitField(void);
+	bool MoveToDest(D3DXVECTOR3 posDest,float fSpeed);
 
 private:
 	struct SInfo
@@ -97,6 +97,7 @@ private:
 		float fLife;	// 体力
 		float fMoveSpeed;	// 移動速度
 		int nTimerState;	// 状態遷移カウンター
+		float fCntAttack;	// 攻撃タイマー
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
 		STATE state;	// 状態
