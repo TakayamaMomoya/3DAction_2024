@@ -41,7 +41,7 @@ public:
 	void Hit(float fDamage);
 	void ChangeState(CStateBoss *pNext);
 	void Event(EVENT_INFO *pEventInfo);
-	void AimPlayer(void);
+	void AimPlayer(float fSpeed = 500.0f);
 	void Back(void);
 
 private:

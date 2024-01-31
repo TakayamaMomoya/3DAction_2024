@@ -108,6 +108,10 @@ HRESULT CEnemyBoss::Init(void)
 
 	FollowCollision();
 
+	SetPosition(D3DXVECTOR3(0.0f, 1500.0f, 0.0f));
+
+	SetDistLock(50000.0f);
+
 	return S_OK;
 }
 
@@ -164,7 +168,7 @@ void CEnemyBoss::ManageCollision(void)
 //=====================================================
 // ƒvƒŒƒCƒ„[‚ð‘_‚¤ˆ—
 //=====================================================
-void CEnemyBoss::AimPlayer(void)
+void CEnemyBoss::AimPlayer(float fSpeed)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -176,7 +180,7 @@ void CEnemyBoss::AimPlayer(void)
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
 		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 
-		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, 500.0f, posPlayer, movePlayer);
+		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
 
 		D3DXVECTOR3 vecDiff = posPridiction - pos;
 

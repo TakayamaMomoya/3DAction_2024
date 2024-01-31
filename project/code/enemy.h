@@ -80,6 +80,8 @@ public:
 	void SetPositionCursor(D3DXVECTOR3 pos);
 	void SetDistMoveState(float fValue, MOVESTATE moveState) { m_info.aDistMoveState[moveState] = fValue; }
 	bool AttackTimer(float fTime);
+	void SetDistLock(float fDist) { m_info.fDistLock = fDist; }
+	float GetDistLock(void) { return m_info.fDistLock; }
 
 protected:
 	void ManageScore(void);
@@ -104,6 +106,7 @@ private:
 		MOVESTATE moveState;	// 移動状態
 		D3DXVECTOR3 posDest;	// 目標位置
 		CUI *pCursor;	// 捕捉可能カーソル
+		float fDistLock;	// ロック可能距離
 		float aDistMoveState[MOVESTATE_MAX];	// 移動状態がかわる距離
 	};
 	void ManageState(void);

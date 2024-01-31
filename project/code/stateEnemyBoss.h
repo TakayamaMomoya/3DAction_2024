@@ -60,4 +60,11 @@ class CStateBossLaunchDrone : public CStateBoss
 	int m_nCnt; // 射出カウンター
 };
 
+class CStateBossAttackMachinegun : public CStateBoss
+{// マシンガン
+	void Init(CEnemyBoss *pBoss) override;
+	void Attack(CEnemyBoss *pBoss) override;
+
+	int m_nCnt; // 射出カウンター
+};
 #endif

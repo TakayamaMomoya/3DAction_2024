@@ -43,6 +43,7 @@ const int DAMAGE_FRAME = 10;	// ダメージ状態のフレーム数
 const int TIME_DEATH = 60;	// 死亡までの時間
 const float DAMAGE_THROWN = 10.0f;	// 投げでのダメージ
 const float SIZE_CURSOR = 30.0f;	// カーソルサイズ
+const float INITIAL_DIST_LOCK = 5000.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon00.png";	// カーソルのテクスチャ
 const float INITIAL_DIST_MOVESTATE[CEnemy::MOVESTATE_MAX] =
 {// 移動状態が切り替わる距離
@@ -210,6 +211,7 @@ HRESULT CEnemy::Init(void)
 	// パラメーター初期設定
 	m_info.fLife = INITIAL_LIFE;
 	SetMoveSpeed(INITIAL_SPEED);
+	m_info.fDistLock = INITIAL_DIST_LOCK;
 
 	// 通常状態にする
 	m_info.state = STATE_NORMAL;

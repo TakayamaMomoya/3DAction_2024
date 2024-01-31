@@ -31,7 +31,6 @@ namespace
 {
 const char* FILE_PATH = "data\\TEXT\\checkPoint.txt";	// ファイルのパス
 const float TIME_SPAWN = 5.0f;	// 敵のスポーン
-const float DIST_LOCKON = 5000.0f;	// ロックオン距離
 const float SIZE_CURSOR = 60.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon01.png";	// カーソルのテクスチャ
 }
@@ -359,7 +358,9 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 			// ロックオンする敵の決定
 			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
 			{
-				if (DIST_LOCKON > fDistPlayer)
+				float fDist = pEnemy->GetDistLock();
+
+				if (fDist > fDistPlayer)
 				{// 距離内に敵がいたら
 					bInAny = true;
 
@@ -465,8 +466,10 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 			// ロックオンする敵の決定
 			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
 			{
+				float fDist = pEnemy->GetDistLock();
+
 				// 距離制限
-				if (DIST_LOCKON > fDistLockon)
+				if (fDist > fDistLockon)
 				{
 					bool bOk = false;
 

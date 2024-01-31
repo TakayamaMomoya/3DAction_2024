@@ -13,6 +13,8 @@
 #include "enemyDrone.h"
 #include "manager.h"
 #include "missile.h"
+#include "bullet.h"
+#include "player.h"
 
 //*****************************************************
 // 定数定義
@@ -23,8 +25,12 @@ const float TIME_MISSILE = 0.25f;	// ミサイル発射の時間
 const int NUM_MISSILE = 10;	// ミサイルの発射数
 const float TIME_DRONE = 1.0f;	// ドローン発射の時間
 const int NUM_DRONE = 10;	// ドローンの発射数
-const int RANGE_HEIGHT_DRONE = 200;	// ドローンの高さの幅
-const float MOVE_DRONE = 20.0f;	// ドローンの射出時の移動量
+const int RANGE_HEIGHT_DRONE = 500;	// ドローンの高さの幅
+const float MOVE_DRONE = 50.0f;	// ドローンの射出時の移動量
+const float TIME_MG = 0.15f;	// マシンガン発射の時間
+const int NUM_MG = 30;	// マシンガンの発射数
+const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
+const int ACCURACY_MG = 10;	// マシンガンの精度
 }
 
 //=====================================================
@@ -53,7 +59,7 @@ void CStateBossApper::Move(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// モーション終了で次の状態へ移る
-		pBoss->ChangeState(new CStateBossAttackBeam);
+		pBoss->ChangeState(new CStateBossAttackMachinegun);
 	}
 }
 
@@ -114,12 +120,13 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 		if (m_nCnt > NUM_MISSILE)
 		{// 一定数撃ったら次の行動へ
-			pBoss->ChangeState(new CStateBossLaunchDrone);
+			pBoss->ChangeState(new CStateBossAttackMachinegun);
 		}
 	}
 
 	// 後退処理
 	pBoss->Back();
+	pBoss->AimPlayer();
 }
 
 //=====================================================
@@ -150,7 +157,7 @@ void CStateBossLaunchDrone::Attack(CEnemyBoss *pBoss)
 
 			pDrone->SetPosition(pos);
 
-			pos.y += universal::RandRange(RANGE_HEIGHT_DRONE, -RANGE_HEIGHT_DRONE);
+			pos.y += universal::RandRange(0, -RANGE_HEIGHT_DRONE);
 
 			// 射出してからの位置設定
 			pDrone->SetPositionDest(pos);
@@ -164,10 +171,65 @@ void CStateBossLaunchDrone::Attack(CEnemyBoss *pBoss)
 
 		if (m_nCnt > NUM_DRONE)
 		{// 一定数撃ったら次の行動へ
+			pBoss->ChangeState(new CStateBossAttackMissile);
+		}
+	}
+
+	// 後退処理
+	pBoss->Back();
+	pBoss->AimPlayer();
+}
+
+//=====================================================
+// マシンガン
+//=====================================================
+void CStateBossAttackMachinegun::Init(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
+
+	m_nCnt = 0;
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
+}
+
+void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
+
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	if (pBoss->AttackTimer(TIME_MG))
+	{// 射出する
+		D3DXVECTOR3 posMazzle = pBoss->GetMtxPos(0);
+		D3DXVECTOR3 moveBullet;
+		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+
+		D3DXVECTOR3 posPrediction = universal::LinePridiction(posMazzle, SPEED_BULLET, posPlayer, movePlayer);
+
+		posPrediction.x += (float)universal::RandRange(ACCURACY_MG, -ACCURACY_MG);
+		posPrediction.y += (float)universal::RandRange(ACCURACY_MG, -ACCURACY_MG);
+		posPrediction.z += (float)universal::RandRange(ACCURACY_MG, -ACCURACY_MG);
+
+		D3DXVECTOR3 vecDiffBullet = posMazzle - posPrediction;
+		D3DXVec3Normalize(&vecDiffBullet, &vecDiffBullet);
+
+		moveBullet = vecDiffBullet * SPEED_BULLET;
+
+		CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.01f);
+
+		m_nCnt++;
+
+		if (m_nCnt > NUM_MG)
+		{// 一定数撃ったら次の行動へ
 			pBoss->ChangeState(new CStateBossAttackBeam);
 		}
 	}
 
 	// 後退処理
 	pBoss->Back();
+	pBoss->AimPlayer();
 }
