@@ -1146,6 +1146,8 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	{// “¥‚Ý‚Â‚¯
 		AddMoveUp(POW_STAMP);
 
+		AddMoveStamp();
+
 		m_fragMotion.bStamp = false;
 	}
 
@@ -1440,6 +1442,51 @@ void CPlayer::AddBoost(float fValue)
 	}
 
 	universal::LimitValue(&m_info.fBoost, m_param.fInitialBoost, 0.0f);
+}
+
+//=====================================================
+// “¥‚Ý‚Â‚¯‚ÌˆÚ“®—Ê‰ÁŽZ
+//=====================================================
+void CPlayer::AddMoveStamp(void)
+{
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager == nullptr)
+	{
+		return;
+	}
+
+	// ƒJƒƒ‰Žæ“¾
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera == nullptr)
+	{
+		return;
+	}
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
+	CInputManager::SAxis axis = pInputManager->GetAxis();
+
+	axis.axisMove;
+
+	float fLengthInput = sqrtf(axis.axisMove.x * axis.axisMove.x + axis.axisMove.y * axis.axisMove.y);
+
+	if (fLengthInput >= 0.3f)
+	{
+		float fAngleInput = atan2f(axis.axisMove.x, axis.axisMove.y);
+
+		D3DXVECTOR3 move = GetMove();
+
+		move +=
+		{
+			sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+			0.0f,
+			cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+		};
+
+		SetMove(move);
+	}
 }
 
 //=====================================================

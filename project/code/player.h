@@ -131,6 +131,7 @@ private:
 	void EndMelee(void);
 	void AddBoost(float fValue);
 	void ToggleLockTarget(void);
+	void AddMoveStamp(void);
 	void Debug(void);
 
 	SInfo m_info;	// ©g‚Ìî•ñ
