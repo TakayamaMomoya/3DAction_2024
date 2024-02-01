@@ -34,6 +34,7 @@
 #include "blockManager.h"
 #include "meshfield.h"
 #include "enemyBoss.h"
+#include "cameraBehavior.h"
 
 //*****************************************************
 // マクロ定義
@@ -108,7 +109,7 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CEnemyBoss::Create();
+	//CEnemyBoss::Create();
 
 	return S_OK;
 }
@@ -185,15 +186,8 @@ void CGame::UpdateCamera(void)
 		return;
 	}
 
-	if (m_bStop == false)
-	{
-		pCamera->FollowPlayer();
-	}
-	else
-	{
-		// 操作
-		pCamera->Control();
-	}
+	pCamera->Update();
+	pCamera->Quake();
 
 	pCamera->MoveDist(0.3f);
 }

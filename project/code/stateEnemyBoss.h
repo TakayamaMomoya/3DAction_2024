@@ -49,7 +49,7 @@ class CStateBossAttackMissile : public CStateBoss
 	void Init(CEnemyBoss *pBoss) override;
 	void Attack(CEnemyBoss *pBoss) override;
 
-	int m_nCnt; // ミサイルカウンター
+	int m_nCnt; // 射出カウンター
 };
 
 class CStateBossLaunchDrone : public CStateBoss

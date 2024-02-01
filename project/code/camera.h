@@ -9,6 +9,16 @@
 #define _CAMERA_H_
 
 //****************************************************
+// 前方宣言
+//****************************************************
+class CCameraBehavior;
+
+//****************************************************
+// インクルード
+//****************************************************
+#include "main.h"
+
+//****************************************************
 // マクロ定義
 //****************************************************
 #define MIN_DRAW		(10.0f)					//描画を開始する距離
@@ -48,20 +58,26 @@ public:
 	float GetDist(void) { return m_camera.fLength; }
 	void Control(void);
 	Camera *GetCamera(void);
-	void FollowPlayer(void);
 	void SetQuake(float fQuakeSizeH, float fQuakeSizeV, int nTime);
 	void Quake(void);
 	void MoveDist(float fFact);
 	void SetPosRDest(D3DXVECTOR3 posRDest) { m_camera.posRDest = posRDest; }
 	void SetPosVDest(D3DXVECTOR3 posVDest) { m_camera.posVDest = posVDest; }
 	void SetEventTimer(float fTime) { m_camera.fTimeEvent = fTime; }
+	void ChangeBehavior(CCameraBehavior *pBehavior);
 
 private:
-	void LockEnemy(void);
 	void SetPosV(void);
 	void SetPosR(void);
 
 	Camera m_camera;	// 構造体の情報
+	CCameraBehavior *m_pBehavior;	// 行動のポインタ
 };
+
+namespace Camera
+{
+// 行動の切り替え
+void ChangeBehavior(CCameraBehavior *pBehavior);
+}
 
 #endif

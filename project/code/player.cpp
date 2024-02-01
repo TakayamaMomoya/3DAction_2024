@@ -23,6 +23,7 @@
 #include "bullet.h"
 #include "effect3D.h"
 #include "meshfield.h"
+#include "cameraBehavior.h"
 
 //*****************************************************
 // 定数定義
@@ -36,7 +37,7 @@ const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 150.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
-const float POW_STAMP = 40.0f;	// 踏みつけの推進力
+const float POW_STAMP = 30.0f;	// 踏みつけの推進力
 const float SPEED_STAMP = 70.0f;	// 踏みつけ水平推進力
 const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
@@ -159,6 +160,9 @@ HRESULT CPlayer::Init(void)
 	EnableShadow(true);
 
 	SetMotion(MOTION_WALK_FRONT);
+
+	// カメラの行動設定
+	Camera::ChangeBehavior(new CFollowPlayer);
 
 	return S_OK;
 }

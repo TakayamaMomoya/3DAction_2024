@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "main.h"
 #include "camera.h"
+#include "cameraBehavior.h"
 #include "inputkeyboard.h"
 #include "inputmouse.h"
 #include "debugproc.h"
@@ -66,6 +67,8 @@ HRESULT CCamera::Init(void)
 
 	m_camera.fTimeEvent = 0.0f;
 
+	m_pBehavior = nullptr;
+
 	return S_OK;
 }
 
@@ -82,7 +85,10 @@ void CCamera::Uninit(void)
 //====================================================
 void CCamera::Update(void)
 {
-
+	if (m_pBehavior != nullptr)
+	{
+		m_pBehavior->Update(this);
+	}
 }
 
 //====================================================
@@ -191,98 +197,6 @@ void CCamera::Control(void)
 			SetPosR();
 		}
 	}
-}
-
-//====================================================
-// 追従処理
-//====================================================
-void CCamera::FollowPlayer(void)
-{
-	CPlayer *pPlayer = CPlayer::GetInstance();
-	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
-
-	if (pPlayer == nullptr || pEnemyManager == nullptr)
-	{
-		return;
-	}
-
-	bool bLock = pPlayer->IsTargetLock();
-	CEnemy *pEnemyLock = pEnemyManager->GetLockon();
-
-	if (pEnemyLock != nullptr && bLock)
-	{// 敵ロックオン時
-		LockEnemy();
-	}
-	else
-	{// 通常操作
-		D3DXVECTOR3 pos = pPlayer->GetMtxPos(2);
-
-		m_camera.posRDest = pos;
-
-		//目標の視点設定
-		m_camera.posVDest =
-		{
-			m_camera.posRDest.x - sinf(m_camera.rot.x) * sinf(m_camera.rot.y - D3DX_PI * 0.02f) * m_camera.fLength,
-			m_camera.posRDest.y - cosf(m_camera.rot.x) * m_camera.fLength,
-			m_camera.posRDest.z - sinf(m_camera.rot.x) * cosf(m_camera.rot.y - D3DX_PI * 0.02f) * m_camera.fLength
-		};
-	}
-
-	Quake();
-
-#ifdef _DEBUG
-	CEffect3D::Create(m_camera.posRDest, 20.0f, 1, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-#endif
-}
-
-//====================================================
-// 敵を見る処理
-//====================================================
-void CCamera::LockEnemy(void)
-{
-	CPlayer *pPlayer = CPlayer::GetInstance();
-	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
-
-	if (pPlayer == nullptr || pEnemyManager == nullptr)
-	{
-		return;
-	}
-
-	CEnemy *pEnemyLock = pEnemyManager->GetLockon();
-	D3DXVECTOR3 posEnemy = { 0.0f,0.0f,0.0f };
-
-	if (pEnemyLock != nullptr)
-	{
-		posEnemy = pEnemyLock->GetMtxPos(0);
-	}
-
-	// 位置の差分を取得
-	D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(2);
-	D3DXVECTOR3 vecDiff = posEnemy - posPlayer;
-	D3DXVECTOR3 vecDiffFlat = { vecDiff.x,0.0f,vecDiff.z };
-
-	// 差分の向きを計算
-	D3DXVECTOR3 rot;
-	float fLegnthDiff = D3DXVec3Length(&vecDiff);
-	float fLegnthFlat = D3DXVec3Length(&vecDiffFlat);
-
-	rot.x = atan2f(fLegnthFlat, vecDiff.y) + D3DX_PI * 0.01f;
-	rot.y = atan2f(vecDiff.x, vecDiff.z);
-
-	// 注視点位置の設定
-	m_camera.posRDest = posPlayer + vecDiff * 0.5f;
-
-	float fLengthView = fLegnthDiff + m_camera.fLength;
-
-	// 視点位置の設定
-	m_camera.posVDest =
-	{
-		posEnemy.x - sinf(rot.x) * sinf(rot.y) * fLengthView,
-		posEnemy.y - cosf(rot.x) * fLengthView,
-		posEnemy.z - sinf(rot.x) * cosf(rot.y) * fLengthView
-	};
-
-	m_camera.rot = rot;
 }
 
 //====================================================
@@ -410,4 +324,32 @@ void CCamera::SetCamera(void)
 CCamera::Camera *CCamera::GetCamera(void)
 {
 	return &m_camera;
+}
+
+//====================================================
+// 行動の切り替え
+//====================================================
+void CCamera::ChangeBehavior(CCameraBehavior *pBehavior)
+{
+	if (m_pBehavior != nullptr)
+	{
+		delete m_pBehavior;
+		m_pBehavior = nullptr;
+	}
+
+	m_pBehavior = pBehavior;
+}
+
+namespace Camera
+{
+// 行動の切り替え
+void ChangeBehavior(CCameraBehavior *pBehavior)
+{
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera != nullptr)
+	{
+		pCamera->ChangeBehavior(pBehavior);
+	}
+}
 }
