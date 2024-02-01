@@ -74,7 +74,7 @@ public:
 	void SetMoveSpeed(float fSpeed) { m_info.fMoveSpeed = fSpeed; }
 	MOVESTATE GetMoveState(void) { return m_info.moveState; }
 	void SetPosDest(D3DXVECTOR3 pos) { m_info.posDest = pos; }
-	void CreateCollision(void);
+	void CreateCollision(float fRadius = 90.0f);
 	void DeleteCollision(void);
 	void EnableLock(bool bLock);
 	void SetPositionCursor(D3DXVECTOR3 pos);
@@ -100,6 +100,7 @@ private:
 		float fMoveSpeed;	// 移動速度
 		int nTimerState;	// 状態遷移カウンター
 		float fCntAttack;	// 攻撃タイマー
+		float fRadius;	// 判定半径
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
 		STATE state;	// 状態

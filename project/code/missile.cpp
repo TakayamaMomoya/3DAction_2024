@@ -159,6 +159,8 @@ void CMissile::Update(void)
 		}
 	}
 
+	CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_MISSILE_SMOKE);
+
 	// 継承クラスの更新
 	CEnemy::Update();
 }
@@ -182,19 +184,17 @@ void CMissile::ChasePlayer(void)
 		float fSpeed = D3DXVec3Length(&move);
 		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
 		
-		D3DXVECTOR3 vecDiff = posPridiction - pos;
+		D3DXVECTOR3 vecDiff = posPlayer - pos;
 
 		vecDiff.y *= -1;
 
 		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
-		//rotDest.x += D3DX_PI * 0.5f;
-		//rotDest.y -= D3DX_PI;
 
 		// 向きの補正
 		D3DXVECTOR3 rot = GetRot();
 
-		universal::FactingRot(&rot.x, rotDest.x, 0.20f);
-		universal::FactingRot(&rot.y, rotDest.y, 0.20f);
+		universal::FactingRot(&rot.x, rotDest.x, 0.30f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.30f);
 
 		SetRot(rot);
 

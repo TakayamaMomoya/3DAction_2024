@@ -34,9 +34,10 @@ const float INITIAL_BOOST = 200.0f;	// ブースト残量の初期値
 const float REGEN_BOOST = 2.5f;	// ブースト回復量
 const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
-const float SPEED_BULLET = 50.0f;	// 弾速
+const float SPEED_BULLET = 150.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
 const float POW_STAMP = 40.0f;	// 踏みつけの推進力
+const float SPEED_STAMP = 70.0f;	// 踏みつけ水平推進力
 const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
@@ -1480,9 +1481,9 @@ void CPlayer::AddMoveStamp(void)
 
 		move +=
 		{
-			sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+			sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_STAMP,
 			0.0f,
-			cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+			cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_STAMP,
 		};
 
 		SetMove(move);

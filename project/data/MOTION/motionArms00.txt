@@ -36,119 +36,116 @@ MODEL_FILENAME = data/MODEL/weapon/smg.x			# [15]武器
 #------------------------------------------------------------------------------
 CHARACTERSET
 	NUM_PARTS = 16					# パーツ数
-	MOVE = 5.0						# 移動量
-	RADIUS = 40.0					# 半径
-	JUMP = 8.65						# ジャンプ量
 
 	PARTSSET						# [0]腰
 		INDEX = 0
 		PARENT = -1					# (親)なし
-		POS = 0.0 180.0 0.0
+		POS = 0.0 360.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [1]体
 		INDEX = 1
 		PARENT = 0					# (親)腰
-		POS = 0.0 20.0 0.0
+		POS = 0.0 40.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [2]頭
 		INDEX = 2
 		PARENT = 1					# (親)体
-		POS = 0.0 50.0 0.0
+		POS = 0.0 100.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [3]左肩
 		INDEX = 3
 		PARENT = 1					# (親)体
-		POS = 35.0 50.0 0.0
+		POS = 70.0 100.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [4]左腕
 		INDEX = 4
 		PARENT = 3					# (親)左肩
-		POS = 20.0 -12.0 0.0
+		POS = 40.0 -24.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [5]左手
 		INDEX = 5
 		PARENT = 4					# (親)左腕
-		POS = 2.0 -33.0 0.0
+		POS = 4.0 -66.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [6]右肩
 		INDEX = 6
 		PARENT = 1					# (親)体
-		POS = -35.0 50.0 0.0
+		POS = -70.0 100.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [7]右腕
 		INDEX = 7
 		PARENT = 6					# (親)右肩
-		POS = -20.0 -12.0 0.0
+		POS = -40.0 -24.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [8]右手
 		INDEX = 8
 		PARENT = 7					# (親)右腕
-		POS = -2.0 -33.0 0.0
+		POS = -4.0 -66.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [9]左腿
 		INDEX = 9
 		PARENT = 0					# (親)腰
-		POS = 20.0 0.0 0.0
+		POS = 40.0 0.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [10]左脛
 		INDEX = 10
 		PARENT = 9					# (親)左腿
-		POS = 0.0 -60.0 0.0
+		POS = 0.0 -120.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [11]左足
 		INDEX = 11
 		PARENT = 10					# (親)左脛
-		POS = 0.0 -90.0 0.0
+		POS = 0.0 -180.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [12]左腿
 		INDEX = 12
 		PARENT = 0					# (親)腰
-		POS = -20.0 0.0 0.0
+		POS = -40.0 0.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [13]左脛
 		INDEX = 13
 		PARENT = 12					# (親)右腿
-		POS = 0.0 -60.0 0.0
+		POS = 0.0 -120.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [13]左足
 		INDEX = 14
 		PARENT = 13					# (親)右脛
-		POS = 0.0 -90.0 0.0
+		POS = 0.0 -180.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 	PARTSSET						# [13]武器
 		INDEX = 15
 		PARENT = 8					# (親)右手
-		POS = 0.0 -60.0 -5.0
+		POS = 0.0 -120.0 -10.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 END_CHARACTERSET

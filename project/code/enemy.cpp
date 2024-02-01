@@ -486,6 +486,11 @@ void CEnemy::CollisionThrown(void)
 			m_info.pCollisionSphere->DamageAll(CCollision::TAG_ENEMY, DAMAGE_THROWN);
 		}
 
+		if (m_info.pCollisionSphere->OnEnter(CCollision::TAG_ROCKET))
+		{// ƒ~ƒTƒCƒ‹‚Ì”j‰ó
+			m_info.pCollisionSphere->DamageAll(CCollision::TAG_ROCKET, DAMAGE_THROWN);
+		}
+
 		if (m_info.pCollisionSphere != nullptr)
 		{
 			m_info.pCollisionSphere->SetRadius(90.0f);
@@ -742,8 +747,10 @@ void CEnemy::SetSpherePosition(D3DXVECTOR3 pos)
 //=====================================================
 // “–‚½‚è”»’è¶¬
 //=====================================================
-void CEnemy::CreateCollision(void)
+void CEnemy::CreateCollision(float fRadius)
 {
+	m_info.fRadius = fRadius;
+
 	if (m_info.pCollisionSphere == nullptr)
 	{// ‹…‚Ì“–‚½‚è”»’è¶¬
 		m_info.pCollisionSphere = CCollisionSphere::Create(CCollision::TAG_ENEMY, CCollision::TYPE_SPHERE, this);
@@ -751,7 +758,7 @@ void CEnemy::CreateCollision(void)
 		if (m_info.pCollisionSphere != nullptr)
 		{// î•ñ‚Ìİ’è
 			m_info.pCollisionSphere->SetPosition(GetPosition());
-			m_info.pCollisionSphere->SetRadius(90.0f);
+			m_info.pCollisionSphere->SetRadius(fRadius);
 		}
 	}
 

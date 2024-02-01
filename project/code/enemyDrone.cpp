@@ -51,12 +51,12 @@ CEnemyDrone::~CEnemyDrone()
 //=====================================================
 HRESULT CEnemyDrone::Init(void)
 {
-	DeleteCollision();
-
 	Load((char*)PATH_BODY_ENEMY[TYPE_DRONE]);
 
 	// åpè≥ÉNÉâÉXÇÃèâä˙âª
 	CEnemy::Init();
+
+	DeleteCollision();
 
 	return S_OK;
 }
@@ -98,7 +98,7 @@ void CEnemyDrone::Update(void)
 
 			if (nMotion != 1 && state != STATE_DEATH)
 			{
-				CreateCollision();
+				CreateCollision(240.0f);
 
 				SetMotion(1);
 			}

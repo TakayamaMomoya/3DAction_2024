@@ -24,7 +24,7 @@ namespace
 const float TIME_MISSILE = 0.25f;	// ミサイル発射の時間
 const int NUM_MISSILE = 10;	// ミサイルの発射数
 const float TIME_DRONE = 1.0f;	// ドローン発射の時間
-const int NUM_DRONE = 10;	// ドローンの発射数
+const int NUM_DRONE = 3;	// ドローンの発射数
 const int RANGE_HEIGHT_DRONE = 500;	// ドローンの高さの幅
 const float MOVE_DRONE = 50.0f;	// ドローンの射出時の移動量
 const float TIME_MG = 0.15f;	// マシンガン発射の時間
@@ -105,7 +105,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 	if (pBoss->AttackTimer(TIME_MISSILE))
 	{// ミサイルの発射
-		CMissile *pMissile = CMissile::Create(pBoss->GetPosition());
+		CMissile *pMissile = CMissile::Create(pBoss->GetMtxPos(1));
 
 		if (pMissile != nullptr)
 		{
@@ -125,7 +125,6 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 	}
 
 	// 後退処理
-	pBoss->Back();
 	pBoss->AimPlayer();
 }
 
@@ -203,7 +202,7 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 
 	if (pBoss->AttackTimer(TIME_MG))
 	{// 射出する
-		D3DXVECTOR3 posMazzle = pBoss->GetMtxPos(0);
+		D3DXVECTOR3 posMazzle = pBoss->GetMtxPos(5);
 		D3DXVECTOR3 moveBullet;
 		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
