@@ -137,3 +137,20 @@ void CSlow::SetSlowTime(float fTime, float fScale)
 	
 	SetScale(fScale);
 }
+
+namespace Slow
+{
+float GetScale(void)
+{
+	float fScale = 1.0f;
+
+	CSlow *pSlow = CSlow::GetInstance();
+
+	if (pSlow != nullptr)
+	{
+		fScale = pSlow->GetScale();
+	}
+
+	return fScale;
+}
+}

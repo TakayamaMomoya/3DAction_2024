@@ -23,19 +23,20 @@
 #include "particle.h"
 #include "stateEnemyBoss.h"
 #include "beam.h"
+#include "slow.h"
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
-const float INITIAL_LIFE = 60.0f;	// 初期体力
+const float INITIAL_LIFE = 6.0f;	// 初期体力
 const int INITIAL_SCORE = 30000;	// 初期スコア
 const float MOVE_FACT = 0.04f;	// 移動係数
 const float LINE_END = 5.0f;	// 移動終了のしきい値
 const int DAMAGE_FRAME = 10;	// ダメージ状態の時間
 const float SPEED_BACK = 1.8f;	// 後退の移動速度
-const float SPEED_DODGE = 1.1f;	// 後退時の横移動速度
+const float SPEED_DODGE = 2.1f;	// 後退時の横移動速度
 }
 
 //*****************************************************
@@ -389,6 +390,11 @@ void CEnemyBoss::Hit(float fDamage)
 
 			// 当たり判定削除
 			DeleteCollision();
+
+			CSlow *pSlow = CSlow::GetInstance();
+
+			if (pSlow != nullptr)
+				pSlow->SetSlowTime(4.0f,0.1f);
 		}
 		else
 		{

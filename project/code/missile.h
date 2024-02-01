@@ -25,6 +25,7 @@ public:
 	void Draw(void);
 	static CMissile *Create(D3DXVECTOR3 pos);
 	void Hit(float fDamage) { Death(); }
+	void HitField(void) override;
 
 private:
 	void ChasePlayer(void);	// ’ÇÕˆ—

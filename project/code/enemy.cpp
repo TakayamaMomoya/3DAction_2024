@@ -212,6 +212,7 @@ HRESULT CEnemy::Init(void)
 	m_info.fLife = INITIAL_LIFE;
 	SetMoveSpeed(INITIAL_SPEED);
 	m_info.fDistLock = INITIAL_DIST_LOCK;
+	m_info.bStamp = true;
 
 	// ’Êíó‘Ô‚É‚·‚é
 	m_info.state = STATE_NORMAL;
@@ -586,8 +587,9 @@ bool CEnemy::MoveToDest(D3DXVECTOR3 posDest, float fSpeed)
 bool CEnemy::AttackTimer(float fTime)
 {
 	float fDeltaTime = CManager::GetDeltaTime();
+	float fScaleTime = Slow::GetScale();
 
-	m_info.fCntAttack += fDeltaTime;
+	m_info.fCntAttack += fDeltaTime * fScaleTime;
 
 	if (m_info.fCntAttack > fTime)
 	{

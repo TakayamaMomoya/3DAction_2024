@@ -412,6 +412,14 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 		posDestCursor = posScreen;
 	}
 
+	if (m_pEnemyLockon != nullptr)
+	{
+		D3DXVECTOR3 pos = m_pEnemyLockon->GetMtxPos(0);
+		D3DXMATRIX mtx = *m_pEnemyLockon->GetMatrix();
+
+		universal::IsInScreen(pos, mtx, &posDestCursor);
+	}
+
 	if (m_pCursor != nullptr)
 	{// カーソルの位置補正
 		D3DXVECTOR3 posCursor = m_pCursor->GetPosition();

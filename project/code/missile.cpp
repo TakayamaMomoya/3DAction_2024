@@ -91,6 +91,10 @@ HRESULT CMissile::Init(void)
 //=====================================================
 void CMissile::Death(void)
 {
+	D3DXVECTOR3 pos = GetPosition();
+
+	CParticle::Create(pos, CParticle::TYPE::TYPE_EXPLOSION);
+
 	// 自身の終了
 	Uninit();
 }
@@ -239,4 +243,12 @@ void CMissile::Draw(void)
 {
 	// 継承クラスの描画
 	CEnemy::Draw();
+}
+
+//=====================================================
+// 地面に当たったときの処理
+//=====================================================
+void CMissile::HitField(void)
+{
+	Death();
 }

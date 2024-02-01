@@ -242,6 +242,8 @@ void CPlayer::Update(void)
 		nMotion != MOTION_ASSAULT && 
 		nMotion != MOTION_MELEE && 
 		nMotion != MOTION_MELEE2 &&
+		nMotion != MOTION_GRAB &&
+		nMotion != MOTION_THROW &&
 		m_fragMotion.bStamp == false)
 	{
 		if (pSlow != nullptr)
@@ -552,18 +554,42 @@ void CPlayer::Stamp(void)
 		CObject *pObj = m_info.pClsnAttack->GetOther();
 
 		if (pObj != nullptr)
-		{
-			// 当たったオブジェクトのヒット処理
-			pObj->Hit(5.0f);
+		{// 踏める敵かチェック
+			CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+			if (pEnemyManager == nullptr)
+			{
+				return;
+			}
+
+			CEnemy *pEnemy = pEnemyManager->GetHead();
+
+			while (pEnemy != nullptr)
+			{
+				CEnemy *pEnemyNext = pEnemy->GetNext();
+
+				if ((CObject*)pEnemy == pObj)
+				{
+					bool bStamp = pEnemy->IsStamp();
+
+					if (bStamp)
+					{
+						m_fragMotion.bStamp = true;
+
+						D3DXVECTOR3 move = GetMove();
+
+						move *= 0.0;
+
+						SetMove(move);
+
+						// 当たったオブジェクトのヒット処理
+						pObj->Hit(5.0f);
+					}
+				}
+
+				pEnemy = pEnemyNext;
+			}
 		}
-
-		m_fragMotion.bStamp = true;
-
-		D3DXVECTOR3 move = GetMove();
-
-		move *= 0.0;
-
-		SetMove(move);
 	}
 }
 
@@ -1307,8 +1333,6 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 
 		if (pObj != nullptr)
 		{
-			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 5.0f);
-
 			// ヒットストップ
 			CSlow *pSlow = CSlow::GetInstance();
 
@@ -1324,6 +1348,8 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 			{
 				pCamera->SetQuake(1.01f, 1.01f, 10);
 			}
+
+			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 5.0f);
 		}
 	}
 }

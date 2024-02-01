@@ -82,6 +82,8 @@ public:
 	bool AttackTimer(float fTime);
 	void SetDistLock(float fDist) { m_info.fDistLock = fDist; }
 	float GetDistLock(void) { return m_info.fDistLock; }
+	bool IsStamp(void) { return m_info.bStamp; }
+	void EnableStamp(bool bStamp) { m_info.bStamp = bStamp; }
 
 protected:
 	void ManageScore(void);
@@ -109,6 +111,7 @@ private:
 		CUI *pCursor;	// 捕捉可能カーソル
 		float fDistLock;	// ロック可能距離
 		float aDistMoveState[MOVESTATE_MAX];	// 移動状態がかわる距離
+		bool bStamp;	// 踏めるかどうか
 	};
 	void ManageState(void);
 	void ManageMoveState(void);
