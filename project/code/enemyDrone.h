@@ -45,6 +45,8 @@ private:
 
 	float m_fTimeFire;	// 射撃タイマー
 	D3DXVECTOR3 m_posDest;	// 目標位置
+	float m_fLengthDest;	// 目標位置の距離
+	float m_fAngleDest;	// 目標位置の角度
 };
 
 #endif

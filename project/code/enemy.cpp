@@ -480,15 +480,15 @@ void CEnemy::CollisionThrown(void)
 	{
 		m_info.pCollisionSphere->SetRadius(200.0f);
 
+		if (m_info.pCollisionSphere->OnEnter(CCollision::TAG_ROCKET))
+		{// ミサイルの破壊
+			m_info.pCollisionSphere->DamageAll(CCollision::TAG_ROCKET, DAMAGE_THROWN);
+		}
+
 		if (m_info.pCollisionSphere->OnEnter(CCollision::TAG_ENEMY))
 		{
 			// 当たった敵にダメージを与える
 			m_info.pCollisionSphere->DamageAll(CCollision::TAG_ENEMY, DAMAGE_THROWN);
-		}
-
-		if (m_info.pCollisionSphere->OnEnter(CCollision::TAG_ROCKET))
-		{// ミサイルの破壊
-			m_info.pCollisionSphere->DamageAll(CCollision::TAG_ROCKET, DAMAGE_THROWN);
 		}
 
 		if (m_info.pCollisionSphere != nullptr)

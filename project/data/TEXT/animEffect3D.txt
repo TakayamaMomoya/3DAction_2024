@@ -10,7 +10,7 @@ EFFECTSET		#0 マズルフラッシュ
 	PATH = data\TEXTURE\EFFECT\muzzleFlush.png
 	NUM_ANIM = 6
 	SPEED_ANIM = 1
-	SIZE = 70.0
+	SIZE = 400.0
 	COL = 1.0 1.0 1.0 1.0
 	IS_ADD = 0
 	IS_LOOP = 0
@@ -53,7 +53,7 @@ EFFECTSET		#4 爆発のアニメーション
 	PATH = data\TEXTURE\EFFECT\explosion.png
 	NUM_ANIM = 14
 	SPEED_ANIM = 3
-	SIZE = 60.0
+	SIZE = 120.0
 	COL = 1.0 1.0 1.0 1.0
 	IS_ADD = 0
 	IS_LOOP = 0

@@ -81,7 +81,7 @@ HRESULT CBullet::Init(void)
 	// É^ÉCÉvÇÃê›íË
 	SetType(TYPE_BULLET);
 
-	m_col = D3DXCOLOR(1.0f, 0.3f, 0.0f, 1.0f);
+	m_col = D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f);
 
 	// å©ÇΩñ⁄ÇÃê∂ê¨
 	if (m_pObject3D == nullptr)

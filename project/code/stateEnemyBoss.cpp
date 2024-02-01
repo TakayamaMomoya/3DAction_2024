@@ -15,13 +15,14 @@
 #include "missile.h"
 #include "bullet.h"
 #include "player.h"
+#include "animEffect3D.h"
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
-const float TIME_MISSILE = 0.25f;	// ミサイル発射の時間
+const float TIME_MISSILE = 0.5f;	// ミサイル発射の時間
 const int NUM_MISSILE = 10;	// ミサイルの発射数
 const float TIME_DRONE = 1.0f;	// ドローン発射の時間
 const int NUM_DRONE = 3;	// ドローンの発射数
@@ -111,7 +112,17 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 		{
 			D3DXVECTOR3 rot = pBoss->GetRot();
 
-			rot.x = -D3DX_PI * 0.5f;
+
+			if (m_nCnt % 2 == 0)
+			{
+				rot.x = -D3DX_PI * 0.3f;
+				rot.y = D3DX_PI * 0.5f;
+			}
+			else
+			{
+				rot.x = -D3DX_PI * 0.3f;
+				rot.y = -D3DX_PI * 0.3f;
+			}
 
 			pMissile->SetRot(rot);
 		}
@@ -207,6 +218,7 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
 
+		// 偏差の計算
 		D3DXVECTOR3 posPrediction = universal::LinePridiction(posMazzle, SPEED_BULLET, posPlayer, movePlayer);
 
 		posPrediction.x += (float)universal::RandRange(ACCURACY_MG, -ACCURACY_MG);
@@ -218,7 +230,16 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 
 		moveBullet = vecDiffBullet * SPEED_BULLET;
 
+		// 弾の発射
 		CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.01f);
+
+		// アニメエフェクト生成
+		CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
+
+		if (pAnim3D != nullptr)
+		{
+			pAnim3D->CreateEffect(posMazzle, CAnimEffect3D::TYPE::TYPE_MUZZLEFLUSH);
+		}
 
 		m_nCnt++;
 

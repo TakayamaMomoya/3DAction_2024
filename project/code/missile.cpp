@@ -193,8 +193,8 @@ void CMissile::ChasePlayer(void)
 		// å¸Ç´ÇÃï‚ê≥
 		D3DXVECTOR3 rot = GetRot();
 
-		universal::FactingRot(&rot.x, rotDest.x, 0.30f);
-		universal::FactingRot(&rot.y, rotDest.y, 0.30f);
+		universal::FactingRot(&rot.x, rotDest.x, 0.35f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.35f);
 
 		SetRot(rot);
 
