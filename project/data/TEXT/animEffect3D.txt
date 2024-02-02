@@ -51,7 +51,7 @@ END_EFFECTSET
 
 EFFECTSET		#4 爆発のアニメーション
 	PATH = data\TEXTURE\EFFECT\explosion.png
-	NUM_ANIM = 14
+	NUM_ANIM = 8
 	SPEED_ANIM = 3
 	SIZE = 120.0
 	COL = 1.0 1.0 1.0 1.0

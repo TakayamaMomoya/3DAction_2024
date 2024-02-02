@@ -36,6 +36,7 @@ public:
 	CGame();	// コンストラクタ
 	~CGame();	// デストラクタ
 
+	static CGame *GetInstance(void) { return m_pGame; }
 	virtual HRESULT Init(void);
 	virtual void Uninit(void);
 	virtual void Update();
@@ -45,7 +46,6 @@ public:
 	void EnableStop(bool bStop) { m_bStop = bStop; }
 	bool GetStop(void) { return m_bStop; }
 	void SetEventCamera(float fTime, D3DXVECTOR3 posRDest, D3DXVECTOR3 posVDest);
-	static CGame *GetInstance(void) { return m_pGame; }
 
 private:
 	void UpdateCamera(void);

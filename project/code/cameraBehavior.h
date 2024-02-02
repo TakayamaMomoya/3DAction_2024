@@ -23,7 +23,6 @@ public:
 	virtual void Update(CCamera *pCamera) = 0;
 
 private:
-
 };
 
 // ƒvƒŒƒCƒ„[’Ç]

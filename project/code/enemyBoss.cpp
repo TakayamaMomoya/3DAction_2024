@@ -24,6 +24,7 @@
 #include "stateEnemyBoss.h"
 #include "beam.h"
 #include "slow.h"
+#include "fade.h"
 
 //*****************************************************
 // 定数定義
@@ -112,6 +113,8 @@ HRESULT CEnemyBoss::Init(void)
 	SetPosition(D3DXVECTOR3(0.0f, 1500.0f, 0.0f));
 
 	SetDistLock(50000.0f);
+
+	EnableStamp(false);
 
 	return S_OK;
 }
@@ -375,15 +378,11 @@ void CEnemyBoss::Hit(float fDamage)
 
 		if (fLife <= 0.0f)
 		{// 死亡状態
-			SetMotion(MOTION_DEATH);
+			//SetMotion(MOTION_DEATH);
 
 			//CParticle::Create(GetMtxPos(0), CParticle::TYPE_FIRE);
 
 			fLife = 0.0f;
-
-			CGame::SetState(CGame::STATE_END);
-
-			state = CEnemy::STATE_DEATH;
 
 			// スコア管理
 			ManageScore();
@@ -394,7 +393,16 @@ void CEnemyBoss::Hit(float fDamage)
 			CSlow *pSlow = CSlow::GetInstance();
 
 			if (pSlow != nullptr)
-				pSlow->SetSlowTime(4.0f,0.1f);
+				pSlow->SetSlowTime(0.5f,0.1f);
+
+			ChangeState(new CStateBossTrans);
+
+			CFade *pFade = CFade::GetInstance();
+
+			if (pFade != nullptr)
+			{
+				pFade->SetFade(CScene::MODE_GAME, false);
+			}
 		}
 		else
 		{

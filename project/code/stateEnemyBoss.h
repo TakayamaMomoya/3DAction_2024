@@ -11,6 +11,7 @@
 #include <assert.h>
 
 class CEnemyBoss;
+class CObject3D;
 
 //*****************************************************
 // クラスの定義
@@ -66,5 +67,15 @@ class CStateBossAttackMachinegun : public CStateBoss
 	void Attack(CEnemyBoss *pBoss) override;
 
 	int m_nCnt; // 射出カウンター
+};
+
+class CStateBossTrans : public CStateBoss
+{// 第二形態へ移行する
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
+
+	void TransMovie(CEnemyBoss *pBoss);
+
+	CObject3D *CObject3D;	// 光っぽいエフェクト
 };
 #endif

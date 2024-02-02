@@ -19,8 +19,8 @@
 //*****************************************************
 namespace
 {
-const float DIST_CYLINDER = 3500.0f;
-const float DIST_LOOK = 5000.0f;
+const float DIST_CYLINDER = 1000.0f;
+const float DIST_LOOK = 1500.0f;
 }
 
 //=====================================================
@@ -125,7 +125,7 @@ void CLookEnemy::Update(CCamera *pCamera)
 		pCamera->ChangeBehavior(new CFollowPlayer);
 	}
 
-	if (fLegnthDiff < DIST_CYLINDER)
+	if (fLegnthFlat < DIST_CYLINDER)
 	{// シリンダー状の注視に移行
 		Camera::ChangeBehavior(new CMoveCylinder);
 	}
@@ -193,7 +193,7 @@ void CMoveCylinder::Update(CCamera *pCamera)
 		pCamera->ChangeBehavior(new CFollowPlayer);
 	}
 
-	if (fLegnthDiff > DIST_LOOK)
+	if (fLegnthFlat > DIST_LOOK)
 	{// 普通の注視に移行
 		Camera::ChangeBehavior(new CLookEnemy);
 	}

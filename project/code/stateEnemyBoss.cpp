@@ -16,6 +16,9 @@
 #include "bullet.h"
 #include "player.h"
 #include "animEffect3D.h"
+#include "fade.h"
+#include "explosionspawner.h"
+#include "particle.h"
 
 //*****************************************************
 // 定数定義
@@ -252,4 +255,61 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 	// 後退処理
 	pBoss->Back();
 	pBoss->AimPlayer();
+}
+
+//=====================================================
+// 第二形態へ移行する
+//=====================================================
+void CStateBossTrans::Init(CEnemyBoss *pBoss)
+{
+	CObject3D = nullptr;
+
+	CheckPointer(pBoss);
+
+}
+
+void CStateBossTrans::Move(CEnemyBoss *pBoss)
+{
+	CheckPointer(pBoss);
+
+	CFade *pFade = CFade::GetInstance();
+
+	int nMotion = pBoss->GetMotion();
+
+	if (pFade != nullptr && nMotion != CEnemyBoss::MOTION::MOTION_DEATH)
+	{
+		CFade::FADE state = pFade->GetState();
+
+		if (state == CFade::FADE::FADE_OUT)
+		{// ムービーにいく
+			TransMovie(pBoss);
+		}
+	}
+}
+
+void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
+{// ムービーに移行
+	D3DXVECTOR3 pos = { 7000.0f,0.0f,0.0f };
+	D3DXVECTOR3 rot = { 0.0f,D3DX_PI * 0.5f,0.0f };
+
+	// ボスとプレイヤーの位置を設定
+	pBoss->SetPosition(pos);
+	pBoss->SetRot(rot);
+
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr)
+	{
+		D3DXVECTOR3 posPlayer = { 5000.0f,0.0f,0.0f };
+		D3DXVECTOR3 rotPlayer = { 0.0f,0.0f,0.0f };
+
+		pPlayer->SetPosition(posPlayer);
+		pPlayer->SetRot(rotPlayer);
+	}
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
+	
+	pos.y += 200.0f;
+	CExplSpawner::Create(pos, 300.0f, 360);
+	CParticle::Create(pos, CParticle::TYPE::TYPE_TURN_EXPLOSION);
 }

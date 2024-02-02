@@ -23,7 +23,7 @@ public:
 	{
 		TYPE_NONE = 0,	// ‰½‚Å‚à‚È‚¢
 		TYPE_EXPLOSION,	// ”š”­
-		TYPE_INJECTION_FIRE,	// •¬ŽË(‰Î)
+		TYPE_TURN_EXPLOSION,	// Žû‘©”š”­
 		TYPE_INJECTION_SMOKE,	// •¬ŽË(‰Œ)
 		TYPE_SMOKE,	// ‰Œ
 		TYPE_TOMATO_JUICE,	// ƒgƒ}ƒg`

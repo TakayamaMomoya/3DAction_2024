@@ -180,6 +180,7 @@
     <ClCompile Include="code\enemyDrone.cpp" />
     <ClCompile Include="code\enemyManager.cpp" />
     <ClCompile Include="code\enemyNormal.cpp" />
+    <ClCompile Include="code\explosionspawner.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\fan2D.cpp" />
     <ClCompile Include="code\fan3D.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="code\enemyDrone.h" />
     <ClInclude Include="code\enemyManager.h" />
     <ClInclude Include="code\enemyNormal.h" />
+    <ClInclude Include="code\explosionspawner.h" />
     <ClInclude Include="code\fade.h" />
     <ClInclude Include="code\fan2D.h" />
     <ClInclude Include="code\fan3D.h" />
