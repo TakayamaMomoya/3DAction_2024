@@ -31,7 +31,7 @@
 //*****************************************************
 namespace
 {
-const float INITIAL_LIFE = 6.0f;	// 初期体力
+const float INITIAL_LIFE = 40.0f;	// 初期体力
 const int INITIAL_SCORE = 30000;	// 初期スコア
 const float MOVE_FACT = 0.04f;	// 移動係数
 const float LINE_END = 5.0f;	// 移動終了のしきい値

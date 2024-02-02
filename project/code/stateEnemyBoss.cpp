@@ -19,6 +19,10 @@
 #include "fade.h"
 #include "explosionspawner.h"
 #include "particle.h"
+#include "anim3D.h"
+#include "camera.h"
+#include "meshfield.h"
+#include "blockManager.h"
 
 //*****************************************************
 // 定数定義
@@ -262,7 +266,7 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossTrans::Init(CEnemyBoss *pBoss)
 {
-	CObject3D = nullptr;
+	m_fTimeTrans = 0.0f;
 
 	CheckPointer(pBoss);
 
@@ -272,17 +276,45 @@ void CStateBossTrans::Move(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
+	m_fTimeTrans += CManager::GetDeltaTime();
+
 	CFade *pFade = CFade::GetInstance();
 
 	int nMotion = pBoss->GetMotion();
+	bool bFinish = pBoss->IsFinish();
 
-	if (pFade != nullptr && nMotion != CEnemyBoss::MOTION::MOTION_DEATH)
+	if (pFade != nullptr)
 	{
 		CFade::FADE state = pFade->GetState();
 
+		if (state == CFade::FADE::FADE_NONE)
+		{
+			if (m_fTimeTrans > 6.0f)
+			{// フェードで第二形態に移る
+				Evolve(pBoss);
+			}
+		}
+
 		if (state == CFade::FADE::FADE_OUT)
-		{// ムービーにいく
-			TransMovie(pBoss);
+		{
+			if (nMotion != CEnemyBoss::MOTION::MOTION_DEATH)
+			{// ムービーにいく
+				TransMovie(pBoss);
+			}
+
+			if (m_fTimeTrans > 6.0f)
+			{// 地形の変動
+				// ブロック削除
+				CBlockManager *pBlockManager = CBlockManager::GetInstance();
+
+				if (pBlockManager != nullptr)
+					pBlockManager->DeleteAll();
+
+				// メッシュフィールド変形
+
+
+				pBoss->ChangeState(new CStateBossBeforeTrans);
+			}
 		}
 	}
 }
@@ -292,14 +324,14 @@ void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
 	D3DXVECTOR3 pos = { 7000.0f,0.0f,0.0f };
 	D3DXVECTOR3 rot = { 0.0f,D3DX_PI * 0.5f,0.0f };
 
-	// ボスとプレイヤーの位置を設定
+	// ボス位置を設定
 	pBoss->SetPosition(pos);
 	pBoss->SetRot(rot);
 
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
 	if (pPlayer != nullptr)
-	{
+	{// プレイヤー位置を設定
 		D3DXVECTOR3 posPlayer = { 5000.0f,0.0f,0.0f };
 		D3DXVECTOR3 rotPlayer = { 0.0f,0.0f,0.0f };
 
@@ -307,9 +339,59 @@ void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
 		pPlayer->SetRot(rotPlayer);
 	}
 
-	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
-	
+	// 爆発エフェクト
 	pos.y += 200.0f;
 	CExplSpawner::Create(pos, 300.0f, 360);
 	CParticle::Create(pos, CParticle::TYPE::TYPE_TURN_EXPLOSION);
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
+}
+
+void CStateBossTrans::Evolve(CEnemyBoss *pBoss)
+{// 第二形態に進化
+	// 大爆発を起こす
+	CAnimEffect3D *pAnim = CAnimEffect3D::GetInstance();
+
+	if (pAnim != nullptr)
+	{
+		D3DXVECTOR3 pos = pBoss->GetMtxPos(0);
+
+		CAnim3D *pExplosion;
+
+		pExplosion = pAnim->CreateEffect(pos, CAnimEffect3D::TYPE_EXPLOSION);
+
+		if (pExplosion != nullptr)
+		{
+			pExplosion->SetSize(2000.0f, 2000.0f);
+		}
+	}
+
+	// カメラを揺らす
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera != nullptr)
+	{
+		pCamera->SetQuake(0.2f, 0.2f, 120);
+	}
+
+	// 白いフェードをかける
+	CFade *pFade = CFade::GetInstance();
+
+	if (pFade != nullptr)
+	{
+		pFade->SetFade(CScene::MODE_GAME, false);
+	}
+}
+
+//=====================================================
+// 第二形態に移ったときの処理
+//=====================================================
+void CStateBossBeforeTrans::Init(CEnemyBoss *pBoss)
+{
+
+}
+
+void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
+{
+
 }

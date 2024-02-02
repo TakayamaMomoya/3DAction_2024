@@ -75,7 +75,14 @@ class CStateBossTrans : public CStateBoss
 	void Move(CEnemyBoss *pBoss) override;
 
 	void TransMovie(CEnemyBoss *pBoss);
+	void Evolve(CEnemyBoss *pBoss);
 
-	CObject3D *CObject3D;	// 光っぽいエフェクト
+	float m_fTimeTrans;	// 遷移タイマー
+};
+
+class CStateBossBeforeTrans : public CStateBoss
+{// 第二形態への移行時
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
 };
 #endif
