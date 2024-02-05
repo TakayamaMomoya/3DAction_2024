@@ -30,7 +30,7 @@
 #define MESH_U						(254)											// 横のブロック数
 #define MESH_V						(254)											// 縦のブロック数
 #define SPLIT_TEX					(10)										// テクスチャ分割数
-#define CHENGE_LENGTH	(1000)	// 操作できる頂点までの距離
+#define CHENGE_LENGTH	(10000)	// 操作できる頂点までの距離
 #define ANGLE_SLIP	(0.7f)	// 坂を滑る角度
 #define CMP_LENGTH	(1000.0f)	// 判定する半径
 
@@ -95,7 +95,7 @@ HRESULT CMeshField::Init(void)
 	m_col = { 1.0f,1.0f,1.0f,1.0f };
 
 	// 読込処理
-	Load();
+	Load("data\\MAP\\field00.bin");
 
 	//Reset();
 
@@ -324,7 +324,7 @@ void CMeshField::Edit(void)
 
 	if (pKeyboard->GetTrigger(DIK_F7))
 	{// 読込処理
-		Load();
+		Reset();
 	}
 }
 
@@ -899,7 +899,7 @@ void CMeshField::Draw(void)
 //=====================================================
 // 読込処理
 //=====================================================
-void CMeshField::Load(void)
+void CMeshField::Load(std::string path)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();
@@ -908,7 +908,7 @@ void CMeshField::Load(void)
 	FILE *pFile;
 
 	//ファイルを開く
-	pFile = fopen("data\\MAP\\field00.bin", "rb");
+	pFile = fopen((const char*)&path[0], "rb");
 
 	if (pFile != nullptr)
 	{
@@ -957,7 +957,7 @@ void CMeshField::Save(void)
 	FILE *pFile;
 
 	//ファイルを開く
-	pFile = fopen("data\\MAP\\field00.bin", "wb");
+	pFile = fopen("data\\MAP\\field01.bin", "wb");
 
 	if (pFile != nullptr)
 	{

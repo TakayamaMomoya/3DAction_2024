@@ -479,6 +479,21 @@ void CMotion::Draw(void)
 //=====================================================
 void CMotion::Load(char *pPath)
 {
+	for (int nCntMotion = 0; nCntMotion < MAX_MOTION; nCntMotion++)
+	{// パーティクル情報の破棄
+		if (m_aMotionInfo[nCntMotion].pEvent != nullptr)
+		{
+			delete m_aMotionInfo[nCntMotion].pEvent;
+			m_aMotionInfo[nCntMotion].pEvent = nullptr;
+		}
+	}
+
+	//ZeroMemory(&m_aMotionInfo, sizeof(m_aMotionInfo));
+	ZeroMemory(&m_aKeyOld, sizeof(m_aKeyOld));
+	ZeroMemory(&m_apParts[0], sizeof(m_apParts));
+	//ZeroMemory(&m_abMotion[0], sizeof(m_abMotion));
+	m_nKey = 0;
+
 	//変数宣言
 	char cTemp[MAX_STRING];
 	int nCntMotion = 0;

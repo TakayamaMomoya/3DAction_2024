@@ -12,6 +12,7 @@
 // インクルード
 //*****************************************************
 #include "object.h"
+#include <string>
 
 //*****************************************************
 // クラス定義
@@ -39,7 +40,7 @@ public:
 	void Draw(void);
 	float GetHeight(D3DXVECTOR3 pos, D3DXVECTOR3 *pMove, D3DXVECTOR3 *pNor = nullptr);
 	void Edit(void);
-	void Load(void);
+	void Load(std::string path);
 	void Save(void);
 	void SetNormal(void);
 	void Dent(D3DXVECTOR3 pos, float fRadius, float fDepth);

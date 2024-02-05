@@ -85,6 +85,34 @@ void LimitPosInSq(float fWidth, float fHeight, D3DXVECTOR3 *pPos)
 }
 
 //========================================
+// 球の距離制限
+//========================================
+float LimitDistCylinder(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget)
+{
+	if (pPos == nullptr)
+		return 0.0f;
+
+	posTarget.y = pPos->y;
+
+	D3DXVECTOR3 vecDiff = posTarget - *pPos;
+
+	float fDistDiff = D3DXVec3Length(&vecDiff);
+
+	if (fLength >= fDistDiff)
+	{
+		fDistDiff = fLength;
+
+		D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+		vecDiff *= fLength;
+
+		*pPos = posTarget - vecDiff;
+	}
+
+	return fDistDiff;
+}
+
+//========================================
 // オフセット設定処理
 //========================================
 void SetOffSet(D3DXMATRIX *pMtxWorldOffset, D3DXMATRIX mtxWorldOwner, D3DXVECTOR3 posOffset, D3DXVECTOR3 rot)
@@ -216,11 +244,9 @@ bool IsCross(D3DXVECTOR3 posTarget, D3DXVECTOR3 vecSorce, D3DXVECTOR3 vecDest, f
 	{
 		if (pRate != nullptr)
 		{
-			D3DXVECTOR3 vecToPos = posTarget - vecSorce;
-
 			// 割合を算出
 			float fAreaMax = (vecDest.z * move.x) - (vecDest.x * move.z);
-			float fArea = (vecToPos.z * move.x) - (vecToPos.x * move.z);
+			fArea = (vecToPos.z * move.x) - (vecToPos.x * move.z);
 
 			*pRate = fArea / fAreaMax;
 		}

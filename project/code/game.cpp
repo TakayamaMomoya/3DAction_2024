@@ -109,7 +109,7 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CEnemyBoss::Create();
+	//CEnemyBoss::Create();
 
 	return S_OK;
 }

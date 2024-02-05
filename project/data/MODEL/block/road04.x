@@ -343,7 +343,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\stageEditor\\data\\TEXTURE\\MATERIAL\\curve.jpg";
+    "data\\TEXTURE\\MATERIAL\\curve.jpg";
    }
   }
   Material {
@@ -352,7 +352,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\stageEditor\\data\\TEXTURE\\MATERIAL\\road.jpg";
+    "data\\TEXTURE\\MATERIAL\\road.jpg";
    }
   }
   Material {
@@ -361,7 +361,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\stageEditor\\data\\TEXTURE\\MATERIAL\\crossroad.jpg";
+    "data\\TEXTURE\\MATERIAL\\crossroad.jpg";
    }
   }
   Material {

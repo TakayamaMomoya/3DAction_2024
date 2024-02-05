@@ -33,6 +33,9 @@ protected:
 private:
 };
 
+//=====================================================
+// 第一形態
+//=====================================================
 class CStateBossApper : public CStateBoss
 {// 出現状態
 	void Init(CEnemyBoss *pBoss) override;
@@ -80,8 +83,17 @@ class CStateBossTrans : public CStateBoss
 	float m_fTimeTrans;	// 遷移タイマー
 };
 
+//=====================================================
+// 第ニ形態
+//=====================================================
 class CStateBossBeforeTrans : public CStateBoss
 {// 第二形態への移行時
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
+};
+
+class CStateBossSlash : public CStateBoss
+{
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
 };

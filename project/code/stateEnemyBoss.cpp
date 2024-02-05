@@ -78,7 +78,7 @@ void CStateBossAttackBeam::Init(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
 
-	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_SHOT_UNDER);
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_SHOT);
 }
 
 void CStateBossAttackBeam::Attack(CEnemyBoss *pBoss)
@@ -311,7 +311,10 @@ void CStateBossTrans::Move(CEnemyBoss *pBoss)
 					pBlockManager->DeleteAll();
 
 				// メッシュフィールド変形
+				CMeshField *pMesh = CMeshField::GetInstance();
 
+				if (pMesh != nullptr)
+					pMesh->Load("data\\MAP\\field01.bin");
 
 				pBoss->ChangeState(new CStateBossBeforeTrans);
 			}
@@ -388,10 +391,27 @@ void CStateBossTrans::Evolve(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossBeforeTrans::Init(CEnemyBoss *pBoss)
 {
+	pBoss->Load("data\\MOTION\\robot00.txt");
 
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_SLASH);
+
+	pBoss->ChangeState(new CStateBossSlash);
 }
 
 void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
+{
+
+}
+
+//=====================================================
+// 斬撃モーション
+//=====================================================
+void CStateBossSlash::Init(CEnemyBoss *pBoss)
+{
+
+}
+
+void CStateBossSlash::Move(CEnemyBoss *pBoss)
 {
 
 }

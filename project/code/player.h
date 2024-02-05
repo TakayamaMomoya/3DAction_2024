@@ -27,6 +27,22 @@ class CEnemy;
 class CPlayer : public CMotion
 {
 public:
+	enum MOTION
+	{
+		MOTION_NEUTRAL = 0,	// 待機
+		MOTION_WALK_FRONT,	// 前歩
+		MOTION_SHOT,	// 射撃
+		MOTION_JUMP,	// ジャンプ
+		MOTION_AIR,	// 滞空
+		MOTION_ASSAULT,	// 突進状態
+		MOTION_MELEE,	// 近接攻撃
+		MOTION_MELEE2,	// ２回目の近接攻撃
+		MOTION_STOP,	// 急停止モーション
+		MOTION_GRAB,	// 掴みモーション
+		MOTION_THROW,	// 投げモーション
+		MOTION_STAMP,	// 踏みつけモーション
+		MOTION_MAX
+	};
 	enum STATE
 	{
 		STATE_NONE = 0,	// 何でもない状態
@@ -67,22 +83,6 @@ public:
 	STATEBOOST GetStateBoost(void) { return m_info.stateBoost; }
 
 private:
-	enum MOTION
-	{
-		MOTION_NEUTRAL = 0,	// 待機
-		MOTION_WALK_FRONT,	// 前歩
-		MOTION_SHOT,	// 射撃
-		MOTION_JUMP,	// ジャンプ
-		MOTION_AIR,	// 滞空
-		MOTION_ASSAULT,	// 突進状態
-		MOTION_MELEE,	// 近接攻撃
-		MOTION_MELEE2,	// ２回目の近接攻撃
-		MOTION_STOP,	// 急停止モーション
-		MOTION_GRAB,	// 掴みモーション
-		MOTION_THROW,	// 投げモーション
-		MOTION_STAMP,	// 踏みつけモーション
-		MOTION_MAX
-	};
 	struct SFragMotion
 	{
 		bool bMove;	// 移動

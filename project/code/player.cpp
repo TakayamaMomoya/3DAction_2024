@@ -299,6 +299,11 @@ void CPlayer::Update(void)
 		// ブースト回復
 		AddBoost(REGEN_BOOST);
 	}
+	else
+	{
+		// ブースト回復
+		AddBoost(REGEN_BOOST * 0.2f);
+	}
 
 // デバッグ処理
 #if _DEBUG
@@ -687,9 +692,13 @@ void CPlayer::InputAttack(void)
 		return;
 	}
 
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_SHOT))
+	if (pInputManager->GetPress(CInputManager::BUTTON_SHOT))
 	{// 射撃処理
 		m_fragMotion.bShot = true;
+	}
+	else
+	{
+		m_fragMotion.bShot = false;
 	}
 
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE))
@@ -978,6 +987,8 @@ void CPlayer::ManageMotion(void)
 
 					if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr) == false)
 					{
+						Camera::ChangeBehavior(new CMoveCylinder);
+
 						AddMoveForward(POW_ADDMELEE);
 					}
 				}
@@ -1003,7 +1014,7 @@ void CPlayer::ManageMotion(void)
 	}
 	else if (m_fragMotion.bShot)
 	{// 射撃モーション
-		if (nMotion != MOTION_SHOT)
+		if (nMotion != MOTION_SHOT || (nMotion == MOTION_SHOT && bFinish))
 		{
 			SetMotion(MOTION_SHOT);
 		}
@@ -1080,6 +1091,8 @@ void CPlayer::StartMelee(void)
 
 		if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr))
 		{
+			Camera::ChangeBehavior(new CMoveCylinder);
+
 			bNear = true;
 
 			// 移動を止める
@@ -1427,6 +1440,8 @@ CEnemy *CPlayer::GetLockOn(void)
 //=====================================================
 void CPlayer::EndMelee(void)
 {
+	Camera::ChangeBehavior(new CFollowPlayer);
+
 	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
 	if (pEnemyManager != nullptr)

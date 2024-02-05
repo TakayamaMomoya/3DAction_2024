@@ -255,7 +255,7 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 
 	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
 
-	if (nMotion == MOTION_SHOT_UNDER)
+	if (nMotion == MOTION_SHOT)
 	{
 		// ÉrÅ[ÉÄÇÃê∂ê¨
 		CBeam *pBeam = CBeam::Create();

@@ -2641,7 +2641,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Visual Studio 2015\\Projects\\プログラミング応用DirectX\\07_alpha\\data\\TEXTURE\\MATERIAL\\container.jpg";
+    "data\\TEXTURE\\MATERIAL\\container.jpg";
    }
   }
   Material {
@@ -2656,7 +2656,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Visual Studio 2015\\Projects\\プログラミング応用DirectX\\07_alpha\\data\\TEXTURE\\MATERIAL\\container.jpg";
+    "data\\TEXTURE\\MATERIAL\\container.jpg";
    }
   }
   Material {
@@ -2671,7 +2671,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Visual Studio 2015\\Projects\\プログラミング応用DirectX\\07_alpha\\data\\TEXTURE\\MATERIAL\\container.jpg";
+    "data\\TEXTURE\\MATERIAL\\container.jpg";
    }
   }
   Material {

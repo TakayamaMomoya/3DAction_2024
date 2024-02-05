@@ -23,8 +23,9 @@ public:
 		MOTION_APPER = 0,	// 出現モーション
 		MOTION_MISSILE,	// ミサイルモーション
 		MOTION_DASH,	// 突進モーション
-		MOTION_SHOT_UNDER,	// 射撃モーション
-		MOTION_SHOT_UPPER,	// 反転射撃モーション
+		MOTION_SHOT,	// 射撃モーション
+		MOTION_SLASH,	// 斬撃
+		MOTION_PRE_SLASH,	// 斬撃予備
 		MOTION_DEATH,	// 死亡モーション
 		MOTION_MAX
 	};

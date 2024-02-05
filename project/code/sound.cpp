@@ -18,7 +18,7 @@ CSound::CSound()
 {
 	m_pXAudio2 = nullptr;								// XAudio2オブジェクトへのインターフェイス
 	m_pMasteringVoice = nullptr;			// マスターボイス
-	m_apSourceVoice[LABEL_MAX] = {};	// ソースボイス
+	memset(&m_apSourceVoice[0], 0, sizeof(m_apSourceVoice));
 	ZeroMemory(&m_apDataAudio[0],sizeof(m_apDataAudio));					// オーディオデータ
 	ZeroMemory(&m_aSizeAudio[0],sizeof(m_aSizeAudio));;					// オーディオデータサイズ
 	m_fadeSound = FADESTATE_NONE;								// フェード状態

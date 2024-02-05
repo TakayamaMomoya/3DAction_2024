@@ -160,6 +160,12 @@ void CInputManager::Update(void)
 		pMouse->GetTrigger(CInputMouse::BUTTON_LMB) ||
 		pKeyboard->GetTrigger(DIK_RETURN)
 	);
+	m_info.abPress[BUTTON_SHOT] =
+	(
+		pJoypad->GetTriggerTB(CInputJoypad::TRIGGER_LT, 0) ||
+		pMouse->GetPress(CInputMouse::BUTTON_LMB) ||
+		pKeyboard->GetPress(DIK_RETURN)
+	);
 
 	// ‹ßÚUŒ‚
 	m_info.abTrigger[BUTTON_MELEE] =

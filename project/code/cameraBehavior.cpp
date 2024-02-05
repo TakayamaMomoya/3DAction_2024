@@ -116,6 +116,8 @@ void CLookEnemy::Update(CCamera *pCamera)
 		posEnemy.z - sinf(rot.x) * cosf(rot.y) * fLengthView
 	};
 
+	universal::LimitDistCylinder(1000.0f, &pInfoCamera->posV, pPlayer->GetPosition());
+
 	pInfoCamera->rot = rot;
 
 	bool bLock = pPlayer->IsTargetLock();
@@ -127,7 +129,7 @@ void CLookEnemy::Update(CCamera *pCamera)
 
 	if (fLegnthFlat < DIST_CYLINDER)
 	{// シリンダー状の注視に移行
-		Camera::ChangeBehavior(new CMoveCylinder);
+		//Camera::ChangeBehavior(new CMoveCylinder);
 	}
 }
 
@@ -188,13 +190,15 @@ void CMoveCylinder::Update(CCamera *pCamera)
 
 	bool bLock = pPlayer->IsTargetLock();
 
+	int nMotion = pPlayer->GetMotion();
+
 	if (pEnemyLock == nullptr || bLock == false)
 	{// プレイヤー追従に移行
-		pCamera->ChangeBehavior(new CFollowPlayer);
+		//pCamera->ChangeBehavior(new CFollowPlayer);
 	}
 
 	if (fLegnthFlat > DIST_LOOK)
 	{// 普通の注視に移行
-		Camera::ChangeBehavior(new CLookEnemy);
+		//Camera::ChangeBehavior(new CLookEnemy);
 	}
 }
