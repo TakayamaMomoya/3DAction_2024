@@ -39,6 +39,7 @@ const float TIME_MG = 0.15f;	// マシンガン発射の時間
 const int NUM_MG = 30;	// マシンガンの発射数
 const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
 const int ACCURACY_MG = 10;	// マシンガンの精度
+const float GRAVITY = 0.4f;	// 重力
 }
 
 //=====================================================
@@ -413,5 +414,9 @@ void CStateBossSlash::Init(CEnemyBoss *pBoss)
 
 void CStateBossSlash::Move(CEnemyBoss *pBoss)
 {
+	D3DXVECTOR3 move = pBoss->GetMove();
 
+	move.y -= GRAVITY;
+
+	pBoss->SetMove(move);
 }

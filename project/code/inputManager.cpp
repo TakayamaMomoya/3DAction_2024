@@ -162,7 +162,7 @@ void CInputManager::Update(void)
 	);
 	m_info.abPress[BUTTON_SHOT] =
 	(
-		pJoypad->GetTriggerTB(CInputJoypad::TRIGGER_LT, 0) ||
+		pJoypad->GetPressTB(CInputJoypad::TRIGGER_LT, 0) ||
 		pMouse->GetPress(CInputMouse::BUTTON_LMB) ||
 		pKeyboard->GetPress(DIK_RETURN)
 	);

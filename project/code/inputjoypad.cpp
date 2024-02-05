@@ -174,6 +174,14 @@ void CInputJoypad::Update(void)
 //====================================================
 // トリガー判定取得
 //====================================================
+bool CInputJoypad::GetPressTB(TRIGGER trigger, int nPlayer)
+{
+	return m_abPressTB[nPlayer][trigger];
+}
+
+//====================================================
+// トリガー判定取得
+//====================================================
 bool CInputJoypad::GetTriggerTB(TRIGGER trigger, int nPlayer)
 {
 	return m_abTriggerTB[nPlayer][trigger];
@@ -193,6 +201,10 @@ void CInputJoypad::CheckTrigger(XINPUT_STATE state, int nPlayer)
 	// 一気に押されていたらトリガー判定
 	m_abTriggerTB[nPlayer][TRIGGER_RT] = nDiffRT > LINE_TRIGGER;
 	m_abTriggerTB[nPlayer][TRIGGER_LT] = nDiffLT > LINE_TRIGGER;
+
+	// プレス判定
+	m_abPressTB[nPlayer][TRIGGER_RT] = m_aState[nPlayer].Gamepad.bRightTrigger > LINE_TRIGGER;
+	m_abPressTB[nPlayer][TRIGGER_LT] = m_aState[nPlayer].Gamepad.bLeftTrigger > LINE_TRIGGER;
 
 	CDebugProc::GetInstance()->Print("\n差分左[%d]右[%d]", nDiffLT, nDiffRT);
 }

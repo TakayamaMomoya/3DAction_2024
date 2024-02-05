@@ -76,7 +76,8 @@ public:
 	bool GetTrigger(PADBUTTOS nKey, int nPlayer);
 	bool GetRelease(PADBUTTOS nKey, int nPlayer);
 	int GetRepeat(PADBUTTOS nKey, int nPlayer);
-	bool GetTriggerTB(TRIGGER trigger,int nPlayer);
+	bool GetTriggerTB(TRIGGER trigger, int nPlayer);
+	bool GetPressTB(TRIGGER trigger,int nPlayer);
 	float GetJoyStickLX(int nPlayer);
 	float GetJoyStickLY(int nPlayer);
 	float GetJoyStickRX(int nPlayer);
@@ -102,6 +103,7 @@ private:
 	bool m_abTrigggerLStick[MAX_PLAYER][DIRECTION_MAX];	// スティックのトリガー判定
 	bool m_abTrigggerRStick[MAX_PLAYER][DIRECTION_MAX];	// スティックのトリガー判定
 	bool m_abTriggerTB[MAX_PLAYER][TRIGGER_MAX];	// トリガーの判定
+	bool m_abPressTB[MAX_PLAYER][TRIGGER_MAX];	// プレスの判定
 
 	static CInputJoypad *m_pJoyPad;	// 自身のポインタ
 };
