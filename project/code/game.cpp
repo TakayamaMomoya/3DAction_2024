@@ -70,7 +70,7 @@ HRESULT CGame::Init(void)
 	CUIManager::Create();
 
 	// スカイボックスの生成
-	//CSkybox::Create();
+	CSkybox::Create();
 
 	// ブロック管理の生成
 	CBlockManager::Create();
@@ -109,7 +109,7 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	//CEnemyBoss::Create();
+	CEnemyBoss::Create();
 
 	return S_OK;
 }

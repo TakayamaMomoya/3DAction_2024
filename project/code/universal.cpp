@@ -113,6 +113,35 @@ float LimitDistCylinder(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget)
 }
 
 //========================================
+// 反対の相対座標を出す処理
+//========================================
+D3DXVECTOR3 RelativeInversPos(D3DXVECTOR3 pos, D3DXVECTOR3 posCenter, float fRate)
+{
+	D3DXVECTOR3 posInvers = { 0.0f,0.0f,0.0f };
+
+	D3DXVECTOR3 vecDiff = posCenter - pos;
+
+	vecDiff *= fRate;
+
+	posInvers = posCenter + vecDiff;
+
+	return posInvers;
+}
+
+//========================================
+// 目標位置に向かう処理
+//========================================
+void MoveToDest(D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget, float fFact)
+{
+	if (pPos == nullptr)
+		return;
+
+	D3DXVECTOR3 vecDiff = posTarget - *pPos;
+
+	*pPos += vecDiff * fFact;
+}
+
+//========================================
 // オフセット設定処理
 //========================================
 void SetOffSet(D3DXMATRIX *pMtxWorldOffset, D3DXMATRIX mtxWorldOwner, D3DXVECTOR3 posOffset, D3DXVECTOR3 rot)

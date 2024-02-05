@@ -9,6 +9,7 @@
 #define _STATEENEMYBOSS_H_
 
 #include <assert.h>
+#include "main.h"
 
 class CEnemyBoss;
 class CObject3D;
@@ -93,8 +94,16 @@ class CStateBossBeforeTrans : public CStateBoss
 };
 
 class CStateBossSlash : public CStateBoss
-{
+{// 斬撃
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
+};
+
+class CStateBossStep : public CStateBoss
+{// ステップの逃げ
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
+
+	D3DXVECTOR3 m_posDest;
 };
 #endif

@@ -40,6 +40,9 @@ const int NUM_MG = 30;	// マシンガンの発射数
 const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
 const int ACCURACY_MG = 10;	// マシンガンの精度
 const float GRAVITY = 0.4f;	// 重力
+const float SPEED_SLASH = 0.05f;	// 斬撃時の突撃スピード
+const float RANGE_SLASH = 1000.0f;	// 斬撃に移るまでの距離
+const D3DXVECTOR3 POS_CENTER = { 5170.0f,-6245.0f,3791.0f };	// ステージの中心座標
 }
 
 //=====================================================
@@ -395,6 +398,8 @@ void CStateBossBeforeTrans::Init(CEnemyBoss *pBoss)
 	pBoss->Load("data\\MOTION\\robot00.txt");
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_SLASH);
+
+	pBoss->EnableTrans(true);
 }
 
 void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
@@ -410,6 +415,12 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 	if (bFinish)
 	{// 行動に遷移
 		pBoss->ChangeState(new CStateBossSlash);
+
+		// 当たり判定再生成
+		pBoss->CreateCollision(Boss::RADIUS_COLLISION);
+
+		// ライフリセット
+		pBoss->SetLife(Boss::INITIAL_LIFE);
 	}
 }
 
@@ -423,5 +434,72 @@ void CStateBossSlash::Init(CEnemyBoss *pBoss)
 
 void CStateBossSlash::Move(CEnemyBoss *pBoss)
 {
+	int nMotion = pBoss->GetMotion();
+	bool bFinish = pBoss->IsFinish();
 
+	if (nMotion == CEnemyBoss::MOTION::MOTION_PRE_SLASH)
+	{
+		pBoss->AimPlayer(0.0f, false);
+
+		if (bFinish)
+		{
+			// 目的地を設定
+			CPlayer *pPlayer = CPlayer::GetInstance();
+
+			if (pPlayer == nullptr)
+				return;
+
+			D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+			D3DXVECTOR3 pos = pBoss->GetPosition();
+
+			universal::MoveToDest(&pos, posPlayer, SPEED_SLASH);
+
+			pBoss->SetPosition(pos);
+
+			if (universal::DistCmp(pos, posPlayer, RANGE_SLASH, nullptr))
+			{
+				pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_SLASH);
+			}
+		}
+	}
+	else if (nMotion == CEnemyBoss::MOTION::MOTION_SLASH)
+	{
+		if (bFinish)
+		{
+			pBoss->ChangeState(new CStateBossStep);
+		}
+	}
+}
+
+//=====================================================
+// ステップ回避
+//=====================================================
+void CStateBossStep::Init(CEnemyBoss *pBoss)
+{
+	// 目的地を設定
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 目的地を設定
+	m_posDest = universal::RelativeInversPos(posPlayer,POS_CENTER,1.0f);
+}
+
+void CStateBossStep::Move(CEnemyBoss *pBoss)
+{
+	D3DXVECTOR3 pos = pBoss->GetPosition();
+
+	universal::MoveToDest(&pos, m_posDest, SPEED_SLASH);
+
+	pBoss->SetPosition(pos);
+
+	
+
+	if (universal::DistCmp(pos, m_posDest, RANGE_SLASH, nullptr))
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
 }

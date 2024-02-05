@@ -31,7 +31,6 @@
 //*****************************************************
 namespace
 {
-const float INITIAL_LIFE = 40.0f;	// 初期体力
 const int INITIAL_SCORE = 30000;	// 初期スコア
 const float MOVE_FACT = 0.04f;	// 移動係数
 const float LINE_END = 5.0f;	// 移動終了のしきい値
@@ -103,10 +102,10 @@ HRESULT CEnemyBoss::Init(void)
 	CEnemy::Init();
 
 	// 初期の体力設定
-	SetLife(INITIAL_LIFE);
+	SetLife(Boss::INITIAL_LIFE);
 
 	// 状態設定
-	ChangeState(new CStateBossAttackMissile);
+	ChangeState(new CStateBossTrans);
 
 	FollowCollision();
 
@@ -172,7 +171,7 @@ void CEnemyBoss::ManageCollision(void)
 //=====================================================
 // プレイヤーを狙う処理
 //=====================================================
-void CEnemyBoss::AimPlayer(float fSpeed)
+void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -183,8 +182,16 @@ void CEnemyBoss::AimPlayer(float fSpeed)
 
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
 		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
+		D3DXVECTOR3 posPridiction;
 
-		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
+		if (bPridict)
+		{
+			posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
+		}
+		else
+		{
+			posPridiction = posPlayer;
+		}
 
 		D3DXVECTOR3 vecDiff = posPridiction - pos;
 
@@ -302,7 +309,7 @@ void CEnemyBoss::FollowCollision(void)
 
 		pCollision->SetPositionOld(pCollision->GetPosition());
 		pCollision->SetPosition(pos);
-		pCollision->SetRadius(200.0f);
+		pCollision->SetRadius(Boss::RADIUS_COLLISION);
 	}
 }
 
@@ -378,9 +385,6 @@ void CEnemyBoss::Hit(float fDamage)
 
 		if (fLife <= 0.0f)
 		{// 死亡状態
-			//SetMotion(MOTION_DEATH);
-
-			//CParticle::Create(GetMtxPos(0), CParticle::TYPE_FIRE);
 
 			fLife = 0.0f;
 
@@ -395,13 +399,20 @@ void CEnemyBoss::Hit(float fDamage)
 			if (pSlow != nullptr)
 				pSlow->SetSlowTime(0.5f,0.1f);
 
-			ChangeState(new CStateBossTrans);
-
-			CFade *pFade = CFade::GetInstance();
-
-			if (pFade != nullptr)
+			if (m_info.bTrans == false)
 			{
-				pFade->SetFade(CScene::MODE_GAME, false);
+				ChangeState(new CStateBossTrans);
+
+				CFade *pFade = CFade::GetInstance();
+
+				if (pFade != nullptr)
+				{
+					pFade->SetFade(CScene::MODE_GAME, false);
+				}
+			}
+			else
+			{
+				SetMotion(MOTION::MOTION_DEATH);
 			}
 		}
 		else

@@ -12,6 +12,12 @@
 
 class CStateBoss;
 
+namespace Boss
+{
+const float RADIUS_COLLISION = 300.0f;	// 当たり判定の半径
+const float INITIAL_LIFE = 4.0f;	// 初期体力
+}
+
 //*****************************************************
 // クラスの定義
 //*****************************************************
@@ -42,8 +48,9 @@ public:
 	void Hit(float fDamage);
 	void ChangeState(CStateBoss *pNext);
 	void Event(EVENT_INFO *pEventInfo);
-	void AimPlayer(float fSpeed = 500.0f);
+	void AimPlayer(float fSpeed = 500.0f,bool bPridict = true);
 	void Back(void);
+	void EnableTrans(bool bTrans) { m_info.bTrans = bTrans; }
 
 private:
 	enum IDXPARTS
@@ -73,6 +80,7 @@ private:
 		int nCntAttack;	// 攻撃カウンター
 		int nNumAttack;	// 攻撃した回数
 		int nCntState;	// 状態遷移カウンター
+		bool bTrans;	// 形態変化後かどうか
 	};
 
 	void ManageCollision(void);
