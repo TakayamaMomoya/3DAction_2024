@@ -192,7 +192,6 @@ bool CInputJoypad::GetTriggerTB(TRIGGER trigger, int nPlayer)
 //====================================================
 void CInputJoypad::CheckTrigger(XINPUT_STATE state, int nPlayer)
 {
-	// ç∑ï™éÊìæ
 	int nDiffRT, nDiffLT;
 
 	nDiffRT = state.Gamepad.bRightTrigger - m_aState[nPlayer].Gamepad.bRightTrigger;

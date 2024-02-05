@@ -395,13 +395,22 @@ void CStateBossBeforeTrans::Init(CEnemyBoss *pBoss)
 	pBoss->Load("data\\MOTION\\robot00.txt");
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_SLASH);
-
-	pBoss->ChangeState(new CStateBossSlash);
 }
 
 void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 {
+	D3DXVECTOR3 move = pBoss->GetMove();
 
+	move.y -= GRAVITY;
+
+	pBoss->SetMove(move);
+
+	bool bFinish = pBoss->IsFinish();
+
+	if (bFinish)
+	{// s“®‚É‘JˆÚ
+		pBoss->ChangeState(new CStateBossSlash);
+	}
 }
 
 //=====================================================
@@ -409,14 +418,10 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossSlash::Init(CEnemyBoss *pBoss)
 {
-
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_SLASH);
 }
 
 void CStateBossSlash::Move(CEnemyBoss *pBoss)
 {
-	D3DXVECTOR3 move = pBoss->GetMove();
 
-	move.y -= GRAVITY;
-
-	pBoss->SetMove(move);
 }
