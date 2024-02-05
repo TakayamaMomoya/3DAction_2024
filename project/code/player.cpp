@@ -52,6 +52,7 @@ const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
 const float MELEE_DIST = 800.0f;	// 格闘に移る距離
 const float MIN_ANGLE_CAMERA = D3DX_PI * 0.2f;	// カメラの下を見る制限
 const float MAX_ANGLE_CAMERA = D3DX_PI * 0.7f;	// カメラの上を見る制限
+const float DAMAGE_BULLET = 1.0f;	// 弾の威力
 }
 
 //*****************************************************
@@ -1323,7 +1324,7 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_BULLET
 	};
 
-	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, 5.0f,
+	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, DAMAGE_BULLET,
 		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
 }
 
