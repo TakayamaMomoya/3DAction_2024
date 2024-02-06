@@ -423,6 +423,7 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 		// ライフリセット
 		pBoss->SetLife(Boss::INITIAL_LIFE);
 	}
+
 }
 
 //=====================================================
@@ -470,6 +471,8 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 			pBoss->ChangeState(new CStateBossStep);
 		}
 	}
+
+	pBoss->BeamBlade();
 }
 
 //=====================================================
@@ -495,6 +498,8 @@ void CStateBossStep::Init(CEnemyBoss *pBoss)
 void CStateBossStep::Move(CEnemyBoss *pBoss)
 {
 	D3DXVECTOR3 pos = pBoss->GetPosition();
+
+	pBoss->SetAfterImage(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.4f), 20);
 
 	if (m_bMid)
 	{

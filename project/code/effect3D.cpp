@@ -22,7 +22,7 @@
 //=====================================================
 // コンストラクタ
 //=====================================================
-CEffect3D::CEffect3D(int nPriority) : CBillboard(nPriority)
+CEffect3D::CEffect3D(int nPriority) : CObject3D(nPriority)
 {
 	m_nLife = 0;
 	m_fDecreaseRadius = 0.0f;
@@ -47,7 +47,7 @@ CEffect3D::~CEffect3D()
 HRESULT CEffect3D::Init(void)
 {
 	// 継承クラスの初期化
-	CBillboard::Init();
+	CObject3D::Init();
 
 	return S_OK;
 }
@@ -58,7 +58,7 @@ HRESULT CEffect3D::Init(void)
 void CEffect3D::Uninit(void)
 {
 	// 継承クラスの終了
-	CBillboard::Uninit();
+	CObject3D::Uninit();
 }
 
 //=====================================================
@@ -67,7 +67,19 @@ void CEffect3D::Uninit(void)
 void CEffect3D::Update(void)
 {
 	// 継承クラスの更新
-	CBillboard::Update();
+	CObject3D::Update();
+
+	MODE mode = GetMode();
+
+	if (mode == MODE_STRETCHBILLBOARD)
+	{
+		D3DXVECTOR3 rot = universal::VecToRot(m_move);
+
+		rot.x += 1.57;
+		rot.y += 3.14f;
+
+		SetRot(rot);
+	}
 
 	// 寿命減衰
 	m_nLife--;
@@ -152,7 +164,7 @@ void CEffect3D::Draw(void)
 	pDevice->SetRenderState(D3DRS_LIGHTING,FALSE);
 
 	// 継承クラスの描画
-	CBillboard::Draw();
+	CObject3D::Draw();
 
 	// ライティングを無効化
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);

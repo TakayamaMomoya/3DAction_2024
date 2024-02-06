@@ -50,12 +50,14 @@ public:
 	void SetRadius(void);
 	float GetRadius(void) { return m_fRadius; }
 	D3DXMATRIX *GetMatrix(void) { return &m_mtxWorld; }
-	void SetMatrix(void);
+	void CalcMatrix(void);
+	void SetMatrix(D3DXMATRIX mtx) { m_mtxWorld = mtx; }
 	D3DXVECTOR3 GetVtxMax(void) { return m_vtxMax; }	// æ“¾ˆ—
 	D3DXVECTOR3 GetVtxMin(void) { return m_vtxMin; }	// æ“¾ˆ—
 	void SetVtxMax(D3DXVECTOR3 vtx) { m_vtxMax = vtx; }
 	void SetVtxMin(D3DXVECTOR3 vtx) { m_vtxMin = vtx; }
 	void SetEmissiveCol(D3DXCOLOR col) { m_col = col; m_bChangeCol = true; }
+	D3DXCOLOR GetEmissiveCol(void) { return m_col; }
 	void ResetColor(void) { m_bChangeCol = false; }
 	float GetScale(void) { return m_fScale; }
 	void SetScale(float fScale) { m_fScale = fScale; }

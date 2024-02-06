@@ -35,6 +35,7 @@
 #include "meshfield.h"
 #include "enemyBoss.h"
 #include "cameraBehavior.h"
+#include "particle.h"
 
 //*****************************************************
 // マクロ定義
@@ -138,6 +139,8 @@ void CGame::Update(void)
 	{
 		// シーンの更新
 		CScene::Update();
+
+		CParticle::Create(D3DXVECTOR3(0.0f,0.0f,0.0f), CParticle::TYPE::TYPE_BEAM_BLADE);
 
 		// カーソルを中心に固定
 		SetCursorPos((int)(SCREEN_WIDTH * 0.5f), (int)(SCREEN_HEIGHT * 0.5f));

@@ -24,7 +24,7 @@ public:
 		TYPE_NONE = 0,	// 何でもない
 		TYPE_EXPLOSION,	// 爆発
 		TYPE_TURN_EXPLOSION,	// 収束爆発
-		TYPE_INJECTION_SMOKE,	// 噴射(煙)
+		TYPE_BEAM_BLADE,	// ビームブレード
 		TYPE_SMOKE,	// 煙
 		TYPE_TOMATO_JUICE,	// トマト汁
 		TYPE_MISSILE_SMOKE,	// ミサイルの煙
@@ -67,6 +67,7 @@ private:
 		float fRangeRot;	// 向きのランダム範囲
 		int nRot;	// 向きを反映するかどうか
 		bool bTurn;	// 反転するかどうか
+		int modeRender;	// 描画モード
 	}PARTICLE_INFO;
 
 	D3DXVECTOR3 m_pos;	// 位置

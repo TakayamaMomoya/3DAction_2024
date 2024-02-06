@@ -1416,7 +1416,7 @@ void CPlayer::Hit(float fDamage)
 				}
 				else
 				{
-					pCamera->SetQuake(0.6f, 0.6f, 20);
+					pCamera->SetQuake(1.5f, 1.5f, 20);
 				}
 			}
 		}

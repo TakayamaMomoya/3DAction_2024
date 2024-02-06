@@ -144,8 +144,8 @@ void CParticle::Update(void)
 			// エフェクト生成
 			pEffect3D = CEffect3D::Create(
 				&m_apParticleInfo[m_type]->acTexPath[0],
-				m_pos, 
-				fRadius, 
+				m_pos,
+				fRadius,
 				nLife,
 				m_apParticleInfo[m_type]->col, 
 				move, 
@@ -154,6 +154,16 @@ void CParticle::Update(void)
 				m_apParticleInfo[m_type]->fDecrease, 
 				m_pPosOwner, 
 				m_nPriorityEffect);
+		}
+
+		if (pEffect3D != nullptr)
+		{
+			pEffect3D->SetMode((CObject3D::MODE)m_apParticleInfo[m_type]->modeRender);
+
+			if (m_apParticleInfo[m_type]->modeRender == CObject3D::MODE_STRETCHBILLBOARD)
+			{
+				pEffect3D->SetSize(fRadius, fRadius * 10.0f);
+			}
 		}
 
 	}
@@ -228,6 +238,11 @@ void CParticle::Load(void)
 				{
 					// インスタンス生成
 					m_apParticleInfo[nCntParticle] = new PARTICLE_INFO;
+
+					if (m_apParticleInfo[nCntParticle] != nullptr)
+					{
+						m_apParticleInfo[nCntParticle]->modeRender = 1;
+					}
 				}
 
 				pInfo = m_apParticleInfo[nCntParticle];
@@ -333,6 +348,13 @@ void CParticle::Load(void)
 						{
 							pInfo->bTurn = false;
 						}
+					}
+
+					if (strcmp(cTemp, "MODE_RENDER") == 0)
+					{// 加算合成かどうか取得
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%d", &pInfo->modeRender);
 					}
 
 					if (strcmp(cTemp, "COLOR") == 0)

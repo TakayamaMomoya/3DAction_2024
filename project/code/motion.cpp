@@ -19,6 +19,7 @@
 #include "universal.h"
 #include "slow.h"
 #include "effect3D.h"
+#include "afterimage.h"
 
 //*****************************************************
 // ƒ}ƒNƒ’è‹`
@@ -876,7 +877,7 @@ void CMotion::SetAfterImage(D3DXCOLOR col, int m_nLife)
 			D3DXMATRIX *pMtx = m_apParts[nCntParts]->pParts->GetMatrix();
 			CModel::Model *model = m_apParts[nCntParts]->pParts->GetModel();
 
-			//CAfterImage::Create(*m_apParts[nCntParts]->m_pParts->GetMatrix(), m_apParts[nCntParts]->m_pParts->GetIdxModel(),col,m_nLife);
+			CAfterImage::Create(*m_apParts[nCntParts]->pParts->GetMatrix(), m_apParts[nCntParts]->pParts->GetIdxModel(),col,m_nLife);
 		}
 	}
 }

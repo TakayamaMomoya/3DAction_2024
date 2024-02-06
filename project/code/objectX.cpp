@@ -117,7 +117,7 @@ void CObjectX::Draw(void)
 		}
 
 		// マトリックスの設定
-		SetMatrix();
+		CalcMatrix();
 
 		D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
 		D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
@@ -271,7 +271,7 @@ void CObjectX::JustDraw(void)
 //=====================================================
 // マトリックス設定処理
 //=====================================================
-void CObjectX::SetMatrix(void)
+void CObjectX::CalcMatrix(void)
 {
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();

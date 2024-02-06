@@ -12,6 +12,7 @@
 
 class CStateBoss;
 class CCollisionSphere;
+class CObject3D;
 
 namespace Boss
 {
@@ -52,6 +53,7 @@ public:
 	void AimPlayer(float fSpeed = 500.0f,bool bPridict = true);
 	void Back(void);
 	void EnableTrans(bool bTrans) { m_info.bTrans = bTrans; }
+	void BeamBlade(void);
 
 private:
 	enum IDXPARTS
@@ -83,6 +85,7 @@ private:
 		int nCntState;	// 状態遷移カウンター
 		bool bTrans;	// 形態変化後かどうか
 		CCollisionSphere *pClsnAttack;	// 攻撃判定
+		CObject3D *pBlade;	// ブレード
 	};
 
 	void ManageCollision(void);

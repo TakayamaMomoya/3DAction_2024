@@ -106,7 +106,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE);
 
 	// 状態設定
-	ChangeState(new CStateBossTrans);
+	ChangeState(new CStateBossApper);
 
 	FollowCollision();
 
@@ -263,6 +263,31 @@ void CEnemyBoss::Back(void)
 	move += {sinf(fAngle) * SPEED_DODGE, 0.0f, cosf(fAngle) * SPEED_DODGE};
 
 	SetMove(move);
+}
+
+//=====================================================
+// 腕からビームブレードを出す処理
+//=====================================================
+void CEnemyBoss::BeamBlade(void)
+{
+	D3DXMATRIX mtxArm = *GetParts(IDX_ARM_L)->pParts->GetMatrix();
+
+	D3DXVECTOR3 vecFront =
+	{
+		mtxArm._31,
+		mtxArm._32,
+		mtxArm._33
+	};
+
+	D3DXVECTOR3 rot = universal::VecToRot(vecFront);
+	D3DXVECTOR3 pos =
+	{
+		mtxArm._41,
+		mtxArm._42,
+		mtxArm._43
+	};
+
+	CParticle::Create(pos, CParticle::TYPE::TYPE_BEAM_BLADE);
 }
 
 //=====================================================
