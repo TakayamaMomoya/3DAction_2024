@@ -37,6 +37,7 @@ const float LINE_END = 5.0f;	// 移動終了のしきい値
 const int DAMAGE_FRAME = 10;	// ダメージ状態の時間
 const float SPEED_BACK = 1.8f;	// 後退の移動速度
 const float SPEED_DODGE = 2.1f;	// 後退時の横移動速度
+const float DAMAGE_SLASH = 10.0f;	// 斬撃ダメージ
 }
 
 //*****************************************************
@@ -115,6 +116,17 @@ HRESULT CEnemyBoss::Init(void)
 
 	EnableStamp(false);
 
+	if (m_info.pClsnAttack == nullptr)
+	{// 球の当たり判定生成
+		m_info.pClsnAttack = CCollisionSphere::Create(CCollision::TAG_NONE, CCollision::TYPE_SPHERE, this);
+
+		if (m_info.pClsnAttack != nullptr)
+		{// 情報の設定
+			m_info.pClsnAttack->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_info.pClsnAttack->SetRadius(0.0f);
+		}
+	}
+
 	return S_OK;
 }
 
@@ -129,6 +141,12 @@ void CEnemyBoss::Uninit(void)
 	{
 		delete m_info.pState;
 		m_info.pState = nullptr;
+	}
+
+	if (m_info.pClsnAttack != nullptr)
+	{
+		m_info.pClsnAttack->Uninit();
+		m_info.pClsnAttack = nullptr;
 	}
 
 	// 継承クラスの終了
@@ -261,6 +279,7 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 	universal::SetOffSet(&mtxParent, mtxPart, offset);
 
 	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
+	float fRadius = pEventInfo->fRadius;
 
 	if (nMotion == MOTION_SHOT)
 	{
@@ -286,6 +305,25 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 			pBeam->SetShrink(5.0f);
 			pBeam->SetExpand(80.0f);
 			pBeam->SetExtend(100.0f);
+		}
+	}
+
+	if (nMotion == MOTION_SLASH)
+	{// 斬撃
+		if (m_info.pClsnAttack != nullptr)
+		{// 情報の設定
+			m_info.pClsnAttack->SetPosition(pos);
+			m_info.pClsnAttack->SetRadius(fRadius);
+
+			if (m_info.pClsnAttack->OnEnter(CCollision::TAG_PLAYER))
+			{
+				CObject *pObj = m_info.pClsnAttack->GetOther();
+
+				if (pObj != nullptr)
+				{
+					pObj->Hit(DAMAGE_SLASH);
+				}
+			}
 		}
 	}
 }

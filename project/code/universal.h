@@ -26,6 +26,7 @@ void FactingRot(float *pfRot, float fRotDest, float rotateFact);	//向き補正処理
 void FactingRotTarget(D3DXVECTOR3 *pRot, D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget,float fFact);	// ターゲットの方を向く処理
 D3DXVECTOR3 VecToRot(D3DXVECTOR3 vec);
 bool DistCmp(D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fLengthMax, float *fDiff);
+bool DistCmpFlat(D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fLengthMax, float *fDiff);
 int RandRange(int nMax, int nMin);
 float CrossProduct(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);
 bool IsInTriangle(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECTOR3 posTarget);

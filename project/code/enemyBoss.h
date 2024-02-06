@@ -11,6 +11,7 @@
 #include "enemy.h"
 
 class CStateBoss;
+class CCollisionSphere;
 
 namespace Boss
 {
@@ -81,6 +82,7 @@ private:
 		int nNumAttack;	// 攻撃した回数
 		int nCntState;	// 状態遷移カウンター
 		bool bTrans;	// 形態変化後かどうか
+		CCollisionSphere *pClsnAttack;	// 攻撃判定
 	};
 
 	void ManageCollision(void);

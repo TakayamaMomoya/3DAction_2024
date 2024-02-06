@@ -41,6 +41,7 @@ const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
 const int ACCURACY_MG = 10;	// マシンガンの精度
 const float GRAVITY = 0.4f;	// 重力
 const float SPEED_SLASH = 0.05f;	// 斬撃時の突撃スピード
+const float SPEED_STEP = 0.02f;	// ステップのスピード
 const float RANGE_SLASH = 1000.0f;	// 斬撃に移るまでの距離
 const D3DXVECTOR3 POS_CENTER = { 5170.0f,-6245.0f,3791.0f };	// ステージの中心座標
 }
@@ -486,20 +487,33 @@ void CStateBossStep::Init(CEnemyBoss *pBoss)
 
 	// 目的地を設定
 	m_posDest = universal::RelativeInversPos(posPlayer,POS_CENTER,1.0f);
+	m_posDestMid = universal::RelativeInversPos(posPlayer, POS_CENTER, 0.0f);
+
+	m_bMid = false;
 }
 
 void CStateBossStep::Move(CEnemyBoss *pBoss)
 {
 	D3DXVECTOR3 pos = pBoss->GetPosition();
 
-	universal::MoveToDest(&pos, m_posDest, SPEED_SLASH);
+	if (m_bMid)
+	{
+		universal::MoveToDest(&pos, m_posDest, SPEED_STEP);
+
+		if (universal::DistCmpFlat(pos, m_posDest, RANGE_SLASH, nullptr))
+		{
+			pBoss->ChangeState(new CStateBossSlash);
+		}
+	}
+	else
+	{
+		universal::MoveToDest(&pos, m_posDestMid, SPEED_STEP);
+
+		if (universal::DistCmpFlat(pos, m_posDestMid, RANGE_SLASH, nullptr))
+		{
+			m_bMid = true;
+		}
+	}
 
 	pBoss->SetPosition(pos);
-
-	
-
-	if (universal::DistCmp(pos, m_posDest, RANGE_SLASH, nullptr))
-	{
-		pBoss->ChangeState(new CStateBossSlash);
-	}
 }

@@ -48,18 +48,13 @@ public:
 	{// パーティクル情報構造体
 		int nKey;	//生成するキー
 		int nFrame;	//生成するフレーム
+		float fNumFrame;    // 持続フレーム
+		float fTimer;    // 持続タイマー
+		float fRadius;    // 半径
 		D3DXVECTOR3 offset;	// オフセット位置
 		int nIdxParent;	// 親となるパーツの番号
 	}EVENT_INFO;
 	
-	typedef struct
-	{// 当たり判定情報構造体
-		int nKey;	//生成するキー
-		int nFrame;	//生成するフレーム
-		D3DXVECTOR3 offset;	// オフセット位置
-		int nIdxParent;	// 親となるパーツの番号
-	}COLLISION_INFO;
-
 	//モーション情報の構造体
 	typedef struct
 	{
@@ -69,7 +64,6 @@ public:
 		int nNumEvent;	// パーティクルの数
 		int nNumCollision;	// 当たり判定の数
 		EVENT_INFO *pEvent;	// イベント情報のポインタ
-		COLLISION_INFO *pCollision;	// 当たり判定のポインタ
 	}MOTION_INFO;
 
 	// パーツの構造体

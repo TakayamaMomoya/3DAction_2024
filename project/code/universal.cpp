@@ -251,6 +251,29 @@ bool DistCmp(D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fLengthMax, float 
 }
 
 //========================================
+// ‹——£‚Ì”äŠr•½–Ê
+//========================================
+bool DistCmpFlat(D3DXVECTOR3 posOwn, D3DXVECTOR3 posTarget, float fLengthMax, float *fDiff)
+{
+	D3DXVECTOR3 vecDiff = posTarget - posOwn;
+	float fLength = sqrtf(vecDiff.x * vecDiff.x + vecDiff.z * vecDiff.z);
+
+	if (fLength < fLengthMax)
+	{
+		if (fDiff != nullptr)
+		{
+			*fDiff = fLength;
+		}
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//========================================
 // ŠOÏ‚ÌŒvŽZ
 //========================================
 float CrossProduct(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)

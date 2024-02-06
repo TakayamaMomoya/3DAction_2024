@@ -1412,7 +1412,11 @@ void CPlayer::Hit(float fDamage)
 				}
 				else if (fDamage < 1.0f)
 				{
-					pCamera->SetQuake(1.0f, 1.0f, 10);
+					pCamera->SetQuake(0.4f, 0.4f, 10);
+				}
+				else
+				{
+					pCamera->SetQuake(0.6f, 0.6f, 20);
 				}
 			}
 		}

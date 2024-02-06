@@ -18,6 +18,7 @@
 #include "sound.h"
 #include "universal.h"
 #include "slow.h"
+#include "effect3D.h"
 
 //*****************************************************
 // マクロ定義
@@ -241,9 +242,31 @@ void CMotion::Update(void)
 			if (m_nKey == m_aMotionInfo[m_motionType].pEvent[nCntEvent].nKey &&
 				m_fCounterMotion >= m_aMotionInfo[m_motionType].pEvent[nCntEvent].nFrame && 
 				fFrameOld < m_aMotionInfo[m_motionType].pEvent[nCntEvent].nFrame)
-			{// イベント呼び出し
-				// イベント
+			{// イベントの開始
+				m_aMotionInfo[m_motionType].pEvent[nCntEvent].fTimer = 0.0f;
+			}
+
+			if (m_aMotionInfo[m_motionType].pEvent[nCntEvent].fTimer <= m_aMotionInfo[m_motionType].pEvent[nCntEvent].fNumFrame)
+			{// イベントの呼び出し
 				Event(&m_aMotionInfo[m_motionType].pEvent[nCntEvent]);
+
+				D3DXMATRIX mtxParent = *GetParts(m_aMotionInfo[m_motionType].pEvent[nCntEvent].nIdxParent)->pParts->GetMatrix();
+				D3DXMATRIX mtx;
+
+				universal::SetOffSet(&mtx, mtxParent, m_aMotionInfo[m_motionType].pEvent[nCntEvent].offset);
+
+				D3DXVECTOR3 pos =
+				{
+					mtx._41,
+					mtx._42,
+					mtx._43
+				};
+
+				float fRadius = m_aMotionInfo[m_motionType].pEvent[nCntEvent].fRadius;
+
+				CEffect3D::Create(pos, fRadius, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
+				m_aMotionInfo[m_motionType].pEvent[nCntEvent].fTimer += 1.0f;
 			}
 		}
 	}
@@ -493,6 +516,7 @@ void CMotion::Load(char *pPath)
 	ZeroMemory(&m_apParts[0], sizeof(m_apParts));
 	//ZeroMemory(&m_abMotion[0], sizeof(m_abMotion));
 	m_nKey = 0;
+	m_nNumMotion = 0;
 
 	//変数宣言
 	char cTemp[MAX_STRING];
@@ -674,6 +698,22 @@ void CMotion::Load(char *pPath)
 								(void)fscanf(pFile, "%s", &cTemp[0]);
 
 								(void)fscanf(pFile, "%d", &m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].nFrame);
+							}
+
+							if (strcmp(cTemp, "NUM_FRAME") == 0)
+							{// 再生フレーム数取得
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%f", &m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].fNumFrame);
+
+								m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].fTimer = FLT_MAX;
+							}
+
+							if (strcmp(cTemp, "RADIUS") == 0)
+							{// 半径
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%f", &m_aMotionInfo[m_nNumMotion].pEvent[nCntEvent].fRadius);
 							}
 
 							if (strcmp(cTemp, "POS") == 0)

@@ -104,6 +104,8 @@ class CStateBossStep : public CStateBoss
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
 
+	D3DXVECTOR3 m_posDestMid;
 	D3DXVECTOR3 m_posDest;
+	bool m_bMid;	// 中間のステップを終えたか
 };
 #endif
