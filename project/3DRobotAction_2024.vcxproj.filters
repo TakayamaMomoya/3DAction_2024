@@ -51,9 +51,6 @@
     <ClCompile Include="code\collision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="code\inpact.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="code\model.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -252,6 +249,12 @@
     <ClCompile Include="code\afterimage.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\beamBlade.cpp">
+      <Filter>ソース ファイル\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="code\inpact.cpp">
+      <Filter>ソース ファイル\VFX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -264,9 +267,6 @@
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\collision.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="code\inpact.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\model.h">
@@ -466,6 +466,12 @@
     </ClInclude>
     <ClInclude Include="code\afterimage.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\beamBlade.h">
+      <Filter>ソース ファイル\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="code\inpact.h">
+      <Filter>ソース ファイル\VFX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

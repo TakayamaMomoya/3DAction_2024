@@ -12,7 +12,7 @@
 #include "main.h"
 
 class CEnemyBoss;
-class CObject3D;
+class COrbit;
 
 //*****************************************************
 // ƒNƒ‰ƒX‚Ì’è‹`
@@ -97,6 +97,8 @@ class CStateBossSlash : public CStateBoss
 {// ŽaŒ‚
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
+
+	COrbit *m_pOrbit;
 };
 
 class CStateBossStep : public CStateBoss

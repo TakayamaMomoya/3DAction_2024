@@ -297,3 +297,18 @@ CAnim3D *CAnimEffect3D::CreateEffect(D3DXVECTOR3 pos, TYPE type)
 
 	return pAnim3D;
 }
+
+namespace Anim3D
+{
+CAnim3D *CreateAnim(D3DXVECTOR3 pos, CAnimEffect3D::TYPE type)
+{
+	CAnimEffect3D *pManager = CAnimEffect3D::GetInstance();
+
+	if (pManager == nullptr)
+		return nullptr;
+
+	CAnim3D *pAnim = pManager->CreateEffect(pos, type);
+
+	return pAnim;
+}
+}

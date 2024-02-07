@@ -53,7 +53,7 @@ HRESULT COrbit::Init(void)
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();
 
 	// テクスチャ読込
-	m_nIdxTexture = CTexture::GetInstance()->Regist("data\\TEXTURE\\EFFECT\\orbit001.png");
+	m_nIdxTexture = CTexture::GetInstance()->Regist("data\\TEXTURE\\EFFECT\\orbit000.png");
 
 	if (m_pVtxBuff == nullptr)
 	{
@@ -161,6 +161,22 @@ void COrbit::UpdatePolygon(void)
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
+	if (m_bEnd)
+	{// 切り離しからの自動削除
+		D3DXVECTOR3 vecDiff;
+
+		vecDiff = pVtx[0].pos - pVtx[m_nNumEdge * NUM_OFFSET - 1].pos;
+
+		float fLength = D3DXVec3Length(&vecDiff);
+
+		if (fLength < DELETE_LENGTH)
+		{
+			Uninit();
+
+			return;
+		}
+	}
+
 	for (int nCntVtx = 0; nCntVtx < m_nNumEdge; nCntVtx++)
 	{//辺ごとの頂点座標設定
 
@@ -178,19 +194,7 @@ void COrbit::UpdatePolygon(void)
 		pVtx += NUM_OFFSET;
 	}
 
-	if (m_bEnd)
-	{// 切り離しからの自動削除
-		D3DXVECTOR3 vecDiff;
-
-		vecDiff = pVtx[0].pos - pVtx[m_nNumEdge * NUM_OFFSET - 1].pos;
-
-		float fLength = D3DXVec3Length(&vecDiff);
-
-		if (fLength < DELETE_LENGTH)
-		{
-			Uninit();
-		}
-	}
+	m_pVtxBuff->Unlock();
 }
 
 //==========================================
@@ -214,11 +218,6 @@ void COrbit::Draw()
 	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-
-	// アルファテストの有効化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 100);
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
@@ -262,11 +261,6 @@ void COrbit::Draw()
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-	// アルファテストの無効化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-
 	// ライティング有効化
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
@@ -305,24 +299,41 @@ COrbit *COrbit::Create(D3DXMATRIX mtxWorld, D3DXVECTOR3 m_posOffset1, D3DXVECTOR
 			// 辺の数の代入
 			pOrbit->m_nNumEdge = nNumEdge;
 
-			pOrbit->m_aMtxOffset[0]._41 = m_posOffset1.x + mtxWorld._41;
-			pOrbit->m_aMtxOffset[0]._42 = m_posOffset1.y + mtxWorld._42;
-			pOrbit->m_aMtxOffset[0]._43 = m_posOffset1.z + mtxWorld._43;
-			pOrbit->m_aMtxOffset[1]._41 = m_posOffset2.x + mtxWorld._41;
-			pOrbit->m_aMtxOffset[1]._42 = m_posOffset2.y + mtxWorld._42;
-			pOrbit->m_aMtxOffset[1]._43 = m_posOffset2.z + mtxWorld._43;
-
 			for (int nCntVtx = 0; nCntVtx < nNumEdge; nCntVtx++)
 			{
-				pOrbit->m_aPosPoint[nCntVtx][0].x = m_posOffset1.x + mtxWorld._41;
-				pOrbit->m_aPosPoint[nCntVtx][0].y = m_posOffset1.y + mtxWorld._42;
-				pOrbit->m_aPosPoint[nCntVtx][0].z = m_posOffset1.z + mtxWorld._43;
-				pOrbit->m_aPosPoint[nCntVtx][1].x = m_posOffset2.x + mtxWorld._41;
-				pOrbit->m_aPosPoint[nCntVtx][1].y = m_posOffset2.y + mtxWorld._42;
-				pOrbit->m_aPosPoint[nCntVtx][1].z = m_posOffset2.z + mtxWorld._43;
+				D3DXMATRIX mtx;
+
+				universal::SetOffSet(&mtx, mtxWorld, m_posOffset1);
+
+				D3DXVECTOR3 pos = { mtx._41,mtx._42 ,mtx._43 };
+
+				pOrbit->m_aPosPoint[nCntVtx][0] = pos;
+
+				universal::SetOffSet(&mtx, mtxWorld, m_posOffset2);
+
+				pos = { mtx._41,mtx._42 ,mtx._43 };
+
+				pOrbit->m_aPosPoint[nCntVtx][1] = pos;
 			}
 
-			pOrbit->UpdatePolygon();
+			VERTEX_3D *pVtx;		//頂点情報のポインタ
+
+			//頂点バッファをロックし、頂点情報へのポインタを取得
+			pOrbit->m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+			// 頂点座標のリセット
+			for (int nCntVtx = 0; nCntVtx < pOrbit->m_nNumEdge; nCntVtx++)
+			{
+				for (int nCntOffset = 0; nCntOffset < NUM_OFFSET; nCntOffset++)
+				{
+					pVtx[nCntOffset].pos = pOrbit->m_aPosPoint[nCntVtx][nCntOffset];
+				}
+
+				//ポインタを進める
+				pVtx += NUM_OFFSET;
+			}
+
+			pOrbit->m_pVtxBuff->Unlock();
 		}
 	}
 

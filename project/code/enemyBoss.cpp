@@ -106,7 +106,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE);
 
 	// ó‘ÔÝ’è
-	ChangeState(new CStateBossApper);
+	ChangeState(new CStateBossTrans);
 
 	FollowCollision();
 
@@ -270,24 +270,22 @@ void CEnemyBoss::Back(void)
 //=====================================================
 void CEnemyBoss::BeamBlade(void)
 {
-	D3DXMATRIX mtxArm = *GetParts(IDX_ARM_L)->pParts->GetMatrix();
+	D3DXMATRIX mtxArm = *GetParts(IDX_HAND_L)->pParts->GetMatrix();
+	D3DXMATRIX mtx;
 
-	D3DXVECTOR3 vecFront =
-	{
-		mtxArm._31,
-		mtxArm._32,
-		mtxArm._33
-	};
+	D3DXVECTOR3 vecBlade = universal::VecToOffset(mtxArm, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 
-	D3DXVECTOR3 rot = universal::VecToRot(vecFront);
-	D3DXVECTOR3 pos =
+	D3DXVECTOR3 rot = universal::VecToRot(vecBlade);
+	m_info.posBlade =
 	{
 		mtxArm._41,
 		mtxArm._42,
 		mtxArm._43
 	};
 
-	CParticle::Create(pos, CParticle::TYPE::TYPE_BEAM_BLADE);
+	rot.x *= -1;
+
+	CParticle::Create(m_info.posBlade, CParticle::TYPE::TYPE_BEAM_BLADE,rot,&m_info.posBlade);
 }
 
 //=====================================================

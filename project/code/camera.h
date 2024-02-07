@@ -65,11 +65,10 @@ public:
 	void SetPosVDest(D3DXVECTOR3 posVDest) { m_camera.posVDest = posVDest; }
 	void SetEventTimer(float fTime) { m_camera.fTimeEvent = fTime; }
 	void ChangeBehavior(CCameraBehavior *pBehavior);
-
-private:
 	void SetPosV(void);
 	void SetPosR(void);
 
+private:
 	Camera m_camera;	// 構造体の情報
 	CCameraBehavior *m_pBehavior;	// 行動のポインタ
 };

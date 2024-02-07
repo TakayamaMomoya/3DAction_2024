@@ -54,4 +54,15 @@ private:
 
 };
 
+// ‘€ì
+class CMoveControl : public CCameraBehavior
+{
+public:
+	void Update(CCamera *pCamera) override;
+
+private:
+
+};
+
+
 #endif

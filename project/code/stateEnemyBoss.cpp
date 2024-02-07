@@ -23,6 +23,7 @@
 #include "camera.h"
 #include "meshfield.h"
 #include "blockManager.h"
+#include "orbit.h"
 
 //*****************************************************
 // 定数定義
@@ -423,7 +424,6 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 		// ライフリセット
 		pBoss->SetLife(Boss::INITIAL_LIFE);
 	}
-
 }
 
 //=====================================================
@@ -431,6 +431,8 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossSlash::Init(CEnemyBoss *pBoss)
 {
+	m_pOrbit = nullptr;
+
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_SLASH);
 }
 
@@ -461,13 +463,36 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 			if (universal::DistCmp(pos, posPlayer, RANGE_SLASH, nullptr))
 			{
 				pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_SLASH);
+
+				if (m_pOrbit == nullptr)
+				{
+					// 軌跡の生成
+					D3DXMATRIX mtx = *pBoss->GetParts(CEnemyBoss::IDX_HAND_L)->pParts->GetMatrix();
+
+					D3DXVECTOR3 offset = { 0.0f,-1000.0f,0.0f };
+
+					m_pOrbit = COrbit::Create(mtx, D3DXVECTOR3(0.0f, 0.0f, 0.0f), offset, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20);
+				}
 			}
 		}
 	}
 	else if (nMotion == CEnemyBoss::MOTION::MOTION_SLASH)
 	{
+		if (m_pOrbit != nullptr)
+		{// 軌跡の更新
+			D3DXMATRIX mtx = *pBoss->GetParts(CEnemyBoss::IDX_HAND_L)->pParts->GetMatrix();
+
+			m_pOrbit->SetPositionOffset(mtx, 0);
+		}
+
 		if (bFinish)
 		{
+			if (m_pOrbit != nullptr)
+			{
+				m_pOrbit->SetEnd(true);
+				m_pOrbit = nullptr;
+			}
+
 			pBoss->ChangeState(new CStateBossStep);
 		}
 	}

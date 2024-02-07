@@ -20,6 +20,11 @@
 #define MAX_TEX	(128)
 #define MAX_STRING	(256)
 
+namespace Texture
+{
+int GetIdx(const char *pFileName);
+}
+
 //*****************************************************
 // ƒNƒ‰ƒX‚Ì’è‹`
 //*****************************************************

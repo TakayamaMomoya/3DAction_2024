@@ -36,6 +36,7 @@
 #include "enemyBoss.h"
 #include "cameraBehavior.h"
 #include "particle.h"
+#include "beamBlade.h"
 
 //*****************************************************
 // マクロ定義
@@ -110,7 +111,9 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CEnemyBoss::Create();
+	//CEnemyBoss::Create();
+
+	CBeamBlade::Create();
 
 	return S_OK;
 }
@@ -140,7 +143,7 @@ void CGame::Update(void)
 		// シーンの更新
 		CScene::Update();
 
-		CParticle::Create(D3DXVECTOR3(0.0f,0.0f,0.0f), CParticle::TYPE::TYPE_BEAM_BLADE);
+		//CParticle::Create(D3DXVECTOR3(0.0f,0.0f,0.0f), CParticle::TYPE::TYPE_BEAM_BLADE);
 
 		// カーソルを中心に固定
 		SetCursorPos((int)(SCREEN_WIDTH * 0.5f), (int)(SCREEN_HEIGHT * 0.5f));
@@ -256,6 +259,15 @@ void CGame::Debug(void)
 	if (pKeyboard->GetTrigger(DIK_F))
 	{
 		m_bStop = m_bStop ? false : true;
+
+		if (m_bStop)
+		{
+			Camera::ChangeBehavior(new CMoveControl);
+		}
+		else
+		{
+			Camera::ChangeBehavior(new CFollowPlayer);
+		}
 	}
 }
 

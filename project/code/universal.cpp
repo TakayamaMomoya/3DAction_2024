@@ -142,6 +142,34 @@ void MoveToDest(D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget, float fFact)
 }
 
 //========================================
+// オフセットへのベクトル
+//========================================
+D3DXVECTOR3 VecToOffset(D3DXMATRIX mtx, D3DXVECTOR3 posOffset)
+{
+	D3DXVECTOR3 pos =
+	{
+		mtx._41,
+		mtx._42,
+		mtx._43,
+	};
+
+	D3DXMATRIX mtxOffset;
+
+	SetOffSet(&mtxOffset, mtx, posOffset);
+
+	D3DXVECTOR3 offset =
+	{
+		mtxOffset._41,
+		mtxOffset._42,
+		mtxOffset._43,
+	};
+
+	D3DXVECTOR3 vecDiff = offset - pos;
+
+	return vecDiff;
+}
+
+//========================================
 // オフセット設定処理
 //========================================
 void SetOffSet(D3DXMATRIX *pMtxWorldOffset, D3DXMATRIX mtxWorldOwner, D3DXVECTOR3 posOffset, D3DXVECTOR3 rot)

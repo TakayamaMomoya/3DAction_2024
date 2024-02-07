@@ -70,4 +70,9 @@ private:
 	SInfoAnimEffect *m_apAnimEffect[TYPE_MAX];	// î•ñ‚Ìƒ|ƒCƒ“ƒ^
 };
 
+namespace Anim3D
+{
+CAnim3D *CreateAnim(D3DXVECTOR3 pos, CAnimEffect3D::TYPE type);
+}
+
 #endif

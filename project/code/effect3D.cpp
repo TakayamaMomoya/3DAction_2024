@@ -31,6 +31,7 @@ CEffect3D::CEffect3D(int nPriority) : CObject3D(nPriority)
 	m_relPos = { 0.0f,0.0f,0.0f };
 	m_bAdd = true;
 	m_fGravity = 0.0f;
+	m_pPosOwner = nullptr;
 }
 
 //=====================================================
@@ -75,7 +76,7 @@ void CEffect3D::Update(void)
 	{
 		D3DXVECTOR3 rot = universal::VecToRot(m_move);
 
-		rot.x += 1.57;
+		rot.x += 1.57f;
 		rot.y += 3.14f;
 
 		SetRot(rot);
@@ -84,10 +85,16 @@ void CEffect3D::Update(void)
 	// 寿命減衰
 	m_nLife--;
 
-	// サイズ縮小
-	SetSize(GetWidth() - m_fDecreaseRadius, GetHeight() - m_fDecreaseRadius);
+	float fWidth = GetWidth();
+	float fHeight = GetHeight();
 
-	if (GetWidth() < 0.0f)
+	fWidth -= m_fDecreaseRadius;
+	fHeight -= m_fDecreaseRadius;
+
+	// サイズ縮小
+	SetSize(fWidth, fHeight);
+
+	if (fWidth < 0.0f)
 	{// 大きさの補正
 		SetSize(0.0f, 0.0f);
 	}
@@ -162,6 +169,13 @@ void CEffect3D::Draw(void)
 
 	// ライティングを無効化
 	pDevice->SetRenderState(D3DRS_LIGHTING,FALSE);
+
+	MODE mode = GetMode();
+
+	if (mode == MODE_STRETCHBILLBOARD)
+	{
+		SetVtx();
+	}
 
 	// 継承クラスの描画
 	CObject3D::Draw();

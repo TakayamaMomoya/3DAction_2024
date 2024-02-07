@@ -13,6 +13,8 @@
 #include "enemyManager.h"
 #include "player.h"
 #include "effect3D.h"
+#include "inputmouse.h"
+#include "inputkeyboard.h"
 
 //*****************************************************
 // 定数定義
@@ -21,6 +23,8 @@ namespace
 {
 const float DIST_CYLINDER = 1000.0f;
 const float DIST_LOOK = 1500.0f;
+const float MOVE_SPEED = 3.0f;						//移動スピード
+const float ROLL_SPEED = 0.02f;						//回転スピード
 }
 
 //=====================================================
@@ -200,5 +204,83 @@ void CMoveCylinder::Update(CCamera *pCamera)
 	if (fLegnthFlat > DIST_LOOK)
 	{// 普通の注視に移行
 		//Camera::ChangeBehavior(new CLookEnemy);
+	}
+}
+
+//=====================================================
+// 操作する
+//=====================================================
+void CMoveControl::Update(CCamera *pCamera)
+{
+	if (pCamera == nullptr)
+		return;
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
+	// 入力取得
+	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
+	CInputMouse *pMouse = CInputMouse::GetInstance();
+
+	float fMove = MOVE_SPEED;
+
+	//マウス操作======================================================
+	if (pMouse->GetPress(CInputMouse::BUTTON_RMB) == true)
+	{//右クリック中、視点旋回
+		D3DXVECTOR3 rot;
+
+		//マウスの移動量代入
+		rot = { (float)pMouse->GetMoveIX() * ROLL_SPEED, (float)pMouse->GetMoveIY() * ROLL_SPEED, 0.0f };
+
+		D3DXVec3Normalize(&rot, &rot);
+
+		//視点の旋回
+		pInfoCamera->rot.y += rot.x * ROLL_SPEED;
+		pInfoCamera->rot.x -= rot.y * ROLL_SPEED;
+
+		//注視点を相対位置に設定
+		pCamera->SetPosR();
+
+		if (pKeyboard->GetPress(DIK_LSHIFT) == true)
+		{//加速
+			fMove *= 3;
+		}
+
+		//視点移動===============================================
+		if (pKeyboard->GetPress(DIK_A) == true)
+		{//左移動
+			pInfoCamera->posVDest.x += sinf(pInfoCamera->rot.y - D3DX_PI * 0.5f) * fMove;
+			pInfoCamera->posVDest.z += cosf(pInfoCamera->rot.y - D3DX_PI * 0.5f) * fMove;
+			pCamera->SetPosR();
+		}
+		if (pKeyboard->GetPress(DIK_D) == true)
+		{//右移動
+			pInfoCamera->posVDest.x += sinf(pInfoCamera->rot.y - D3DX_PI * -0.5f) * fMove;
+			pInfoCamera->posVDest.z += cosf(pInfoCamera->rot.y - D3DX_PI * -0.5f) * fMove;
+			pCamera->SetPosR();
+		}
+		if (pKeyboard->GetPress(DIK_W) == true)
+		{//前移動
+			pInfoCamera->posVDest.x -= sinf(pInfoCamera->rot.x + D3DX_PI) * sinf(pInfoCamera->rot.y) * fMove;
+			pInfoCamera->posVDest.y += cosf(pInfoCamera->rot.x + D3DX_PI) * MOVE_SPEED;
+			pInfoCamera->posVDest.z -= sinf(pInfoCamera->rot.x + D3DX_PI) * cosf(pInfoCamera->rot.y) * fMove;
+			pCamera->SetPosR();
+		}
+		if (pKeyboard->GetPress(DIK_S) == true)
+		{//後移動
+			pInfoCamera->posVDest.x -= sinf(pInfoCamera->rot.x) * sinf(pInfoCamera->rot.y) * fMove;
+			pInfoCamera->posVDest.y += cosf(pInfoCamera->rot.x) * MOVE_SPEED;
+			pInfoCamera->posVDest.z -= sinf(pInfoCamera->rot.x) * cosf(pInfoCamera->rot.y) * fMove;
+			pCamera->SetPosR();
+		}
+		if (pKeyboard->GetPress(DIK_E) == true)
+		{//上昇
+			pInfoCamera->posVDest.y += fMove;
+			pCamera->SetPosR();
+		}
+		if (pKeyboard->GetPress(DIK_Q) == true)
+		{//下降
+			pInfoCamera->posVDest.y -= fMove;
+			pCamera->SetPosR();
+		}
 	}
 }
