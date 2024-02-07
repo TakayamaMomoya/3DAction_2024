@@ -79,7 +79,7 @@ void CEffect3D::Update(void)
 		rot.x += 1.57f;
 		rot.y += 3.14f;
 
-		SetRot(rot);
+		SetRotation(rot);
 	}
 
 	// éıñΩå∏êä

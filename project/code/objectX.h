@@ -42,8 +42,8 @@ public:
 	void SetMove(D3DXVECTOR3 move) { m_move = move; }	// İ’èˆ—
 	D3DXVECTOR3 GetMove(void) { return m_move; }	// æ“¾ˆ—
 	D3DXVECTOR3 GetPositionOld(void) { return m_posOld; }
-	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }// Œü‚«İ’èˆ—
-	D3DXVECTOR3 GetRot(void) { return m_rot; }	// Œü‚«æ“¾ˆ—
+	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; }// Œü‚«İ’èˆ—
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }	// Œü‚«æ“¾ˆ—
 	void BindModel(int nIdx);
 	int GetIdxModel(void) { return m_nIdxModel; }
 	void SetIdxModel(int nIdx) { m_nIdxModel = nIdx; }

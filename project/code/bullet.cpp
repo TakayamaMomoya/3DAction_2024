@@ -87,7 +87,7 @@ HRESULT CBullet::Init(void)
 	if (m_pObject3D == nullptr)
 	{
 		D3DXVECTOR3 pos = GetPosition();
-		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rot = GetRotation();
 
 		m_pObject3D = CObject3D::Create(pos, rot);
 
@@ -223,14 +223,14 @@ void CBullet::Update(void)
 	if (m_pObject3D != nullptr)
 	{// Œ©‚½–Ú‚Ì’Ç]
 		D3DXVECTOR3 pos = GetPosition();
-		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rot = GetRotation();
 		D3DXVECTOR2 size = D3DXVECTOR2(m_pObject3D->GetWidth(), m_pObject3D->GetHeight());
 
 		size.y += (m_fLengthDest - size.y) * 0.2f;
 
 		m_pObject3D->SetSize(size.x, size.y);
 		m_pObject3D->SetPosition(pos);
-		m_pObject3D->SetRot(rot);
+		m_pObject3D->SetRotation(rot);
 		m_pObject3D->SetVtx();
 	}
 }

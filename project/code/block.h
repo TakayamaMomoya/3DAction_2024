@@ -43,7 +43,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	void Hit(float fDamage);
-	void SetRot(D3DXVECTOR3 rot);
+	void SetRotation(D3DXVECTOR3 rot);
 	int GetIdx(void) { return m_nIdx; }
 	void SetIdx(int nIdx) { m_nIdx = nIdx; }
 	CBlock *GetNext(void) { return m_pNext; }

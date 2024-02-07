@@ -44,8 +44,8 @@ public:
 	void SetPosition(D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
 	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(); }	// 取得処理
-	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; };	// 向き設定
-	D3DXVECTOR3 GetRot(void) { return m_rot; }	// 向き取得
+	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; };	// 向き設定
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }	// 向き取得
 	float GetWidth(void) { return 0.0f; }	// サイズ取得
 	float GetHeight(void) { return 0.0f; }	// サイズ取得
 	static void Load(void);	// 読込処理

@@ -65,8 +65,8 @@ public:
 	LPDIRECT3DVERTEXBUFFER9 GetVtxBuff(void) { return m_pVtxBuff; }
 	void SetPosition(D3DXVECTOR3 pos) { m_meshCylinder.pos = pos; }
 	D3DXVECTOR3 GetPosition(void) { return m_meshCylinder.pos; }
-	void SetRot(D3DXVECTOR3 rot) { m_meshCylinder.rot = rot; }
-	D3DXVECTOR3 GetRot(void) { return m_meshCylinder.rot; }
+	void SetRotation(D3DXVECTOR3 rot) { m_meshCylinder.rot = rot; }
+	D3DXVECTOR3 GetRotation(void) { return m_meshCylinder.rot; }
 	int GetNumVtx(void) { return m_meshCylinder.nNumVtx; }
 	void SetRadius(float fRadius) { m_meshCylinder.fRadius = fRadius; }
 	void SetHeight(float fHeight) { m_meshCylinder.fHeight = fHeight; }

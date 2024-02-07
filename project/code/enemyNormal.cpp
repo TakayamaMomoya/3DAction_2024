@@ -108,7 +108,7 @@ void CEnemyNormal::Chase(void)
 void CEnemyNormal::Attack(void)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 rot = GetRotation();
 
 	// ‹——£‚ğ•Û‚Â
 	KeepDistance();
@@ -127,7 +127,7 @@ void CEnemyNormal::Attack(void)
 		universal::FactingRot(&rot.x, -rotDest.x + D3DX_PI * 0.5f, 0.1f);
 		universal::FactingRot(&rot.y, rotDest.y, 0.1f);
 
-		SetRot(rot);
+		SetRotation(rot);
 
 		// ƒvƒŒƒCƒ„[‚ÉŒü‚©‚Á‚Ä’e‚ğŒ‚‚Â
 		float fDist = D3DXVec3Length(&vecDiff);

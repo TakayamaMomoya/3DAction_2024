@@ -42,8 +42,8 @@ public:
 	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }	// ê›íËèàóù
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }	// éÊìæèàóù
 	D3DXVECTOR3 GetPositionOld(void) { return m_posOld; }
-	D3DXVECTOR3 GetRot(void) { return m_rot; }
-	void SetRot(D3DXVECTOR3 rot = { D3DX_PI * 0.5f,0.0f,0.0f }) { m_rot = rot; }
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }
+	void SetRotation(D3DXVECTOR3 rot = { D3DX_PI * 0.5f,0.0f,0.0f }) { m_rot = rot; }
 	void SetIdxTexture(int nIdx) { m_nIdxTexture = nIdx; }
 	int GetIdxTexture(void) { return m_nIdxTexture; }
 	D3DXCOLOR GetColor(void) { return m_col; }

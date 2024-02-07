@@ -33,8 +33,8 @@ public:
 
 	void SetPosition(D3DXVECTOR3 pos);	// İ’èˆ—
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }	// æ“¾ˆ—
-	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }// Œü‚«İ’èˆ—
-	D3DXVECTOR3 GetRot(void) { return m_rot; }	// Œü‚«æ“¾ˆ—
+	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; }// Œü‚«İ’èˆ—
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }	// Œü‚«æ“¾ˆ—
 	D3DXCOLOR GetCol(void) { return m_col; }
 	void SetCol(D3DXCOLOR col);
 	void SetVtx(void);

@@ -214,7 +214,7 @@ void CBlockManager::LoadMap(FILE *pFile, char *pTemp)
 				if (pBlock != nullptr)
 				{
 					pBlock->SetPosition(pos);
-					pBlock->SetRot(rot);
+					pBlock->SetRotation(rot);
 					pBlock->SetIdx(nIdx);
 
 					if (m_pInfoBlock[nIdx].bSnag == false)
@@ -279,7 +279,7 @@ void CBlockManager::Save(char *pPath)
 			if (pBlock != nullptr)
 			{
 				D3DXVECTOR3 pos = pBlock->GetPosition();
-				D3DXVECTOR3 rot = pBlock->GetRot();
+				D3DXVECTOR3 rot = pBlock->GetRotation();
 				int nIdx = pBlock->GetIdx();
 
 				fprintf(pFile, "SETBLOCK\n");

@@ -114,11 +114,11 @@ void CDebris::Update(void)
 		if (pos.y > GEOWND)
 		{
 			// ‰ñ“]
-			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rot = GetRotation();
 			rot.x += m_rotVelocity.x * ROT_VELOCITY;
 			rot.y += m_rotVelocity.y * ROT_VELOCITY;
 			rot.z += m_rotVelocity.z * ROT_VELOCITY;
-			SetRot(rot);
+			SetRotation(rot);
 		}
 		else
 		{

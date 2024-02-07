@@ -63,10 +63,10 @@ void CCharacter::Load(char *pPath)
 		if (m_info.pBody != nullptr)
 		{
 			D3DXVECTOR3 pos = GetPosition();
-			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rot = GetRotation();
 
 			m_info.pBody->SetPosition(pos);
-			m_info.pBody->SetRot(rot);
+			m_info.pBody->SetRotation(rot);
 
 			m_info.pBody->MultiplyMtx();
 		}
@@ -107,10 +107,10 @@ void CCharacter::Update(void)
 	if (m_info.pBody != nullptr)
 	{// �̂̒Ǐ]
 		D3DXVECTOR3 pos = GetPosition();
-		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rot = GetRotation();
 
 		m_info.pBody->SetPosition(pos);
-		m_info.pBody->SetRot(rot);
+		m_info.pBody->SetRotation(rot);
 	}
 }
 

@@ -195,12 +195,12 @@ void CMissile::ChasePlayer(void)
 		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
 
 		// Œü‚«‚Ì•â³
-		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rot = GetRotation();
 
 		universal::FactingRot(&rot.x, rotDest.x, 0.35f);
 		universal::FactingRot(&rot.y, rotDest.y, 0.35f);
 
-		SetRot(rot);
+		SetRotation(rot);
 
 		// ˆÚ“®—Ê‚ğ³–Ê‚É‘«‚·
 		move +=
@@ -233,7 +233,7 @@ void CMissile::Tilt(void)
 	rot.x = atan2f(fLength,move.y);
 
 	// ‰ñ“]‚Ìİ’è
-	SetRot(rot);
+	SetRotation(rot);
 }
 
 //=====================================================

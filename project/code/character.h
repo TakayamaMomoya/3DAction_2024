@@ -38,8 +38,8 @@ public:
 	D3DXVECTOR3 GetPositionOld(void) { return m_info.posOld; }
 	void SetMove(D3DXVECTOR3 move) { m_info.move = move; }
 	D3DXVECTOR3 GetMove(void) { return m_info.move; }
-	void SetRot(D3DXVECTOR3 rot) { m_info.rot = rot; }
-	D3DXVECTOR3 GetRot(void) { return m_info.rot; }
+	void SetRotation(D3DXVECTOR3 rot) { m_info.rot = rot; }
+	D3DXVECTOR3 GetRotation(void) { return m_info.rot; }
 	CMotion *GetBody(void) { return m_info.pBody; }
 	void Load(char *pPath);
 	void SetMotion(int nMotion);

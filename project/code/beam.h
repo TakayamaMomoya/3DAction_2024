@@ -34,7 +34,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	void SetPosition(D3DXVECTOR3 pos);
-	void SetRot(D3DXVECTOR3 rot);
+	void SetRotation(D3DXVECTOR3 rot);
 	void SetCol(D3DXCOLOR col);
 	void SetMtx(D3DXMATRIX mtx) { m_info.mtxWorld = mtx; }
 	void SetAnimSize(float fWidth, float fLength) { m_info.fWidthAnimDest = fWidth; m_info.fLengthAnimDest = fLength; }

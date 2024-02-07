@@ -375,7 +375,7 @@ void CObject2D::DicMove(float fDicrease)
 //=====================================================
 // Œü‚«İ’èˆ—
 //=====================================================
-void CObject2D::SetRot(float fRot)
+void CObject2D::SetRotation(float fRot)
 {
 	m_fRot = fRot;
 }

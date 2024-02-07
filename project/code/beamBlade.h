@@ -33,6 +33,10 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void SetPosition(D3DXVECTOR3 pos) { m_info.pos = pos; }
+	void SetRotation(D3DXVECTOR3 rot) { m_info.rot = rot; }
+	D3DXVECTOR3 GetPosition(void) { return m_info.pos; }
+	D3DXVECTOR3 GetRotation(void) { return m_info.rot; }
 
 private:
 	struct SInfo
@@ -41,6 +45,8 @@ private:
 		CObject3D *pBlade;
 		D3DXVECTOR3 pos;
 		D3DXVECTOR3 rot;
+		float fRadius;
+		float fHeight;
 	};
 
 	SInfo m_info;

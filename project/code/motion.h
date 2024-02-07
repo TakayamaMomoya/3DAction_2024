@@ -92,8 +92,8 @@ public:
 	D3DXVECTOR3 GetMtxPos(int nIdx);
 	void SetMove(D3DXVECTOR3 move) { m_move = move; }
 	D3DXVECTOR3 GetMove(void) { return m_move; }	// éÊìæèàóù
-	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
-	D3DXVECTOR3 GetRot(void) { return m_rot; }
+	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; }
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	void SetMotion(int nMotionType);
 	int GetMotion(void) { return m_motionType; }
 	void SetKeyOld(void);

@@ -424,7 +424,7 @@ void CPlayer::InputMove(void)
 		D3DXVECTOR3 axisMove = axis.axisMove;
 
 		D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rot = GetRotation();
 
 		float fLengthAxis = D3DXVec3Length(&axisMove);
 
@@ -770,7 +770,7 @@ void CPlayer::Rotation(void)
 			CCamera::Camera *pInfoCamera = pCamera->GetCamera();
 
 			// 向きの補正
-			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rot = GetRotation();
 			D3DXVECTOR3 rotCamera = pInfoCamera->rot;
 
 			rotCamera.x -= D3DX_PI * 0.5f;
@@ -788,9 +788,9 @@ void CPlayer::Rotation(void)
 		if (fLenghtMove >= 6.0f)
 		{
 			// 向きの補正
-			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rot = GetRotation();
 
-			SetRot(rot);
+			SetRotation(rot);
 
 			if (m_info.bLand)
 			{
@@ -806,7 +806,7 @@ void CPlayer::Rotation(void)
 	}
 
 	// 向きの補正
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 rot = GetRotation();
 
 	float fFact = 0.1f;
 
@@ -818,7 +818,7 @@ void CPlayer::Rotation(void)
 	universal::FactingRot(&rot.y, m_info.rotDest.y + D3DX_PI, fFact);
 	universal::FactingRot(&rot.x, m_info.rotDest.x, fFact);
 
-	SetRot(rot);
+	SetRotation(rot);
 }
 
 //=====================================================
@@ -1129,7 +1129,7 @@ void CPlayer::AddMoveForward(float fSpeed)
 {
 	D3DXVECTOR3 move = GetMove();
 	D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 rot = GetRotation();
 
 	vecMove =
 	{
@@ -1286,7 +1286,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 			// 投げ方向に移動量を設定
 			D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rot = GetRotation();
 
 			vecMove =
 			{
@@ -1315,7 +1315,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 //=====================================================
 void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 {
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 rot = GetRotation();
 
 	D3DXVECTOR3 move =
 	{
@@ -1560,7 +1560,7 @@ void CPlayer::Debug(void)
 
 	pDebugProc->Print("\nプレイヤーの位置[%f,%f,%f]", GetPosition().x, GetPosition().y, GetPosition().z);
 	pDebugProc->Print("\nプレイヤーの移動量[%f,%f,%f]", GetMove().x, GetMove().y, GetMove().z);
-	pDebugProc->Print("\n目標の向き[%f,%f,%f]", GetRot().x, GetRot().y, GetRot().z);
+	pDebugProc->Print("\n目標の向き[%f,%f,%f]", GetRotation().x, GetRotation().y, GetRotation().z);
 	pDebugProc->Print("\nブースト残量[%f]", m_info.fBoost);
 	pDebugProc->Print("\n体力[%f]", m_info.fLife);
 

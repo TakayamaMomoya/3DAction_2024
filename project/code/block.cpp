@@ -265,7 +265,7 @@ void CBlock::Hit(float fDamage)
 		float fRotY = (rand() % 628 - 314) / 100.0f;
 		
 		// 瓦礫の生成
-		CObjectX* pObjX = CObjectX::Create(GetPosition(), D3DXVECTOR3(GetRot().x, fRotY, GetRot().z));
+		CObjectX* pObjX = CObjectX::Create(GetPosition(), D3DXVECTOR3(GetRotation().x, fRotY, GetRotation().z));
 		if (pObjX != nullptr)
 		{
 			int nRand = rand() % 2;
@@ -290,14 +290,14 @@ void CBlock::Hit(float fDamage)
 //=====================================================
 // 頂点を入れ替える処理
 //=====================================================
-void CBlock::SetRot(D3DXVECTOR3 rot)
+void CBlock::SetRotation(D3DXVECTOR3 rot)
 {
 	if (rot.y != 0)
 	{// 角度によって最大頂点、最小頂点を変える処理
 		SwapVtx();
 	}
 
-	CObjectX::SetRot(rot);
+	CObjectX::SetRotation(rot);
 }
 
 //=====================================================

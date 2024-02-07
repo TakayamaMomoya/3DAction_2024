@@ -218,12 +218,12 @@ void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict)
 		rotDest.y -= D3DX_PI;
 
 		// Œü‚«‚Ì•â³
-		D3DXVECTOR3 rot = GetRot();
+		D3DXVECTOR3 rot = GetRotation();
 
 		universal::FactingRot(&rot.x, rotDest.x, 0.15f);
 		universal::FactingRot(&rot.y, rotDest.y, 0.15f);
 
-		SetRot(rot);
+		SetRotation(rot);
 	}
 }
 
@@ -318,11 +318,11 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 			D3DXVECTOR3 posMazzle = { mtxBeam._41,mtxBeam._42 ,mtxBeam._43 };
 			D3DXVECTOR3 vecMazzle = posMazzle - pos;
 
-			D3DXVECTOR3 rot = GetRot();
+			D3DXVECTOR3 rot = GetRotation();
 
 			pBeam->SetCol(D3DXCOLOR(0.6f, 0.6f, 1.0f, 1.0f));
 			pBeam->SetMtx(mtxBeam);
-			pBeam->SetRot(rot);
+			pBeam->SetRotation(rot);
 			pBeam->SetPosition(posMazzle);
 			pBeam->SetAnimSize(1000.0f, 5000.0f);
 			pBeam->SetShrink(5.0f);

@@ -54,7 +54,7 @@ HRESULT CBoost::Init(void)
 		{
 			m_pObjectGauge->SetPosition(D3DXVECTOR3(GAUGE_POS.x, GAUGE_POS.y, 0.0f));
 			m_pObjectGauge->SetAngleMax(ANGLE_MAX);
-			m_pObjectGauge->SetRot(INITIAL_ROT);
+			m_pObjectGauge->SetRotation(INITIAL_ROT);
 			m_pObjectGauge->SetRadius(RADIUS_GAUGE);
 			m_pObjectGauge->SetVtx();
 
@@ -111,7 +111,7 @@ void CBoost::Update(void)
 		// Œü‚«‚ÌÝ’è
 		float fRot = INITIAL_ROT + ANGLE_MAX * (1.0f - fRate);
 
-		m_pObjectGauge->SetRot(fRot);
+		m_pObjectGauge->SetRotation(fRot);
 
 		// ƒTƒCƒYÝ’è
 		m_pObjectGauge->SetRateAngle(fRate);

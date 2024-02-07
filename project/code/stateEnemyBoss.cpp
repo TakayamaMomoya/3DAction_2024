@@ -123,7 +123,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 		if (pMissile != nullptr)
 		{
-			D3DXVECTOR3 rot = pBoss->GetRot();
+			D3DXVECTOR3 rot = pBoss->GetRotation();
 
 
 			if (m_nCnt % 2 == 0)
@@ -137,7 +137,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 				rot.y = -D3DX_PI * 0.3f;
 			}
 
-			pMissile->SetRot(rot);
+			pMissile->SetRotation(rot);
 		}
 
 		m_nCnt++;
@@ -335,7 +335,7 @@ void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
 
 	// ボス位置を設定
 	pBoss->SetPosition(pos);
-	pBoss->SetRot(rot);
+	pBoss->SetRotation(rot);
 
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -345,7 +345,7 @@ void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
 		D3DXVECTOR3 rotPlayer = { 0.0f,0.0f,0.0f };
 
 		pPlayer->SetPosition(posPlayer);
-		pPlayer->SetRot(rotPlayer);
+		pPlayer->SetRotation(rotPlayer);
 	}
 
 	// 爆発エフェクト

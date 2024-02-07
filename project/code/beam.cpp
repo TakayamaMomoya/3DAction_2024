@@ -250,13 +250,13 @@ void CBeam::SetPosition(D3DXVECTOR3 pos)
 //=====================================================
 // Œü‚«Ý’è
 //=====================================================
-void CBeam::SetRot(D3DXVECTOR3 rot)
+void CBeam::SetRotation(D3DXVECTOR3 rot)
 {
 	m_info.rot = rot;
 
 	if (m_info.pAnim != nullptr)
 	{
-		m_info.pAnim->SetRot(rot);
+		m_info.pAnim->SetRotation(rot);
 	}
 }
 

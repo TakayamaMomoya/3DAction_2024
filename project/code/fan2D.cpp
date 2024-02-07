@@ -215,7 +215,7 @@ void CFan2D::SetPosition(D3DXVECTOR3 pos)
 //=====================================================
 // Œü‚«İ’èˆ—
 //=====================================================
-void CFan2D::SetRot(float fRot)
+void CFan2D::SetRotation(float fRot)
 {
 	m_fRot = fRot;
 

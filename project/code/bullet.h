@@ -49,8 +49,8 @@ public:
 	static int GetNumAll(void) { return m_nNumAll; }
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
 	D3DXVECTOR3 GetPositionOld(void) { return m_posOld; }
-	D3DXVECTOR3 GetRot(void) { return m_rot; }
-	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }
+	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; }
 
 	void SetIdxPlayer(int nIdx) { m_nIdxPlayer = nIdx; }
 

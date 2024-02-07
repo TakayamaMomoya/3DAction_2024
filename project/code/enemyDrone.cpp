@@ -128,7 +128,7 @@ void CEnemyDrone::Chase(void)
 void CEnemyDrone::Attack(void)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
-	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 rot = GetRotation();
 
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
@@ -149,7 +149,7 @@ void CEnemyDrone::Attack(void)
 
 		universal::FactingRot(&rot.y, rotDest.y, 0.1f);
 
-		SetRot(rot);
+		SetRotation(rot);
 
 		// ƒvƒŒƒCƒ„[‚ÉŒü‚©‚Á‚Ä’e‚ğŒ‚‚Â
 		float fDist = D3DXVec3Length(&vecDiff);

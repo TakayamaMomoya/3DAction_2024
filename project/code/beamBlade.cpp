@@ -18,7 +18,7 @@
 //*****************************************************
 namespace
 {
-
+const int MESH_V = 6;	// メッシュの縦の分割数
 }
 
 //=====================================================
@@ -63,14 +63,17 @@ CBeamBlade *CBeamBlade::Create(void)
 //=====================================================
 HRESULT CBeamBlade::Init(void)
 {
+	m_info.fRadius = 100.0f;
+	m_info.fHeight = 400.0f;
+
 	if (m_info.pCylinder == nullptr)
 	{// シリンダーの生成
-		m_info.pCylinder = CMeshCylinder::Create(16,6);
+		m_info.pCylinder = CMeshCylinder::Create(16, MESH_V);
 
 		if (m_info.pCylinder != nullptr)
 		{
-			m_info.pCylinder->SetHeight(70.0f);
-			m_info.pCylinder->SetRadius(80.0f);
+			m_info.pCylinder->SetHeight(m_info.fHeight / MESH_V);
+			m_info.pCylinder->SetRadius(m_info.fRadius * 0.8f);
 			m_info.pCylinder->SetVtx();
 
 			int nIdx = Texture::GetIdx("data\\TEXTURE\\EFFECT\\energy00.png");
@@ -86,9 +89,9 @@ HRESULT CBeamBlade::Init(void)
 		if (m_info.pBlade != nullptr)
 		{
 			m_info.pBlade->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
-			m_info.pBlade->SetRot(D3DXVECTOR3(-1.57f, 0.0f, 0.0f));
-			m_info.pBlade->SetSize(100.0f, 400.0f);
-			m_info.pBlade->SetPosition(D3DXVECTOR3(0.0f, 400.0f, 0.0f));
+			m_info.pBlade->SetRotation(D3DXVECTOR3(-1.57f, 0.0f, 0.0f));
+			m_info.pBlade->SetSize(m_info.fRadius, m_info.fHeight);
+			m_info.pBlade->SetPosition(D3DXVECTOR3(0.0f, m_info.fHeight, 0.0f));
 
 			int nIdx = Texture::GetIdx("data\\TEXTURE\\EFFECT\\blade.png");
 
@@ -154,6 +157,31 @@ void CBeamBlade::Update(void)
 
 	//頂点バッファをアンロック
 	pVtxBuff->Unlock();
+
+	// 見た目の追従
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
+
+	if (m_info.pCylinder != nullptr)
+	{
+		m_info.pCylinder->SetPosition(pos);
+		m_info.pCylinder->SetRotation(rot);
+	}
+
+	if (m_info.pBlade != nullptr)
+	{
+		pos +=
+		{
+			sinf(rot.x) * sinf(rot.y) * m_info.fHeight,
+				cosf(rot.x) * m_info.fHeight,
+				sinf(rot.x) * cosf(rot.y) * m_info.fHeight
+		};
+
+		rot.x -= 1.57f;
+
+		m_info.pBlade->SetPosition(pos);
+		m_info.pBlade->SetRotation(rot);
+	}
 }
 
 //=====================================================

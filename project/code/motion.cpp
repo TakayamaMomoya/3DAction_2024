@@ -154,7 +154,7 @@ void CMotion::Update(void)
 
 		// パーツのトランスフォーム取得
 		pos = m_apParts[nCntParts]->pParts->GetPosOrg();
-		rot = m_apParts[nCntParts]->pParts->GetRot();
+		rot = m_apParts[nCntParts]->pParts->GetRotation();
 
 		if (m_nKey < m_aMotionInfo[m_motionType].nNumKey - 1)
 		{
@@ -216,7 +216,7 @@ void CMotion::Update(void)
 
 		rot = D3DXVECTOR3(DestRotX, DestRotY, DestRotZ);
 
-		m_apParts[nCntParts]->pParts->SetRot(rot);
+		m_apParts[nCntParts]->pParts->SetRotation(rot);
 	}
 
 	float fFrameOld = m_fCounterMotion;;
@@ -339,9 +339,9 @@ void CMotion::SetKeyOld(void)
 		m_aKeyOld[nCntPart].fPosY = m_apParts[nCntPart]->pParts->GetPosition().y - m_apParts[nCntPart]->pParts->GetPosOrg().y;
 		m_aKeyOld[nCntPart].fPosZ = m_apParts[nCntPart]->pParts->GetPosition().z - m_apParts[nCntPart]->pParts->GetPosOrg().z;
 
-		m_aKeyOld[nCntPart].fRotX = m_apParts[nCntPart]->pParts->GetRot().x;
-		m_aKeyOld[nCntPart].fRotY = m_apParts[nCntPart]->pParts->GetRot().y;
-		m_aKeyOld[nCntPart].fRotZ = m_apParts[nCntPart]->pParts->GetRot().z;
+		m_aKeyOld[nCntPart].fRotX = m_apParts[nCntPart]->pParts->GetRotation().x;
+		m_aKeyOld[nCntPart].fRotY = m_apParts[nCntPart]->pParts->GetRotation().y;
+		m_aKeyOld[nCntPart].fRotZ = m_apParts[nCntPart]->pParts->GetRotation().z;
 	}
 }
 
@@ -370,7 +370,7 @@ void CMotion::InitPose(int nMotion)
 				m_aMotionInfo[nMotion].aKeyInfo[i].aKey[nCntPart].fPosZ
 			};
 
-			m_apParts[nCntPart]->pParts->SetRot(rot);
+			m_apParts[nCntPart]->pParts->SetRotation(rot);
 			//m_apParts[nCntPart]->pParts->SetPosition(pos);
 		}
 	}
@@ -446,7 +446,7 @@ void CMotion::MultiplyMtx(void)
 
 		//向きを反映
 		D3DXMatrixRotationYawPitchRoll(&mtxRotModel,
-			m_apParts[nCntParts]->pParts->GetRot().y, m_apParts[nCntParts]->pParts->GetRot().x, m_apParts[nCntParts]->pParts->GetRot().z);
+			m_apParts[nCntParts]->pParts->GetRotation().y, m_apParts[nCntParts]->pParts->GetRotation().x, m_apParts[nCntParts]->pParts->GetRotation().z);
 		D3DXMatrixMultiply(pMtx, pMtx, &mtxRotModel);
 
 		//位置を反映
@@ -629,7 +629,7 @@ void CMotion::Load(char *pPath)
 									(void)fscanf(pFile, "%f", &rot[nCntRot]);
 								}
 
-								m_apParts[nCntModel]->pParts->SetRot(rot);
+								m_apParts[nCntModel]->pParts->SetRotation(rot);
 							}
 
 						}//END_PART

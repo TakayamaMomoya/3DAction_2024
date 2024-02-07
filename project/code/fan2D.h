@@ -31,8 +31,8 @@ public:
 
 	void SetPosition(D3DXVECTOR3 pos);	// İ’èˆ—
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }	// æ“¾ˆ—
-	void SetRot(float fRot);// Œü‚«İ’èˆ—
-	float GetRot(void) { return m_fRot; }	// Œü‚«æ“¾ˆ—
+	void SetRotation(float fRot);// Œü‚«İ’èˆ—
+	float GetRotation(void) { return m_fRot; }	// Œü‚«æ“¾ˆ—
 	D3DXCOLOR GetCol(void) { return m_col; }
 	void SetCol(D3DXCOLOR col);
 	void SetVtx(void);
