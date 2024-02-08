@@ -209,7 +209,7 @@ void CRenderer::Draw(void)
 	//アルファテストの有効化
 	m_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	m_pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	m_pD3DDevice->SetRenderState(D3DRS_ALPHAREF, 50);
 
 	float fStart = 5000;
 	float fEnd = 20000;

@@ -23,7 +23,7 @@ public:
 	CFan2D(int nPriority = 7);
 	~CFan2D();	//	デストラクタ
 
-	static CFan2D *Create(int nPriority = 6,int nNumVtx = 16);	// 生成処理
+	static CFan2D *Create(int nPriority = 7,int nNumVtx = 16);	// 生成処理
 	HRESULT Init(void);	// 初期化処理
 	void Uninit(void);	// 終了処理
 	void Update(void);	// 更新処理

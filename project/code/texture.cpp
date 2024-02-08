@@ -70,6 +70,8 @@ HRESULT CTexture::Load(void)
 		"data\\TEXTURE\\UI\\pause_quit.png",
 		"data\\TEXTURE\\UI\\pause_restart.png",
 		"data\\TEXTURE\\UI\\pause_resume.png",
+		"data\\TEXTURE\\EFFECT\\energy00.png",
+		"data\\TEXTURE\\EFFECT\\blade.png"
 	};
 
 	for ( int nCntTex = 0;nCntTex < MAX_TEX;nCntTex++)

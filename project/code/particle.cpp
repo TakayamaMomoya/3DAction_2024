@@ -164,6 +164,8 @@ void CParticle::Update(void)
 			{
 				pEffect3D->SetSize(fRadius, fRadius * 10.0f);
 			}
+
+			pEffect3D->SetVtx();
 		}
 	}
 

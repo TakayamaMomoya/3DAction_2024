@@ -50,6 +50,8 @@ HRESULT CEffect3D::Init(void)
 	// Œp³ƒNƒ‰ƒX‚Ì‰Šú‰»
 	CObject3D::Init();
 
+	SetMode(CObject3D::MODE_BILLBOARD);
+
 	return S_OK;
 }
 
@@ -209,11 +211,11 @@ CEffect3D *CEffect3D::Create(D3DXVECTOR3 pos, float fRadius, int nLife, D3DXCOLO
 
 		if (pEffect3D != nullptr)
 		{
-			pEffect3D->SetPosition(pos);
-			pEffect3D->SetSize(fRadius, fRadius);
-
 			// ‰Šú‰»ˆ—
 			pEffect3D->Init();
+
+			pEffect3D->SetPosition(pos);
+			pEffect3D->SetSize(fRadius, fRadius);
 
 			pEffect3D->SetColor(col);
 
@@ -246,6 +248,8 @@ CEffect3D *CEffect3D::Create(D3DXVECTOR3 pos, float fRadius, int nLife, D3DXCOLO
 					pEffect3D->m_move *= -1;
 				}
 			}
+
+			pEffect3D->SetVtx();
 		}
 	}
 	
@@ -265,11 +269,12 @@ CEffect3D* CEffect3D::Create(const char* pTexName, D3DXVECTOR3 pos, float fRadiu
 
 		if (pEffect3D != nullptr)
 		{
-			pEffect3D->SetPosition(pos);
-			pEffect3D->SetSize(fRadius, fRadius);
-
 			// ‰Šú‰»ˆ—
 			pEffect3D->Init();
+
+			pEffect3D->SetPosition(pos);
+			pEffect3D->SetSize(fRadius, fRadius);
+			pEffect3D->SetVtx();
 
 			pEffect3D->SetColor(col);
 

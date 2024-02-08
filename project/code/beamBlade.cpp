@@ -65,22 +65,7 @@ HRESULT CBeamBlade::Init(void)
 {
 	m_info.fRadius = 100.0f;
 	m_info.fHeight = 400.0f;
-
-	if (m_info.pCylinder == nullptr)
-	{// シリンダーの生成
-		m_info.pCylinder = CMeshCylinder::Create(16, MESH_V);
-
-		if (m_info.pCylinder != nullptr)
-		{
-			m_info.pCylinder->SetHeight(m_info.fHeight / MESH_V);
-			m_info.pCylinder->SetRadius(m_info.fRadius * 0.8f);
-			m_info.pCylinder->SetVtx();
-
-			int nIdx = Texture::GetIdx("data\\TEXTURE\\EFFECT\\energy00.png");
-
-			m_info.pCylinder->SetIdxTexture(nIdx);
-		}
-	}
+	m_info.col = { 1.0f,1.0f,1.0f,1.0f };
 
 	if (m_info.pBlade == nullptr)
 	{// ブレード部分の生成
@@ -92,10 +77,28 @@ HRESULT CBeamBlade::Init(void)
 			m_info.pBlade->SetRotation(D3DXVECTOR3(-1.57f, 0.0f, 0.0f));
 			m_info.pBlade->SetSize(m_info.fRadius, m_info.fHeight);
 			m_info.pBlade->SetPosition(D3DXVECTOR3(0.0f, m_info.fHeight, 0.0f));
+			m_info.pBlade->EnableAdd(true);
 
 			int nIdx = Texture::GetIdx("data\\TEXTURE\\EFFECT\\blade.png");
 
 			m_info.pBlade->SetIdxTexture(nIdx);
+		}
+	}
+
+	if (m_info.pCylinder == nullptr)
+	{// シリンダーの生成
+		m_info.pCylinder = CMeshCylinder::Create(16, MESH_V);
+
+		if (m_info.pCylinder != nullptr)
+		{
+			m_info.pCylinder->SetHeight(m_info.fHeight / MESH_V);
+			m_info.pCylinder->SetRadius(m_info.fRadius * 0.8f);
+			m_info.pCylinder->SetVtx();
+			m_info.pCylinder->EnableAdd(true);
+
+			int nIdx = Texture::GetIdx("data\\TEXTURE\\EFFECT\\energy00.png");
+
+			m_info.pCylinder->SetIdxTexture(nIdx);
 		}
 	}
 
@@ -107,6 +110,18 @@ HRESULT CBeamBlade::Init(void)
 //=====================================================
 void CBeamBlade::Uninit(void)
 {
+	if (m_info.pBlade != nullptr)
+	{
+		m_info.pBlade->Uninit();
+		m_info.pBlade = nullptr;
+	}
+
+	if (m_info.pCylinder != nullptr)
+	{
+		m_info.pCylinder->Uninit();
+		m_info.pCylinder = nullptr;
+	}
+
 	Release();
 }
 
@@ -190,4 +205,57 @@ void CBeamBlade::Update(void)
 void CBeamBlade::Draw(void)
 {
 
+}
+
+// 半径設定
+void CBeamBlade::SetRadius(float fRadius)
+{
+	m_info.fRadius = fRadius;
+
+	if (m_info.pCylinder != nullptr)
+	{
+		m_info.pCylinder->SetRadius(fRadius * 0.8f);
+	}
+
+	if (m_info.pBlade != nullptr)
+	{
+		float fHeight = m_info.pBlade->GetHeight();
+
+		m_info.pBlade->SetSize(fRadius, fHeight);
+		m_info.pBlade->SetVtx();
+	}
+}
+
+// 高さ設定
+void CBeamBlade::SetHeight(float fHeight)
+{
+	m_info.fHeight = fHeight;
+
+	if (m_info.pCylinder != nullptr)
+	{
+		m_info.pCylinder->SetHeight(fHeight / MESH_V);
+	}
+
+	if (m_info.pBlade != nullptr)
+	{
+		float fWidth = m_info.pBlade->GetWidth();
+
+		m_info.pBlade->SetSize(fWidth, fHeight);
+	}
+}
+
+// 色設定
+void CBeamBlade::SetColor(D3DXCOLOR col)
+{
+	m_info.col = col;
+
+	if (m_info.pCylinder != nullptr)
+	{
+		m_info.pCylinder->SetCol(col);
+	}
+
+	if (m_info.pBlade != nullptr)
+	{
+		m_info.pBlade->SetColor(col);
+	}
 }

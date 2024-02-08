@@ -13,6 +13,7 @@
 
 class CEnemyBoss;
 class COrbit;
+class CBeamBlade;
 
 //*****************************************************
 // クラスの定義
@@ -93,12 +94,22 @@ class CStateBossBeforeTrans : public CStateBoss
 	void Move(CEnemyBoss *pBoss) override;
 };
 
+class CStateBossSelect : public CStateBoss
+{// 行動選択
+	void Init(CEnemyBoss *pBoss) override;
+
+	void Close(int nRand, CEnemyBoss *pBoss);
+	void Middle(int nRand, CEnemyBoss *pBoss);
+	void Far(int nRand, CEnemyBoss *pBoss);
+};
+
 class CStateBossSlash : public CStateBoss
 {// 斬撃
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
 
 	COrbit *m_pOrbit;
+	CBeamBlade *m_pBlade;
 };
 
 class CStateBossStep : public CStateBoss

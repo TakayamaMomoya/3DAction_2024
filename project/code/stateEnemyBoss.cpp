@@ -24,6 +24,8 @@
 #include "meshfield.h"
 #include "blockManager.h"
 #include "orbit.h"
+#include "beamBlade.h"
+#include "effect3D.h"
 
 //*****************************************************
 // 定数定義
@@ -45,6 +47,10 @@ const float SPEED_SLASH = 0.05f;	// 斬撃時の突撃スピード
 const float SPEED_STEP = 0.02f;	// ステップのスピード
 const float RANGE_SLASH = 1000.0f;	// 斬撃に移るまでの距離
 const D3DXVECTOR3 POS_CENTER = { 5170.0f,-6245.0f,3791.0f };	// ステージの中心座標
+const float RADIUS_BLADE = 70.0f;	// ブレードの半径
+const float SPEED_EXPAND_BLADE = 0.01f;	// ブレードの膨らむ速度
+const float DIST_CLOSE = 3000.0f;	// 近距離判定の距離
+const float DIST_FAR = 7000.0f;	// 遠距離判定の距離
 }
 
 //=====================================================
@@ -349,7 +355,7 @@ void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
 	}
 
 	// 爆発エフェクト
-	pos.y += 200.0f;
+	pos.y += 400.0f;
 	CExplSpawner::Create(pos, 300.0f, 360);
 	CParticle::Create(pos, CParticle::TYPE::TYPE_TURN_EXPLOSION);
 
@@ -427,11 +433,84 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 }
 
 //=====================================================
+// 行動選択
+//=====================================================
+void CStateBossSelect::Init(CEnemyBoss *pBoss)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	// プレイヤーとの距離によって行動が変化
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+	D3DXVECTOR3 pos = pBoss->GetPosition();
+	D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+	float fDest = D3DXVec3Length(&vecDiff);
+
+	int nRand = universal::RandRange(100, 0);
+
+	if (fDest < DIST_CLOSE)
+	{// 近距離
+		Close(nRand,pBoss);
+#ifdef _DEBUG
+		CEffect3D::Create(pBoss->GetMtxPos(0), 600.0f,60, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+#endif
+	}
+	else if (fDest > DIST_FAR)
+	{// 遠距離
+		Far(nRand, pBoss);
+#ifdef _DEBUG
+		CEffect3D::Create(pBoss->GetMtxPos(0), 1000.0f, 60, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
+#endif
+	}
+	else
+	{// 中距離
+		Middle(nRand, pBoss);
+#ifdef _DEBUG
+		CEffect3D::Create(pBoss->GetMtxPos(0), 600.0f, 60, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+#endif
+	}
+}
+
+void CStateBossSelect::Close(int nRand, CEnemyBoss *pBoss)
+{// 近距離
+	if (nRand < 30)
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
+	else
+	{// ステップ回避
+		pBoss->ChangeState(new CStateBossStep);
+	}
+}
+
+void CStateBossSelect::Middle(int nRand, CEnemyBoss *pBoss)
+{// 中距離
+	pBoss->ChangeState(new CStateBossSlash);
+}
+
+void CStateBossSelect::Far(int nRand, CEnemyBoss *pBoss)
+{// 遠距離
+	pBoss->ChangeState(new CStateBossSlash);
+}
+
+//=====================================================
 // 斬撃モーション
 //=====================================================
 void CStateBossSlash::Init(CEnemyBoss *pBoss)
 {
 	m_pOrbit = nullptr;
+	m_pBlade = nullptr;
+
+	m_pBlade = CBeamBlade::Create();
+
+	if (m_pBlade != nullptr)
+	{
+		m_pBlade->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		m_pBlade->SetRadius(0.0f);
+	}
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_SLASH);
 }
@@ -440,6 +519,37 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 {
 	int nMotion = pBoss->GetMotion();
 	bool bFinish = pBoss->IsFinish();
+
+	if (m_pBlade != nullptr)
+	{// 斬撃の更新
+		// 位置・向きの追従
+		D3DXMATRIX mtxArm = *pBoss->GetParts(CEnemyBoss::IDX_HAND_L)->pParts->GetMatrix();
+		D3DXMATRIX mtx;
+
+		D3DXVECTOR3 vecBlade = universal::VecToOffset(mtxArm, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+
+		D3DXVECTOR3 rotBlade = universal::VecToRot(vecBlade);
+		D3DXVECTOR3 posBlade =
+		{
+			mtxArm._41,
+			mtxArm._42,
+			mtxArm._43
+		};
+
+		rotBlade.x *= -1;
+
+		m_pBlade->SetPosition(posBlade);
+		m_pBlade->SetRotation(rotBlade);
+
+		CParticle::Create(posBlade, CParticle::TYPE_BLADE_PARTICLE, rotBlade);
+
+		// 大きさの更新
+		float fRadius = m_pBlade->GetRadius();
+
+		fRadius += (RADIUS_BLADE - fRadius) * SPEED_EXPAND_BLADE;
+
+		m_pBlade->SetRadius(fRadius);
+	}
 
 	if (nMotion == CEnemyBoss::MOTION::MOTION_PRE_SLASH)
 	{
@@ -453,6 +563,7 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 			if (pPlayer == nullptr)
 				return;
 
+			// プレイヤーを追尾
 			D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 			D3DXVECTOR3 pos = pBoss->GetPosition();
 
@@ -465,8 +576,7 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 				pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_SLASH);
 
 				if (m_pOrbit == nullptr)
-				{
-					// 軌跡の生成
+				{// 軌跡の生成
 					D3DXMATRIX mtx = *pBoss->GetParts(CEnemyBoss::IDX_HAND_L)->pParts->GetMatrix();
 
 					D3DXVECTOR3 offset = { 0.0f,-1000.0f,0.0f };
@@ -475,6 +585,9 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 				}
 			}
 		}
+
+		// ビームパーティクルの発生
+		pBoss->BeamBlade();
 	}
 	else if (nMotion == CEnemyBoss::MOTION::MOTION_SLASH)
 	{
@@ -486,18 +599,22 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 		}
 
 		if (bFinish)
-		{
+		{// 斬撃の終了
 			if (m_pOrbit != nullptr)
 			{
 				m_pOrbit->SetEnd(true);
 				m_pOrbit = nullptr;
 			}
 
-			pBoss->ChangeState(new CStateBossStep);
+			if (m_pBlade != nullptr)
+			{
+				m_pBlade->Uninit();
+				m_pBlade = nullptr;
+			}
+
+			pBoss->ChangeState(new CStateBossSelect);
 		}
 	}
-
-	pBoss->BeamBlade();
 }
 
 //=====================================================
@@ -510,6 +627,8 @@ void CStateBossStep::Init(CEnemyBoss *pBoss)
 
 	if (pPlayer == nullptr)
 		return;
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
 
 	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
@@ -532,7 +651,7 @@ void CStateBossStep::Move(CEnemyBoss *pBoss)
 
 		if (universal::DistCmpFlat(pos, m_posDest, RANGE_SLASH, nullptr))
 		{
-			pBoss->ChangeState(new CStateBossSlash);
+			pBoss->ChangeState(new CStateBossSelect);
 		}
 	}
 	else
