@@ -26,6 +26,7 @@
 #include "orbit.h"
 #include "beamBlade.h"
 #include "effect3D.h"
+#include "beam.h"
 
 //*****************************************************
 // 定数定義
@@ -40,6 +41,7 @@ const int RANGE_HEIGHT_DRONE = 500;	// ドローンの高さの幅
 const float MOVE_DRONE = 50.0f;	// ドローンの射出時の移動量
 const float TIME_MG = 0.15f;	// マシンガン発射の時間
 const int NUM_MG = 30;	// マシンガンの発射数
+const int NUM_BEAMSMALL = 4;	// 小ビームの発射数
 const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
 const int ACCURACY_MG = 10;	// マシンガンの精度
 const float GRAVITY = 0.4f;	// 重力
@@ -488,12 +490,26 @@ void CStateBossSelect::Close(int nRand, CEnemyBoss *pBoss)
 
 void CStateBossSelect::Middle(int nRand, CEnemyBoss *pBoss)
 {// 中距離
-	pBoss->ChangeState(new CStateBossSlash);
+	if (nRand < 70)
+	{
+		pBoss->ChangeState(new CStateBossBeamSmall);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
 }
 
 void CStateBossSelect::Far(int nRand, CEnemyBoss *pBoss)
 {// 遠距離
-	pBoss->ChangeState(new CStateBossSlash);
+	if (nRand < 70)
+	{
+		pBoss->ChangeState(new CStateBossBeamSmall);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
 }
 
 //=====================================================
@@ -612,6 +628,59 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 				m_pBlade = nullptr;
 			}
 
+			pBoss->ChangeState(new CStateBossSelect);
+		}
+	}
+}
+
+//=====================================================
+// 小ビーム攻撃
+//=====================================================
+void CStateBossBeamSmall::Init(CEnemyBoss *pBoss)
+{
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_BEAMSMALL);
+
+	m_nCnt = 0;
+}
+
+void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
+{
+	pBoss->AimPlayer(0.0f, false);
+
+	bool bShot = pBoss->AttackTimer(0.5f);
+
+	if (bShot)
+	{
+		// ビームの生成
+		CBeam *pBeam = CBeam::Create();
+
+		D3DXMATRIX mtxParent = *pBoss->GetParts(CEnemyBoss::IDX_HAND_R)->pParts->GetMatrix();
+		D3DXMATRIX mtxBeam;
+
+		universal::SetOffSet(&mtxBeam, mtxParent, D3DXVECTOR3(0.0f, -1.0f, 1.0f));
+
+		if (pBeam != nullptr)
+		{
+			D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
+			D3DXVECTOR3 posMazzle = { mtxBeam._41,mtxBeam._42 ,mtxBeam._43 };
+			D3DXVECTOR3 vecMazzle = posMazzle - pos;
+
+			D3DXVECTOR3 rot = pBoss->GetRotation();
+
+			pBeam->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+			pBeam->SetMtx(mtxBeam);
+			pBeam->SetRotation(rot);
+			pBeam->SetPosition(posMazzle);
+			pBeam->SetAnimSize(200.0f, 10000.0f);
+			pBeam->SetShrink(2.5f);
+			pBeam->SetExpand(160.0f);
+			pBeam->SetExtend(100.0f);
+		}
+
+		m_nCnt++;
+
+		if (m_nCnt > NUM_BEAMSMALL)
+		{
 			pBoss->ChangeState(new CStateBossSelect);
 		}
 	}

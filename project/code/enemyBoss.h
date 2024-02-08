@@ -55,6 +55,7 @@ public:
 		MOTION_SLASH,	// 斬撃
 		MOTION_PRE_SLASH,	// 斬撃予備
 		MOTION_DEATH,	// 死亡モーション
+		MOTION_BEAMSMALL,	// 小ビーム
 		MOTION_MAX
 	};
 

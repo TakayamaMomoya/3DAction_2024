@@ -37,7 +37,7 @@ public:
 	void SetRotation(D3DXVECTOR3 rot);
 	void SetCol(D3DXCOLOR col);
 	void SetMtx(D3DXMATRIX mtx) { m_info.mtxWorld = mtx; }
-	void SetAnimSize(float fWidth, float fLength) { m_info.fWidthAnimDest = fWidth; m_info.fLengthAnimDest = fLength; }
+	void SetAnimSize(float fWidth, float fLength);
 	// ñcÇÁÇﬁë¨ìxê›íË
 	void SetExpand(float fSpeed) { m_info.fSpeedExpand = fSpeed; }	
 	// èkÇﬁë¨ìxê›íË

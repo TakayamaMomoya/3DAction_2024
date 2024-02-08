@@ -112,6 +112,14 @@ class CStateBossSlash : public CStateBoss
 	CBeamBlade *m_pBlade;
 };
 
+class CStateBossBeamSmall : public CStateBoss
+{// 小ビーム
+	void Init(CEnemyBoss *pBoss) override;
+	void Attack(CEnemyBoss *pBoss) override;
+
+	int m_nCnt;
+};
+
 class CStateBossStep : public CStateBoss
 {// ステップの逃げ
 	void Init(CEnemyBoss *pBoss) override;

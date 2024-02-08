@@ -270,3 +270,17 @@ void CBeam::SetCol(D3DXCOLOR col)
 		m_info.pAnim->SetColor(col);
 	}
 }
+
+//=====================================================
+// ƒTƒCƒYÝ’è
+//=====================================================
+void CBeam::SetAnimSize(float fWidth, float fLength)
+{
+	m_info.fWidthAnimDest = fWidth; 
+	m_info.fLengthAnimDest = fLength;
+
+	if (m_info.pCollision != nullptr)
+	{
+		m_info.pCollision->SetRadius(fWidth);
+	}
+}
