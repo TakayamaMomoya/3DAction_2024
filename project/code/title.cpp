@@ -133,6 +133,7 @@ HRESULT CTitle::Init(void)
 		int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\BG\\field00.jpg");
 		pField->SetIdxTexture(nIdx);
 		pField->SetTex(D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(30.0f, 30.0f));
+		pField->SetVtx();
 	}
 	else if (pField == nullptr)
 	{
