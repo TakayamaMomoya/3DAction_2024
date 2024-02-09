@@ -281,6 +281,6 @@ void CBeam::SetAnimSize(float fWidth, float fLength)
 
 	if (m_info.pCollision != nullptr)
 	{
-		m_info.pCollision->SetRadius(fWidth);
+		m_info.pCollision->SetRadius(fWidth * 0.5f);
 	}
 }

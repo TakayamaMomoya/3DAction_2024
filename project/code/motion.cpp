@@ -678,6 +678,11 @@ void CMotion::Load(char *pPath)
 							m_aMotionInfo[m_nNumMotion].pEvent = new EVENT_INFO[m_aMotionInfo[m_nNumMotion].nNumEvent];
 
 							ZeroMemory(m_aMotionInfo[m_nNumMotion].pEvent, sizeof(EVENT_INFO) * m_aMotionInfo[m_nNumMotion].nNumEvent);
+
+							for (int i = 0; i < m_aMotionInfo[m_nNumMotion].nNumEvent;i++)
+							{
+								m_aMotionInfo[m_nNumMotion].pEvent->fTimer = FLT_MAX;
+							}
 						}
 					}
 
