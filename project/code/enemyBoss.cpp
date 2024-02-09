@@ -25,6 +25,7 @@
 #include "beam.h"
 #include "slow.h"
 #include "fade.h"
+#include "camera.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -473,7 +474,15 @@ void CEnemyBoss::Hit(float fDamage)
 			}
 			else
 			{
-				SetMotion(MOTION::MOTION_DEATH);
+				ChangeState(new CStateBossDeath);
+
+				if (pSlow != nullptr)
+					pSlow->SetSlowTime(3.0f, 0.1f);
+
+				CCamera *pCamera = CManager::GetCamera();
+
+				if (pCamera != nullptr)
+					pCamera->SetQuake(1.5f, 1.5f, 160);
 			}
 		}
 		else

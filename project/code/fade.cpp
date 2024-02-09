@@ -151,7 +151,7 @@ void CFade::Update(void)
 
 			if (m_col.a <= 0.0f)
 			{//ƒ|ƒŠƒSƒ“‚ªŠ®‘S‚É•s“§–¾‚É‚È‚Á‚½‚ç
-				m_col.a = 0.0f;
+				m_col = { 0.0f,0.0f,0.0f,0.0f };
 				m_fade = FADE_NONE;
 			}
 		}
@@ -203,7 +203,7 @@ void CFade::SetFade(CScene::MODE modeNext, bool bTrans)
 	{
 		m_fade = FADE_IN;
 		m_modeNext = modeNext;
-		m_col = { 0.0f, 0.0f, 0.0f, 0.0f };
+		m_col.a = 0.0f;
 
 		m_bTrans = bTrans;
 	}

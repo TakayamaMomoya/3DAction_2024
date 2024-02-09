@@ -27,6 +27,7 @@
 #include "beamBlade.h"
 #include "effect3D.h"
 #include "beam.h"
+#include "game.h"
 
 //*****************************************************
 // 定数定義
@@ -55,10 +56,12 @@ const float DIST_CLOSE = 3000.0f;	// 近距離判定の距離
 const float DIST_FAR = 7000.0f;	// 遠距離判定の距離
 }
 
-//=====================================================
-// コンストラクタ
-//=====================================================
 CStateBoss::CStateBoss()
+{
+
+}
+
+CStateBoss::~CStateBoss()
 {
 
 }
@@ -396,6 +399,7 @@ void CStateBossTrans::Evolve(CEnemyBoss *pBoss)
 
 	if (pFade != nullptr)
 	{
+		pFade->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 		pFade->SetFade(CScene::MODE_GAME, false);
 	}
 }
@@ -519,6 +523,21 @@ void CStateBossSelect::Far(int nRand, CEnemyBoss *pBoss)
 //=====================================================
 // 斬撃モーション
 //=====================================================
+CStateBossSlash::~CStateBossSlash()
+{
+	if (m_pBlade != nullptr)
+	{
+		m_pBlade->Uninit();
+		m_pBlade = nullptr;
+	}
+
+	if (m_pOrbit != nullptr)
+	{
+		m_pOrbit->Uninit();
+		m_pOrbit = nullptr;
+	}
+}
+
 void CStateBossSlash::Init(CEnemyBoss *pBoss)
 {
 	m_pOrbit = nullptr;
@@ -715,27 +734,58 @@ void CStateBossStep::Init(CEnemyBoss *pBoss)
 void CStateBossStep::Move(CEnemyBoss *pBoss)
 {
 	D3DXVECTOR3 pos = pBoss->GetPosition();
+	D3DXVECTOR3 posDest = {};
 
+	// 残像を出す
 	pBoss->SetAfterImage(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.4f), 20);
 
 	if (m_bMid)
-	{
-		universal::MoveToDest(&pos, m_posDest, SPEED_STEP);
+	{// 中間地点への移動
+		posDest = m_posDest;
 
-		if (universal::DistCmpFlat(pos, m_posDest, RANGE_SLASH, nullptr))
+		universal::MoveToDest(&pos, posDest, SPEED_STEP);
+
+		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
 		{
 			pBoss->ChangeState(new CStateBossSelect);
 		}
 	}
 	else
-	{
-		universal::MoveToDest(&pos, m_posDestMid, SPEED_STEP);
+	{// 最終目標への移動
+		posDest = m_posDestMid;
 
-		if (universal::DistCmpFlat(pos, m_posDestMid, RANGE_SLASH, nullptr))
+		universal::MoveToDest(&pos, posDest, SPEED_STEP);
+
+		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
 		{
 			m_bMid = true;
 		}
 	}
 
 	pBoss->SetPosition(pos);
+
+	pBoss->AimPlayer(0.0f, false);
+}
+
+//=====================================================
+// 死亡時
+//=====================================================
+void CStateBossDeath::Init(CEnemyBoss *pBoss)
+{
+	CGame::SetState(CGame::STATE::STATE_END);
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
+}
+
+void CStateBossDeath::Move(CEnemyBoss *pBoss)
+{
+	D3DXVECTOR3 posParticle = pBoss->GetMtxPos(CEnemyBoss::IDX_BODY);
+
+	CParticle::Create(posParticle, CParticle::TYPE_SMOKE_DEATH);
+
+	D3DXVECTOR3 move = pBoss->GetMove();
+
+	move.y -= GRAVITY;
+
+	pBoss->SetMove(move);
 }

@@ -26,6 +26,7 @@
 #include "cameraBehavior.h"
 #include "heat.h"
 #include "particle.h"
+#include "game.h"
 
 //*****************************************************
 // 定数定義
@@ -162,7 +163,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// パラメーターに初期値を入れる
-	m_param.fInitialLife = 50.0f;
+	m_param.fInitialLife = 300.0f;
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
@@ -1483,6 +1484,8 @@ void CPlayer::Hit(float fDamage)
 			m_info.state = STATE_DEATH;
 
 			Uninit();
+
+			CGame::SetState(CGame::STATE::STATE_END);
 		}
 		else
 		{// ダメージ判定

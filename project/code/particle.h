@@ -25,7 +25,7 @@ public:
 		TYPE_EXPLOSION,	// 爆発
 		TYPE_TURN_EXPLOSION,	// 収束爆発
 		TYPE_BEAM_BLADE,	// ビームブレード
-		TYPE_SMOKE,	// 煙
+		TYPE_SMOKE_DEATH,	// 煙
 		TYPE_TOMATO_JUICE,	// トマト汁
 		TYPE_SAND_SMOKE,	// 砂煙
 		TYPE_MISSILE_SMOKE,	// ミサイルの煙

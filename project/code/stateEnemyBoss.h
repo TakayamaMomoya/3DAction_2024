@@ -22,6 +22,7 @@ class CStateBoss
 {
 public:
 	CStateBoss();
+	virtual ~CStateBoss();
 
 	virtual void Init(CEnemyBoss *pBoss) {}
 	virtual void Attack(CEnemyBoss *pBoss) {}
@@ -105,6 +106,7 @@ class CStateBossSelect : public CStateBoss
 
 class CStateBossSlash : public CStateBoss
 {// 斬撃
+	~CStateBossSlash();
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
 
@@ -128,5 +130,14 @@ class CStateBossStep : public CStateBoss
 	D3DXVECTOR3 m_posDestMid;
 	D3DXVECTOR3 m_posDest;
 	bool m_bMid;	// 中間のステップを終えたか
+};
+
+//=====================================================
+// 撃破
+//=====================================================
+class CStateBossDeath : public CStateBoss
+{// 死亡中
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
 };
 #endif
