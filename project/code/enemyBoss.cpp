@@ -106,7 +106,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE);
 
 	// èÛë‘ê›íË
-	ChangeState(new CStateBossTrans);
+	ChangeState(new CStateBossApper);
 
 	FollowCollision();
 

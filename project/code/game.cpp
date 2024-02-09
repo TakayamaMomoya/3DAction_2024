@@ -111,7 +111,7 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CEnemyBoss::Create();
+	//CEnemyBoss::Create();
 
 	//CBeamBlade::Create();
 

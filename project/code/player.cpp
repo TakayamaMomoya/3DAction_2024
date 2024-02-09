@@ -24,6 +24,8 @@
 #include "effect3D.h"
 #include "meshfield.h"
 #include "cameraBehavior.h"
+#include "heat.h"
+#include "particle.h"
 
 //*****************************************************
 // 定数定義
@@ -53,6 +55,19 @@ const float MELEE_DIST = 800.0f;	// 格闘に移る距離
 const float MIN_ANGLE_CAMERA = D3DX_PI * 0.2f;	// カメラの下を見る制限
 const float MAX_ANGLE_CAMERA = D3DX_PI * 0.7f;	// カメラの上を見る制限
 const float DAMAGE_BULLET = 1.0f;	// 弾の威力
+const float DECREASE_PARAM = 2.0f;	// パラメータ全回復にかかる時間
+const D3DXVECTOR3 POS_PARAM[CPlayer::PARAM_MAX] =
+{// パラメータ表示の位置
+	{SCREEN_WIDTH * 0.5f - 320.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 銃
+	{SCREEN_WIDTH * 0.5f + 320.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 近接
+	{SCREEN_WIDTH * 0.5f + 320.0f,SCREEN_HEIGHT * 0.5f + 100.0f,0.0f},// 掴み
+};
+const char* PATH_PARAM[CPlayer::PARAM_MAX] =
+{// パラメータUIのテクスチャパス
+	"data\\TEXTURE\\UI\\frame00.png",
+	"data\\TEXTURE\\UI\\frame01.png",
+	"data\\TEXTURE\\UI\\frame02.png",
+};
 }
 
 //*****************************************************
@@ -146,8 +161,8 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 
-	m_param.fInitialLife = 50.0f;
 	// パラメーターに初期値を入れる
+	m_param.fInitialLife = 50.0f;
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
@@ -164,6 +179,18 @@ HRESULT CPlayer::Init(void)
 
 	// カメラの行動設定
 	Camera::ChangeBehavior(new CFollowPlayer);
+
+	// UIの生成
+	for (int i = 0; i < PARAM_MAX; i++)
+	{
+		m_info.apHeatUI[i] = CHeat::Create();
+
+		if (m_info.apHeatUI[i] != nullptr)
+		{
+			m_info.apHeatUI[i]->SetPosition(POS_PARAM[i]);
+			m_info.apHeatUI[i]->BindTextureFrame(PATH_PARAM[i]);
+		}
+	}
 
 	return S_OK;
 }
@@ -191,6 +218,15 @@ void CPlayer::Uninit(void)
 	{
 		m_info.pClsnAttack->Uninit();
 		m_info.pClsnAttack = nullptr;
+	}
+
+	for (int i = 0; i < PARAM_MAX; i++)
+	{
+		if (m_info.apHeatUI[i] != nullptr)
+		{
+			m_info.apHeatUI[i]->Uninit();
+			m_info.apHeatUI[i] = nullptr;
+		}
 	}
 
 	// 継承クラスの終了
@@ -282,6 +318,9 @@ void CPlayer::Update(void)
 	// モーション管理
 	ManageMotion();
 
+	// パラメーター管理
+	ManageParam();
+
 	if (m_info.pEnemyGrab != nullptr)
 	{// 手に追従
 		D3DXVECTOR3 offset = { 0.0f,-100.0f,0.0f };
@@ -304,6 +343,15 @@ void CPlayer::Update(void)
 	{
 		// ブースト回復
 		AddBoost(REGEN_BOOST * 0.2f);
+	}
+	
+	if (nMotion == MOTION_WALK_FRONT)
+	{// 足元に砂煙を出す
+		D3DXVECTOR3 posToe = GetMtxPos(11);
+		CParticle::Create(posToe, CParticle::TYPE::TYPE_SAND_SMOKE);
+
+		posToe = GetMtxPos(14);
+		CParticle::Create(posToe, CParticle::TYPE::TYPE_SAND_SMOKE);
 	}
 
 // デバッグ処理
@@ -693,7 +741,8 @@ void CPlayer::InputAttack(void)
 		return;
 	}
 
-	if (pInputManager->GetPress(CInputManager::BUTTON_SHOT))
+	if (pInputManager->GetPress(CInputManager::BUTTON_SHOT) && 
+		m_info.aHeat[PARAM_GUN] == false)
 	{// 射撃処理
 		m_fragMotion.bShot = true;
 	}
@@ -702,7 +751,8 @@ void CPlayer::InputAttack(void)
 		m_fragMotion.bShot = false;
 	}
 
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE))
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE) &&
+		m_info.aHeat[PARAM_MELEE] == false)
 	{// 近接攻撃処理
 		m_fragMotion.bMelee = true;
 
@@ -993,6 +1043,8 @@ void CPlayer::ManageMotion(void)
 						AddMoveForward(POW_ADDMELEE);
 					}
 				}
+
+				m_info.aParam[PARAM_MELEE] += 0.9f;
 			}
 			else
 			{
@@ -1076,6 +1128,36 @@ void CPlayer::ManageMotion(void)
 }
 
 //=====================================================
+// パラメータ管理
+//=====================================================
+void CPlayer::ManageParam(void)
+{
+	for (int i = 0; i < PARAM_MAX; i++)
+	{
+		if (m_info.aParam[i] > 1.0f)
+		{
+			m_info.aParam[i] = 1.0f;
+			m_info.aHeat[i] = true;
+		}
+
+		float fDeltaTime = CManager::GetDeltaTime();
+
+		m_info.aParam[i] -= 1.0f * (fDeltaTime / DECREASE_PARAM);
+
+		if (m_info.aParam[i] < 0.0f)
+		{
+			m_info.aParam[i] = 0.0f;
+			m_info.aHeat[i] = false;
+		}
+
+		if (m_info.apHeatUI[i] != nullptr)
+		{
+			m_info.apHeatUI[i]->SetParam(m_info.aParam[i]);
+		}
+	}
+}
+
+//=====================================================
 // 近接攻撃の始まるタイミング
 //=====================================================
 void CPlayer::StartMelee(void)
@@ -1119,6 +1201,8 @@ void CPlayer::StartMelee(void)
 		{
 			pEnemyManager->EnableLockTarget(true);
 		}
+
+		m_info.aParam[PARAM_MELEE] += 0.7f;
 	}
 }
 
@@ -1326,6 +1410,9 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 
 	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, DAMAGE_BULLET,
 		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
+
+	// 熱量を加算
+	m_info.aParam[PARAM_GUN] += 0.3f;
 }
 
 //=====================================================
@@ -1563,6 +1650,8 @@ void CPlayer::Debug(void)
 	pDebugProc->Print("\n目標の向き[%f,%f,%f]", GetRotation().x, GetRotation().y, GetRotation().z);
 	pDebugProc->Print("\nブースト残量[%f]", m_info.fBoost);
 	pDebugProc->Print("\n体力[%f]", m_info.fLife);
+	for (int i = 0; i < PARAM_MAX; i++)
+		pDebugProc->Print("\n熱量[%f][%d]", m_info.aParam[i],m_info.aHeat[i]);
 
 	int nMotion = GetMotion();
 

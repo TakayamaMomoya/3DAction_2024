@@ -490,9 +490,13 @@ void CStateBossSelect::Close(int nRand, CEnemyBoss *pBoss)
 
 void CStateBossSelect::Middle(int nRand, CEnemyBoss *pBoss)
 {// ’†‹——£
-	if (nRand < 70)
+	if (nRand < 40)
 	{
 		pBoss->ChangeState(new CStateBossBeamSmall);
+	}
+	else if (nRand < 80)
+	{
+		pBoss->ChangeState(new CStateBossStep);
 	}
 	else
 	{
@@ -502,7 +506,7 @@ void CStateBossSelect::Middle(int nRand, CEnemyBoss *pBoss)
 
 void CStateBossSelect::Far(int nRand, CEnemyBoss *pBoss)
 {// ‰“‹——£
-	if (nRand < 70)
+	if (nRand < 60)
 	{
 		pBoss->ChangeState(new CStateBossBeamSmall);
 	}

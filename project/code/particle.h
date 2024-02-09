@@ -27,8 +27,8 @@ public:
 		TYPE_BEAM_BLADE,	// ビームブレード
 		TYPE_SMOKE,	// 煙
 		TYPE_TOMATO_JUICE,	// トマト汁
+		TYPE_SAND_SMOKE,	// 砂煙
 		TYPE_MISSILE_SMOKE,	// ミサイルの煙
-		TYPE_MISSILE_SPARK,	// ミサイルの火花
 		TYPE_BLADE_PARTICLE,	// 武器の破壊
 		TYPE_MAX
 	}TYPE;

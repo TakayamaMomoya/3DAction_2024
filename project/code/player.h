@@ -20,6 +20,7 @@ class CCollisionSphere;
 class CCollisionCube;
 class CObject3D;
 class CEnemy;
+class CHeat;
 
 //*****************************************************
 // クラスの定義
@@ -58,6 +59,13 @@ public:
 		STATEBOOST_NORMAL,	// 通常状態
 		STATEBOOST_OVERHEAT,	// オーバーヒート状態
 		STATEBOOST_MAX
+	};
+	enum PARAM
+	{
+		PARAM_GUN = 0,	// 銃の熱
+		PARAM_MELEE,	// 近接武器の熱
+		PARAM_HAND,	// 腕の熱
+		PARAM_MAX
 	};
 	struct SParam
 	{
@@ -99,6 +107,9 @@ private:
 	{
 		float fLife;	// 体力
 		float fBoost;	// ブースト残量
+		float aParam[PARAM_MAX];	// パラメータ
+		bool aHeat[PARAM_MAX];	// オーバーヒートフラグ
+		CHeat *apHeatUI[PARAM_MAX];	// パラメータ
 		STATE state;	// 状態
 		STATEBOOST stateBoost;	// ブーストの状態
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
@@ -121,6 +132,7 @@ private:
 	void ManageCollision(void);
 	void ManageState(void);
 	void ManageMotion(void);
+	void ManageParam(void);
 	void StartMelee(void);
 	void AddMoveForward(float fSpeed);
 	void AddMoveUp(float fSpeed);
@@ -135,7 +147,7 @@ private:
 	void Debug(void);
 
 	SInfo m_info;	// 自身の情報
-	SParam m_param;	// パラメーター情報
+	SParam m_param;	// パラメータ情報
 	SFragMotion m_fragMotion;	// モーションのフラグ
 
 	static CPlayer *m_pPlayer;	// 自身のポインタ
