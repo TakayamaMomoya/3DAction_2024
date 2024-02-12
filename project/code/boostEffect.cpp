@@ -175,3 +175,26 @@ void CBoostEffect::SetColor(D3DXCOLOR col)
 		m_info.pBlade->SetColor(col);
 	}
 }
+
+// ˆÊ’uÝ’è
+void CBoostEffect::SetPosition(D3DXVECTOR3 pos)
+{
+	m_info.pos = pos;
+
+	D3DXVECTOR3 rot = GetRotation();
+
+	if (m_info.pBlade != nullptr)
+	{
+		pos +=
+		{
+			sinf(rot.x) * sinf(rot.y) * m_info.fHeight,
+				cosf(rot.x) * m_info.fHeight,
+				sinf(rot.x) * cosf(rot.y) * m_info.fHeight
+		};
+
+		rot.x -= 1.57f;
+
+		m_info.pBlade->SetPosition(pos);
+		m_info.pBlade->SetRotation(rot);
+	}
+}

@@ -195,7 +195,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// “Çž
-	//Load();
+	Load();
 
 	return S_OK;
 }
@@ -1297,6 +1297,20 @@ void CPlayer::Boost(void)
 	if (m_info.pThruster == nullptr)
 		return;
 
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager == nullptr)
+		return;
+
+	// –Ú•W•ûŒü‚ÌÝ’è
+	CInputManager::SAxis axis = pInputManager->GetAxis();
+	D3DXVECTOR3 axisMove = axis.axisMove;
+
+	D3DXVECTOR3 move = GetMove();
+	float fSpeed = sqrtf(axisMove.x * axisMove.x + axisMove.z * axisMove.z);
+
+	universal::LimitValue(&fSpeed, 1.0f, 0.0f);
+
 	for (int i = 0; i < m_info.nNumThruster; i++)
 	{
 		if (m_info.pThruster[i].pFire != nullptr)
@@ -1324,8 +1338,24 @@ void CPlayer::Boost(void)
 			rot.x *= -1;
 			rot.x += D3DX_PI;
 
+			float fHeight = m_info.pThruster[i].pFire->GetHeight();
+
+			float fDest = m_info.pThruster[i].size.y * fSpeed;
+
+			float fDiff = fDest - fHeight;
+
+			float fFact = 0.2f;
+
+			if (fDiff < 0.0f)
+			{
+				fFact = 0.8f;
+			}
+
+			fHeight += fDiff * fFact;
+
+			m_info.pThruster[i].pFire->SetHeight(fHeight);
 			m_info.pThruster[i].pFire->SetRotation(rot);
-			m_info.pThruster[i].pFire->SetPosition(posBoost + GetMove());
+			m_info.pThruster[i].pFire->SetPosition(posBoost);
 		}
 
 	}
