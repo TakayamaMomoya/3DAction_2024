@@ -165,6 +165,7 @@
     <ClCompile Include="code\block.cpp" />
     <ClCompile Include="code\blockManager.cpp" />
     <ClCompile Include="code\boost.cpp" />
+    <ClCompile Include="code\boostEffect.cpp" />
     <ClCompile Include="code\bullet.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\cameraBehavior.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="code\block.h" />
     <ClInclude Include="code\blockManager.h" />
     <ClInclude Include="code\boost.h" />
+    <ClInclude Include="code\boostEffect.h" />
     <ClInclude Include="code\bullet.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\cameraBehavior.h" />

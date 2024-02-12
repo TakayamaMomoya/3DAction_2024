@@ -40,13 +40,13 @@ HRESULT CCamera::Init(void)
 {
 	ZeroMemory(&m_camera,sizeof(Camera));
 
-	m_camera.posV = D3DXVECTOR3(0.0f, 200.0f, -700.0f);
-	m_camera.posVOld = D3DXVECTOR3(0.0f, 30.0f, 100.0f);
-	m_camera.posR = D3DXVECTOR3(0.0f, 0.0f, 100.0f);
-	m_camera.posVDest = D3DXVECTOR3(0.0f, 200.0f, -700.0f);
-	m_camera.posRDest = D3DXVECTOR3(0.0f, 0.0f, 100.0f);
+	m_camera.posV = D3DXVECTOR3(-700.0f, 200.0f, 0.0f);
+	m_camera.posVOld = D3DXVECTOR3(100.0f, 30.0f, 0.0f);
+	m_camera.posR = D3DXVECTOR3(100.0f, 0.0f, 0.0f);
+	m_camera.posVDest = D3DXVECTOR3(-700.0f, 200.0f, 0.0f);
+	m_camera.posRDest = D3DXVECTOR3(100.0f, 0.0f, 0.0f);
 	m_camera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	m_camera.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_camera.rot = D3DXVECTOR3(0.0f, 1.57f, 0.0f);
 	m_camera.fLength = 100.0f;
 	m_camera.fViewAngle = INITIAL_ANGLE;
 
@@ -61,7 +61,7 @@ HRESULT CCamera::Init(void)
 		fLength * fLength + (m_camera.posV.y - m_camera.posR.y) * (m_camera.posV.y - m_camera.posR.y)
 	);
 
-	m_camera.rot.x = atan2f(fLength, m_camera.posV.y - m_camera.posR.y);
+	m_camera.rot.x = atan2f(fLength, m_camera.posR.y - m_camera.posV.y);
 
 	SetPosV();
 

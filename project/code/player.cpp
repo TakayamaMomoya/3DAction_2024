@@ -322,6 +322,9 @@ void CPlayer::Update(void)
 	// パラメーター管理
 	ManageParam();
 
+	// ブーストエフェクト制御
+	Boost();
+
 	if (m_info.pEnemyGrab != nullptr)
 	{// 手に追従
 		D3DXVECTOR3 offset = { 0.0f,-100.0f,0.0f };
@@ -1156,6 +1159,14 @@ void CPlayer::ManageParam(void)
 			m_info.apHeatUI[i]->SetParam(m_info.aParam[i]);
 		}
 	}
+}
+
+//=====================================================
+// ブーストエフェクトの制御
+//=====================================================
+void CPlayer::Boost(void)
+{
+
 }
 
 //=====================================================

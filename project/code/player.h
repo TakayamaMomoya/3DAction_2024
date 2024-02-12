@@ -133,6 +133,7 @@ private:
 	void ManageState(void);
 	void ManageMotion(void);
 	void ManageParam(void);
+	void Boost(void);
 	void StartMelee(void);
 	void AddMoveForward(float fSpeed);
 	void AddMoveUp(float fSpeed);

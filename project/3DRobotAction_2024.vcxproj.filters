@@ -258,6 +258,9 @@
     <ClCompile Include="code\heat.cpp">
       <Filter>ソース ファイル\UI</Filter>
     </ClCompile>
+    <ClCompile Include="code\boostEffect.cpp">
+      <Filter>ソース ファイル\VFX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -478,6 +481,9 @@
     </ClInclude>
     <ClInclude Include="code\heat.h">
       <Filter>ソース ファイル\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="code\boostEffect.h">
+      <Filter>ソース ファイル\VFX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

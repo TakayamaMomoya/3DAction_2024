@@ -37,6 +37,7 @@
 #include "cameraBehavior.h"
 #include "particle.h"
 #include "beamBlade.h"
+#include "boostEffect.h"
 
 //*****************************************************
 // マクロ定義
@@ -111,7 +112,9 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CEnemyBoss::Create();
+	CBoostEffect::Create();
+
+	//CEnemyBoss::Create();
 
 	return S_OK;
 }

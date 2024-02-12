@@ -37,6 +37,10 @@ CInputJoypad::CInputJoypad()
 	ZeroMemory(&m_aVibration, sizeof(m_aVibration));
 	ZeroMemory(&m_aVibState,sizeof(m_aVibState));
 	ZeroMemory(&m_aVibTimer, sizeof(m_aVibTimer));
+	ZeroMemory(&m_abTriggerTB, sizeof(m_abTriggerTB));
+	ZeroMemory(&m_abPressTB, sizeof(m_abPressTB));
+	ZeroMemory(&m_abTrigggerLStick, sizeof(m_abTrigggerLStick));
+	ZeroMemory(&m_abTrigggerRStick, sizeof(m_abTrigggerRStick));
 }
 
 //====================================================
