@@ -195,7 +195,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// 読込
-	Load();
+	//Load();
 
 	return S_OK;
 }
@@ -260,9 +260,9 @@ void CPlayer::Load(void)
 					{// ベクトル
 						(void)fscanf(pFile, "%s", &cTemp[0]);
 
-						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.x);
-						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.y);
-						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.z);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].vector.x);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].vector.y);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].vector.z);
 					}
 
 					if (strcmp(cTemp, "SIZE") == 0)
@@ -282,6 +282,17 @@ void CPlayer::Load(void)
 
 					if (strcmp(cTemp, "END_THRUSTER") == 0)
 					{
+						if (m_info.pThruster[nThruster].pFire == nullptr)
+						{
+							m_info.pThruster[nThruster].pFire = CBoostEffect::Create();
+						
+							if (m_info.pThruster[nThruster].pFire != nullptr)
+							{
+								m_info.pThruster[nThruster].pFire->SetRadius(m_info.pThruster[nThruster].size.x);
+								m_info.pThruster[nThruster].pFire->SetHeight(m_info.pThruster[nThruster].size.y);
+							}
+						}
+
 						nThruster++;
 
 						break;
@@ -1281,30 +1292,43 @@ void CPlayer::ManageParam(void)
 //=====================================================
 void CPlayer::Boost(void)
 {
-	//if (m_info.aBoostEffect != nullptr)
-	//{
-	//	D3DXVECTOR3 posBoost;
-	//	D3DXVECTOR3 vecBoost;
+	MultiplyMtx();
 
-	//	D3DXMATRIX mtxParent = *GetParts(1)->pParts->GetMatrix();
-	//	D3DXMATRIX mtx;
-	//	D3DXMATRIX mtxVec;
+	if (m_info.pThruster == nullptr)
+		return;
 
-	//	universal::SetOffSet(&mtx, mtxParent, D3DXVECTOR3(0.0f, 50.0f, 0.0f));
-	//	universal::SetOffSet(&mtxVec, mtx, D3DXVECTOR3(0.0f, -1.0f, 1.0f));
+	for (int i = 0; i < m_info.nNumThruster; i++)
+	{
+		if (m_info.pThruster[i].pFire != nullptr)
+		{
+			int nParent = m_info.pThruster[i].nIdxParent;
+			D3DXVECTOR3 offset = m_info.pThruster[i].offset;
+			D3DXVECTOR3 vector = m_info.pThruster[i].vector;
 
-	//	posBoost = { mtx._41, mtx._42 ,mtx._43 };
-	//	vecBoost = { mtxVec._41 - posBoost.x,mtxVec._42 - posBoost.y,mtxVec._43 - posBoost.z };
+			D3DXVECTOR3 posBoost;
+			D3DXVECTOR3 vecBoost;
 
-	//	CDebugProc::GetInstance()->Print("\nベクトル[%f,%f,%f]", vecBoost.x, vecBoost.y, vecBoost.z);
+			D3DXMATRIX mtxParent = *GetParts(nParent)->pParts->GetMatrix();
+			D3DXMATRIX mtx;
+			D3DXMATRIX mtxVec;
 
-	//	D3DXVECTOR3 rot = universal::VecToRot(vecBoost);
-	//	rot.x *= -1;
-	//	rot.x += D3DX_PI;
+			universal::SetOffSet(&mtx, mtxParent, offset);
+			universal::SetOffSet(&mtxVec, mtx, vector);
 
-	//	m_info.aBoostEffect->SetRotation(rot);
-	//	m_info.aBoostEffect->SetPosition(posBoost + GetMove());
-	//}
+			posBoost = { mtx._41, mtx._42 ,mtx._43 };
+			vecBoost = { mtxVec._41 - posBoost.x,mtxVec._42 - posBoost.y,mtxVec._43 - posBoost.z };
+
+			CDebugProc::GetInstance()->Print("\nベクトル[%f,%f,%f]", vecBoost.x, vecBoost.y, vecBoost.z);
+
+			D3DXVECTOR3 rot = universal::VecToRot(vecBoost);
+			rot.x *= -1;
+			rot.x += D3DX_PI;
+
+			m_info.pThruster[i].pFire->SetRotation(rot);
+			m_info.pThruster[i].pFire->SetPosition(posBoost + GetMove());
+		}
+
+	}
 }
 
 //=====================================================

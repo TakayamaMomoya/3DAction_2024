@@ -69,6 +69,7 @@ public:
 	void EnableLighting(bool bLighting) { m_bLighting = bLighting; }
 	void EnableAdd(bool bAdd) { m_bAdd = bAdd; }
 	void EnableNotStop(bool bNotStop);
+	void SetAlphaTest(DWORD dValue) { m_dAlpha = dValue; }
 
 protected:
 	void Release(void);	// 個別リリース処理
@@ -90,6 +91,7 @@ private:
 	bool m_bLighting;	// ライティングを有効化するかどうか
 	bool m_bNotStop;	// 止まらないオブジェクトかどうか
 	bool m_bAdd;	// 加算合成するかどうか
+	DWORD m_dAlpha;	// アルファテストの値
 	static CObject *m_apNotStop[NUM_OBJECT];	// 停止中にも動くオブジェクトの配列
 };
 

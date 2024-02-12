@@ -40,6 +40,7 @@ CObject::CObject(int nPriority)
 	m_bAdd = false;
 	m_type = TYPE::TYPE_NONE;
 	m_nID = -1;
+	m_dAlpha = 0;
 
 	m_nPriority = nPriority;
 
@@ -344,6 +345,11 @@ void CObject::DrawAll(void)
 				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 			}
 
+			//アルファテストの有効化
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+			pDevice->SetRenderState(D3DRS_ALPHAREF, pObject->m_dAlpha);
+
 			// 描画処理
 			pObject->Draw();
 
@@ -371,6 +377,11 @@ void CObject::DrawAll(void)
 				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 			}
+
+			// アルファテストの無効化
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+			pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
 			// 次のアドレスを代入
 			pObject = pObjectNext;

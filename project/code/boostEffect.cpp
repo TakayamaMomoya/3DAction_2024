@@ -83,6 +83,8 @@ HRESULT CBoostEffect::Init(void)
 			m_info.pBlade->SetSize(m_info.fRadius, m_info.fHeight);
 			m_info.pBlade->SetPosition(D3DXVECTOR3(0.0f, m_info.fHeight, 0.0f));
 			m_info.pBlade->EnableAdd(true);
+			m_info.pBlade->EnableZtest(false);
+			m_info.pBlade->SetAlphaTest(100);
 		}
 	}
 
