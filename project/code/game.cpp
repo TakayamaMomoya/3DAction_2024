@@ -112,8 +112,6 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CBoostEffect::Create();
-
 	//CEnemyBoss::Create();
 
 	return S_OK;

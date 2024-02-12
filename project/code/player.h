@@ -21,6 +21,7 @@ class CCollisionCube;
 class CObject3D;
 class CEnemy;
 class CHeat;
+class CBoostEffect;
 
 //*****************************************************
 // クラスの定義
@@ -103,6 +104,15 @@ private:
 		bool bAir;	// 滞空
 		bool bStop;	// 急停止
 	};
+	struct SInfoThruster
+	{
+		CBoostEffect *pFire;	// 噴射炎
+		int nIdxParent;	// 親パーツ番号
+		D3DXVECTOR3 offset;	// オフセット
+		D3DXVECTOR3 vector;	// 噴射ベクトル
+		D3DXVECTOR2 size;	// サイズ
+		int nRot;	// 方向ID
+	};
 	struct SInfo
 	{
 		float fLife;	// 体力
@@ -115,12 +125,15 @@ private:
 		CCollisionSphere *pCollisionSphere;	// 球の当たり判定
 		CCollisionSphere *pClsnAttack;	// 攻撃の当たり判定
 		CCollisionCube *pCollisionCube;	// 立方体の当たり判定
+		SInfoThruster *pThruster;	// スラスター情報
+		int nNumThruster;	// スラスターの数
 		bool bLockTarget;	// ターゲットロックするかどうか
 		bool bLand;	// 着地しているかどうか
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
 	};
 
+	void Load(void);
 	void Lockon(void);
 	void Input(void);
 	void InputMove(void);

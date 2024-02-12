@@ -46,7 +46,6 @@ public:
 private:
 	struct SInfo
 	{
-		CMeshCylinder *pCylinder;
 		CAnim3D *pBlade;
 		D3DXVECTOR3 pos;
 		D3DXVECTOR3 rot;

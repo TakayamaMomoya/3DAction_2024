@@ -27,6 +27,7 @@
 #include "heat.h"
 #include "particle.h"
 #include "game.h"
+#include "boostEffect.h"
 
 //*****************************************************
 // 定数定義
@@ -193,7 +194,109 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 
+	// 読込
+	Load();
+
 	return S_OK;
+}
+
+//=====================================================
+// 読込処理
+//=====================================================
+void CPlayer::Load(void)
+{
+	char cTemp[256];
+	int nThruster = 0;
+
+	FILE *pFile = fopen("data\\TEXT\\playerParam.txt", "r");
+
+	if (pFile != nullptr)
+	{
+		while (true)
+		{
+			// ここで読み込んだ文字によって下記のIFにかかる
+			(void)fscanf(pFile, "%s", &cTemp[0]);
+
+			if (strcmp(cTemp, "NUM_THRUSTER") == 0)
+			{// スラスタ数読込
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%d", &m_info.nNumThruster);
+
+				if (m_info.pThruster == nullptr)
+				{
+					m_info.pThruster = new SInfoThruster[m_info.nNumThruster];
+
+					if (m_info.pThruster != nullptr)
+					{
+						ZeroMemory(m_info.pThruster, sizeof(SInfoThruster) * m_info.nNumThruster);
+					}
+				}
+			}
+
+			if (strcmp(cTemp, "THRUSTERSET") == 0)
+			{
+				while (true)
+				{
+					(void)fscanf(pFile, "%s", &cTemp[0]);
+
+					if (strcmp(cTemp, "PARENT") == 0)
+					{// 親番号
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%d", &m_info.pThruster[nThruster].nIdxParent);
+					}
+
+					if (strcmp(cTemp, "OFFSET") == 0)
+					{// オフセット位置
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.x);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.y);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.z);
+					}
+
+					if (strcmp(cTemp, "VECTOR") == 0)
+					{// ベクトル
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.x);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.y);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].offset.z);
+					}
+
+					if (strcmp(cTemp, "SIZE") == 0)
+					{// サイズ
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].size.x);
+						(void)fscanf(pFile, "%f", &m_info.pThruster[nThruster].size.y);
+					}
+
+					if (strcmp(cTemp, "ROT") == 0)
+					{// 向き
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%d", &m_info.pThruster[nThruster].nRot);
+					}
+
+					if (strcmp(cTemp, "END_THRUSTER") == 0)
+					{
+						nThruster++;
+
+						break;
+					}
+				}
+			}
+
+			if (strcmp(cTemp, "END_SCRIPT") == 0)
+			{
+				break;
+			}
+		}
+
+		fclose(pFile);
+	}
 }
 
 //=====================================================
@@ -227,6 +330,18 @@ void CPlayer::Uninit(void)
 		{
 			m_info.apHeatUI[i]->Uninit();
 			m_info.apHeatUI[i] = nullptr;
+		}
+	}
+
+	if (m_info.pThruster != nullptr)
+	{
+		for (int i = 0; i < m_info.nNumThruster; i++)
+		{
+			if (m_info.pThruster[i].pFire != nullptr)
+			{
+				m_info.pThruster[i].pFire->Uninit();
+				m_info.pThruster[i].pFire = nullptr;
+			}
 		}
 	}
 
@@ -322,9 +437,6 @@ void CPlayer::Update(void)
 	// パラメーター管理
 	ManageParam();
 
-	// ブーストエフェクト制御
-	Boost();
-
 	if (m_info.pEnemyGrab != nullptr)
 	{// 手に追従
 		D3DXVECTOR3 offset = { 0.0f,-100.0f,0.0f };
@@ -357,6 +469,9 @@ void CPlayer::Update(void)
 		posToe = GetMtxPos(14);
 		CParticle::Create(posToe, CParticle::TYPE::TYPE_SAND_SMOKE);
 	}
+
+	// ブーストエフェクト制御
+	Boost();
 
 // デバッグ処理
 #if _DEBUG
@@ -1166,7 +1281,30 @@ void CPlayer::ManageParam(void)
 //=====================================================
 void CPlayer::Boost(void)
 {
+	//if (m_info.aBoostEffect != nullptr)
+	//{
+	//	D3DXVECTOR3 posBoost;
+	//	D3DXVECTOR3 vecBoost;
 
+	//	D3DXMATRIX mtxParent = *GetParts(1)->pParts->GetMatrix();
+	//	D3DXMATRIX mtx;
+	//	D3DXMATRIX mtxVec;
+
+	//	universal::SetOffSet(&mtx, mtxParent, D3DXVECTOR3(0.0f, 50.0f, 0.0f));
+	//	universal::SetOffSet(&mtxVec, mtx, D3DXVECTOR3(0.0f, -1.0f, 1.0f));
+
+	//	posBoost = { mtx._41, mtx._42 ,mtx._43 };
+	//	vecBoost = { mtxVec._41 - posBoost.x,mtxVec._42 - posBoost.y,mtxVec._43 - posBoost.z };
+
+	//	CDebugProc::GetInstance()->Print("\nベクトル[%f,%f,%f]", vecBoost.x, vecBoost.y, vecBoost.z);
+
+	//	D3DXVECTOR3 rot = universal::VecToRot(vecBoost);
+	//	rot.x *= -1;
+	//	rot.x += D3DX_PI;
+
+	//	m_info.aBoostEffect->SetRotation(rot);
+	//	m_info.aBoostEffect->SetPosition(posBoost + GetMove());
+	//}
 }
 
 //=====================================================
