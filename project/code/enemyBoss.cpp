@@ -26,6 +26,7 @@
 #include "slow.h"
 #include "fade.h"
 #include "camera.h"
+#include "inputkeyboard.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -107,7 +108,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE);
 
 	// ó‘ÔÝ’è
-	ChangeState(new CStateBossTrans);
+	ChangeState(new CStateBossApper);
 
 	FollowCollision();
 
@@ -176,6 +177,18 @@ void CEnemyBoss::Update(void)
 	universal::LimitPosInSq(23000.0f, 23000.0f,&pos);
 
 	SetPosition(pos);
+
+#ifdef _DEBUG
+	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
+
+	if (pKeyboard != nullptr)
+	{
+		if (pKeyboard->GetTrigger(DIK_Q))
+		{
+			ChangeState(new CStateBossJump);
+		}
+	}
+#endif // DEBUG
 }
 
 //=====================================================

@@ -133,7 +133,7 @@ void CBeamBlade::Uninit(void)
 void CBeamBlade::Update(void)
 {
 	// ƒVƒŠƒ“ƒ_[‚ðŠÛ‚­‚·‚é
-		// î•ñŽæ“¾
+	// î•ñŽæ“¾
 	CMeshCylinder *pMesh = m_info.pCylinder;
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = m_info.pCylinder->GetVtxBuff();
 

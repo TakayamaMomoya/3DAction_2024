@@ -91,7 +91,6 @@ void CLookEnemy::Update(CCamera *pCamera)
 
 	CEnemy *pEnemyLock = pEnemyManager->GetLockon();
 	D3DXVECTOR3 posEnemy = { 0.0f,0.0f,0.0f };
-	D3DXVECTOR3 rot = pInfoCamera->rot;
 
 	if (pEnemyLock != nullptr)
 	{
@@ -101,28 +100,43 @@ void CLookEnemy::Update(CCamera *pCamera)
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(2);
 		D3DXVECTOR3 vecDiff = posEnemy - posPlayer;
 		D3DXVECTOR3 vecDiffFlat = { vecDiff.x,0.0f,vecDiff.z };
+		D3DXVECTOR3 rotDest;
+		D3DXVECTOR3 *pRot = &pInfoCamera->rot;
 
 		// 差分の向きを計算
 		float fLegnthDiff = D3DXVec3Length(&vecDiff);
 		float fLegnthFlat = D3DXVec3Length(&vecDiffFlat);
 
-		rot.x = atan2f(fLegnthFlat, vecDiff.y) + D3DX_PI * 0.01f;
-		rot.y = atan2f(vecDiff.x, vecDiff.z);
+		rotDest.x = atan2f(fLegnthFlat, vecDiff.y) + D3DX_PI * 0.01f;
+		rotDest.y = atan2f(vecDiff.x, vecDiff.z);
 
 		// 注視点位置の設定
 		pInfoCamera->posRDest = posPlayer + vecDiff * 0.5f;
 
 		float fLengthView = fLegnthDiff + pInfoCamera->fLength;
 
+		universal::FactingRot(&pRot->x, rotDest.x, 0.1f);
+		universal::FactingRot(&pRot->y, rotDest.y, 0.1f);
+
 		// 視点位置の設定
 		pInfoCamera->posVDest =
 		{
-			posEnemy.x - sinf(rot.x) * sinf(rot.y) * fLengthView,
-			posEnemy.y - cosf(rot.x) * fLengthView,
-			posEnemy.z - sinf(rot.x) * cosf(rot.y) * fLengthView
+			posEnemy.x - sinf(pRot->x) * sinf(pRot->y) * fLengthView,
+			posEnemy.y - cosf(pRot->x) * fLengthView,
+			posEnemy.z - sinf(pRot->x) * cosf(pRot->y) * fLengthView
 		};
 
-		universal::LimitDistCylinder(1000.0f, &pInfoCamera->posV, pPlayer->GetPosition());
+		float fDiff = universal::LimitDistCylinder(1000.0f, &pInfoCamera->posV, pInfoCamera->posR);
+
+		if (fDiff < 1000.0f)
+		{// カメラ距離が制限されてる時
+			D3DXVECTOR3 vecDiffCamera = pInfoCamera->posR - pInfoCamera->posV;
+
+			float fLengthCameraFlat = sqrtf(vecDiffCamera.x * vecDiffCamera.x + vecDiffCamera.z * vecDiffCamera.z);
+
+			rotDest.x = atan2f(fLengthCameraFlat, vecDiffCamera.y);
+			rotDest.y = atan2f(vecDiffCamera.x, vecDiffCamera.z);
+		}
 	}
 
 	bool bLock = pPlayer->IsTargetLock();
@@ -138,11 +152,6 @@ void CLookEnemy::Update(CCamera *pCamera)
 		pCamera->ChangeBehavior(new CFollowPlayer);
 
 		return;
-	}
-
-	if (pEnemyLock != nullptr)
-	{
-		pInfoCamera->rot = rot;
 	}
 }
 

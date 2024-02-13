@@ -54,8 +54,8 @@ const float POW_THROW = 200.0f;	// 投げの力
 const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
 const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
 const float MELEE_DIST = 800.0f;	// 格闘に移る距離
-const float MIN_ANGLE_CAMERA = D3DX_PI * 0.2f;	// カメラの下を見る制限
-const float MAX_ANGLE_CAMERA = D3DX_PI * 0.7f;	// カメラの上を見る制限
+const float MIN_ANGLE_CAMERA = D3DX_PI * 0.1f;	// カメラの下を見る制限
+const float MAX_ANGLE_CAMERA = D3DX_PI * 0.9f;	// カメラの上を見る制限
 const float DAMAGE_BULLET = 1.0f;	// 弾の威力
 const float DECREASE_PARAM = 2.0f;	// パラメータ全回復にかかる時間
 const D3DXVECTOR3 POS_PARAM[CPlayer::PARAM_MAX] =
@@ -1092,6 +1092,10 @@ void CPlayer::ManageCollision(void)
 
 			SetMove(move);
 		}
+
+		m_info.pCollisionSphere->PushCollision(&pos, CCollision::TAG::TAG_ENEMY);
+
+		SetPosition(pos);
 	}
 }
 

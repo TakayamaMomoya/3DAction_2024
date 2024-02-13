@@ -16,10 +16,10 @@
 #include "bullet.h"
 #include "player.h"
 #include "animEffect3D.h"
+#include "anim3D.h"
 #include "fade.h"
 #include "explosionspawner.h"
 #include "particle.h"
-#include "anim3D.h"
 #include "camera.h"
 #include "meshfield.h"
 #include "blockManager.h"
@@ -54,6 +54,11 @@ const float RADIUS_BLADE = 70.0f;	// ブレードの半径
 const float SPEED_EXPAND_BLADE = 0.01f;	// ブレードの膨らむ速度
 const float DIST_CLOSE = 3000.0f;	// 近距離判定の距離
 const float DIST_FAR = 7000.0f;	// 遠距離判定の距離
+const float HEIGHT_JUMP_BEAM = 0.0f;	// ジャンプ打ちするときの高さ
+const float WIDTH_AIRBEAM = 100.0f;	// 空中ビームの幅
+const float LENGTH_AIRBEAM = 1000.0f;	// 空中ビームの長さ
+const float SPEED_ROTATION_BEAM = 0.02f;	// 空中ビームの回転速度
+const float LIMIT_ROT_BEAM = D3DX_PI * 0.8f;	// 空中ビームの回転制御
 }
 
 CStateBoss::CStateBoss()
@@ -498,6 +503,10 @@ void CStateBossSelect::Middle(int nRand, CEnemyBoss *pBoss)
 	{
 		pBoss->ChangeState(new CStateBossBeamSmall);
 	}
+	else if (nRand < 60)
+	{
+		pBoss->ChangeState(new CStateBossJump);
+	}
 	else if (nRand < 80)
 	{
 		pBoss->ChangeState(new CStateBossStep);
@@ -765,6 +774,189 @@ void CStateBossStep::Move(CEnemyBoss *pBoss)
 	pBoss->SetPosition(pos);
 
 	pBoss->AimPlayer(0.0f, false);
+}
+
+//=====================================================
+// 飛び上がり
+//=====================================================
+void CStateBossJump::Init(CEnemyBoss *pBoss)
+{
+	// 目的地を設定
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
+
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 目的地を設定
+	m_posDest = universal::RelativeInversPos(posPlayer, POS_CENTER, 1.0f);
+
+	m_posDest.y = HEIGHT_JUMP_BEAM;
+}
+
+void CStateBossJump::Move(CEnemyBoss *pBoss)
+{
+	D3DXVECTOR3 pos = pBoss->GetPosition();
+
+	universal::MoveToDest(&pos, m_posDest, SPEED_STEP);
+
+	pBoss->SetPosition(pos);
+
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr)
+	{
+		// 目標向きの取得
+		D3DXVECTOR3 pos = pBoss->GetMtxPos(15);
+
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
+		D3DXVECTOR3 posPridiction;
+
+		D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
+		rotDest.y -= D3DX_PI;
+
+		// 向きの補正
+		D3DXVECTOR3 rot = pBoss->GetRotation();
+
+		universal::FactingRot(&rot.x, 0.0f, 0.15f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.15f);
+
+		pBoss->SetRotation(rot);
+	}
+
+	if (universal::DistCmpFlat(pos, m_posDest, RANGE_SLASH, nullptr))
+	{// 空中ビームに移行
+		pBoss->ChangeState(new CStateBossBeamAir);
+	}
+}
+
+//=====================================================
+// 空中ビーム攻撃
+//=====================================================
+CStateBossBeamAir::~CStateBossBeamAir()
+{
+	if (m_pAnim != nullptr)
+	{
+		m_pAnim->Uninit();
+		m_pAnim = nullptr;
+	}
+}
+
+void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
+{
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_BEAMSMALL);
+
+	if (m_pAnim == nullptr)
+	{// アニメーションエフェクトの生成
+		CAnimEffect3D *pAnimEffect = CAnimEffect3D::GetInstance();
+
+		if (pAnimEffect != nullptr)
+		{
+			m_pAnim = pAnimEffect->CreateEffect(D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAnimEffect3D::TYPE::TYPE_BOOST);
+
+			if (m_pAnim != nullptr)
+			{
+				D3DXVECTOR3 pos = pBoss->GetMtxPos(5);
+				D3DXVECTOR3 rot = pBoss->GetRotation();
+				rot.x += D3DX_PI;
+				universal::LimitRot(&rot.x);
+
+				m_pAnim->EnableZtest(false);
+				m_pAnim->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
+				m_pAnim->SetSize(0.0f, 0.0f);
+				m_pAnim->SetPosition(pos);
+				m_pAnim->SetRotation(rot);
+				m_pAnim->SetVtx();
+			}
+		}
+	}
+
+	m_fRotDest = 0.0f;
+}
+
+void CStateBossBeamAir::Attack(CEnemyBoss *pBoss)
+{
+	int nMotion = pBoss->GetMotion();
+
+	if (nMotion == CEnemyBoss::MOTION::MOTION_RADIATION)
+	{
+		Radiation(pBoss);
+	}
+	else
+	{
+		Rotation(pBoss);
+	}
+}
+
+void CStateBossBeamAir::Rotation(CEnemyBoss *pBoss)
+{// 回転処理
+	if (m_pAnim != nullptr)
+	{// ビームを伸ばす
+		float fWidth = m_pAnim->GetWidth();
+
+		fWidth += (WIDTH_AIRBEAM - fWidth) * 0.4f;
+
+		float fHeight = m_pAnim->GetHeight();
+
+		fHeight += (LENGTH_AIRBEAM - fHeight) * 0.4f;
+
+		D3DXVECTOR3 rot = pBoss->GetRotation();
+		rot.x += D3DX_PI;
+		universal::LimitRot(&rot.x);
+
+		D3DXVECTOR3 pos = pBoss->GetMtxPos(5);
+		pos +=
+		{
+			sinf(rot.x + D3DX_PI * 0.5f) * sinf(rot.y) * fHeight,
+				cosf(rot.x + D3DX_PI * 0.5f) * fHeight,
+				sinf(rot.x + D3DX_PI * 0.5f) * cosf(rot.y) * fHeight
+		};
+
+		m_pAnim->SetPosition(pos);
+		m_pAnim->SetRotation(rot);
+		m_pAnim->SetSize(fWidth, fHeight);
+		m_pAnim->SetVtx();
+	}
+
+	m_fRotDest -= SPEED_ROTATION_BEAM;
+
+	if (-LIMIT_ROT_BEAM > m_fRotDest)
+	{// 放熱モーション
+		m_fRotDest = -LIMIT_ROT_BEAM;
+
+		pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_RADIATION);
+	}
+	else
+	{// ボスを回す
+		D3DXVECTOR3 rot = pBoss->GetRotation();
+
+		universal::FactingRot(&rot.x, m_fRotDest, 0.15f);
+
+		pBoss->SetRotation(rot);
+	}
+}
+
+void CStateBossBeamAir::Radiation(CEnemyBoss *pBoss)
+{// 放熱(後隙)
+	// 正面を向く
+	D3DXVECTOR3 rot = pBoss->GetRotation();
+
+	universal::FactingRot(&rot.x, 0.0f, 0.15f);
+
+	pBoss->SetRotation(rot);
+
+	bool bFinish = pBoss->IsFinish();
+
+	if (bFinish)
+	{
+		pBoss->ChangeState(new CStateBossSelect);
+	}
 }
 
 //=====================================================

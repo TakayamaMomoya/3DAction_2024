@@ -14,6 +14,7 @@
 class CEnemyBoss;
 class COrbit;
 class CBeamBlade;
+class CAnim3D;
 
 //*****************************************************
 // クラスの定義
@@ -130,6 +131,26 @@ class CStateBossStep : public CStateBoss
 	D3DXVECTOR3 m_posDestMid;
 	D3DXVECTOR3 m_posDest;
 	bool m_bMid;	// 中間のステップを終えたか
+};
+
+class CStateBossJump : public CStateBoss
+{// 飛び上がり
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
+
+	D3DXVECTOR3 m_posDest;
+};
+
+class CStateBossBeamAir : public CStateBoss
+{// 空中ビーム
+	~CStateBossBeamAir();
+	void Init(CEnemyBoss *pBoss) override;
+	void Attack(CEnemyBoss *pBoss) override;
+	void Rotation(CEnemyBoss *pBoss);
+	void Radiation(CEnemyBoss *pBoss);
+
+	CAnim3D *m_pAnim;
+	float m_fRotDest;
 };
 
 //=====================================================
