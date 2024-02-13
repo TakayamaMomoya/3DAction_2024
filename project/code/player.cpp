@@ -60,9 +60,9 @@ const float DAMAGE_BULLET = 1.0f;	// 弾の威力
 const float DECREASE_PARAM = 2.0f;	// パラメータ全回復にかかる時間
 const D3DXVECTOR3 POS_PARAM[CPlayer::PARAM_MAX] =
 {// パラメータ表示の位置
-	{SCREEN_WIDTH * 0.5f - 320.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 銃
-	{SCREEN_WIDTH * 0.5f + 320.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 近接
-	{SCREEN_WIDTH * 0.5f + 320.0f,SCREEN_HEIGHT * 0.5f + 100.0f,0.0f},// 掴み
+	{SCREEN_WIDTH * 0.5f - 370.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 銃
+	{SCREEN_WIDTH * 0.5f + 370.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 近接
+	{SCREEN_WIDTH * 0.5f + 370.0f,SCREEN_HEIGHT * 0.5f + 100.0f,0.0f},// 掴み
 };
 const char* PATH_PARAM[CPlayer::PARAM_MAX] =
 {// パラメータUIのテクスチャパス

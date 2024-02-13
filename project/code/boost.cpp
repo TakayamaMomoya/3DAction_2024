@@ -20,8 +20,8 @@ namespace
 {
 const D3DXVECTOR3 GAUGE_POS = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };	// ゲージの位置
 const char* TEXTURE_PATH = "data\\TEXTURE\\UI\\boost00.png";	// テクスチャパス
-const float RADIUS_GAUGE = 100.0f;	// ゲージの半径
-const float INITIAL_ROT = D3DX_PI * 0.35f;
+const float RADIUS_GAUGE = 400.0f;	// ゲージの半径
+const float INITIAL_ROT = D3DX_PI * 0.5f;
 const float ANGLE_MAX = D3DX_PI * 0.3f;
 }
 
