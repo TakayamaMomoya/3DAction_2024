@@ -280,9 +280,4 @@ void CInputManager::Update(void)
 	m_axis.axisCamera += D3DXVECTOR3(pMouse->GetMoveIX(), pMouse->GetMoveIY(), 0.0f);
 
 	D3DXVec3Normalize(&m_axis.axisCamera, &m_axis.axisCamera);
-
-	for (int i = 0; i < BUTTON::BUTTON_MAX;i++)
-	{
-		CDebugProc::GetInstance()->Print("\nëÄçÏ%d[%d]", i, m_info.abTrigger[i]);
-	}
 }

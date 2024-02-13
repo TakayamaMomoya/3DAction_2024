@@ -1738,7 +1738,7 @@ CEnemy *CPlayer::GetLockOn(void)
 //=====================================================
 void CPlayer::EndMelee(void)
 {
-	Camera::ChangeBehavior(new CFollowPlayer);
+	Camera::ChangeBehavior(new CLookEnemy);
 
 	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 

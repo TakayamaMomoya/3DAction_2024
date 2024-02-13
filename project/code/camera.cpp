@@ -313,7 +313,7 @@ void CCamera::SetCamera(void)
 	//CDebugProc::GetInstance()->Print("\n視点の目標位置：[%f,%f,%f]", m_camera.posVDest.x, m_camera.posVDest.y, m_camera.posVDest.z);
 	//CDebugProc::GetInstance()->Print("\n注視点の位置：[%f,%f,%f]", m_camera.posR.x, m_camera.posR.y, m_camera.posR.z);
 	//CDebugProc::GetInstance()->Print("\n注視点の目標位置：[%f,%f,%f]", m_camera.posRDest.x, m_camera.posRDest.y, m_camera.posRDest.z);
-	//CDebugProc::GetInstance()->Print("\nカメラの向き：[%f,%f,%f]", m_camera.rot.x, m_camera.rot.y, m_camera.rot.z);
+	CDebugProc::GetInstance()->Print("\nカメラの向き：[%f,%f,%f]", m_camera.rot.x, m_camera.rot.y, m_camera.rot.z);
 	//CDebugProc::GetInstance()->Print("\nカメラ距離：[%f]", m_camera.fLength);
 #endif
 }
