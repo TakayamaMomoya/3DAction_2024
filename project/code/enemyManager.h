@@ -18,6 +18,7 @@
 // 前方宣言
 //*****************************************************
 class CUI;
+class CFan2D;
 
 //*****************************************************
 // 定数定義
@@ -77,6 +78,9 @@ private:
 	};
 
 	void Load(void);
+	void CreateGauge(void);
+	void DeleteGauge(void);
+	void ControlGauge(void);
 
 	SInfoEnemyGroup *m_pInfoGroup;	// 敵集団の情報
 	CEnemy *m_pEnemyLockon;	// ロックオンしてる敵
@@ -85,6 +89,8 @@ private:
 	CUI *m_pCursor;	// ロックオンカーソル
 	CEnemy *m_pHead;	// 先頭のアドレス
 	CEnemy *m_pTail;	// 最後尾のアドレス
+	CFan2D *m_pObjectGauge;	// ゲージのポインタ
+	CFan2D *m_pObjectFrame;	// フレームのポインタ
 
 	static CEnemyManager *m_pEnemyManager;	// 自身のポインタ
 };

@@ -105,7 +105,7 @@ HRESULT CEnemyBoss::Init(void)
 	CEnemy::Init();
 
 	// ‰Šú‚Ì‘Ì—Íİ’è
-	SetLife(Boss::INITIAL_LIFE);
+	SetLife(Boss::INITIAL_LIFE,true);
 
 	// ó‘Ôİ’è
 	ChangeState(new CStateBossTrans);

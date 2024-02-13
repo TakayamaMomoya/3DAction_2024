@@ -60,8 +60,9 @@ public:
 	void Update(void);
 	void Draw(void);
 	static int GetNumAll(void) { return m_nNumAll; }
-	void SetLife(float fLife);
+	void SetLife(float fLife,bool bInit = false);
 	float GetLife(void) { return m_info.fLife; }
+	float GetLifeInitial(void) { return m_info.fLifeInitial; }
 	void Hit(float fDamage);
 	void SetSpherePosition(D3DXVECTOR3 pos);
 	STATE GetState(void) { return m_info.state; }
@@ -99,6 +100,7 @@ private:
 	struct SInfo
 	{
 		float fLife;	// 体力
+		float fLifeInitial;	// 初期体力
 		float fMoveSpeed;	// 移動速度
 		int nTimerState;	// 状態遷移カウンター
 		float fCntAttack;	// 攻撃タイマー

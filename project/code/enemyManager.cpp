@@ -20,6 +20,7 @@
 #include "effect3D.h"
 #include "player.h"
 #include "UI.h"
+#include "fan2D.h"
 #include "texture.h"
 #include "debugproc.h"
 #include <stdio.h>
@@ -33,6 +34,11 @@ const char* FILE_PATH = "data\\TEXT\\checkPoint.txt";	// ファイルのパス
 const float TIME_SPAWN = 5.0f;	// 敵のスポーン
 const float SIZE_CURSOR = 60.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon01.png";	// カーソルのテクスチャ
+const D3DXVECTOR3 GAUGE_POS = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };	// ゲージの位置
+const char* TEXTURE_PATH = "data\\TEXTURE\\UI\\boost00.png";	// ゲージのパス
+const float RADIUS_GAUGE = 330.0f;	// ゲージの半径
+const float INITIAL_ROT = -D3DX_PI * 0.15f;
+const float ANGLE_MAX = D3DX_PI * 0.3f;
 }
 
 //*****************************************************
@@ -52,6 +58,8 @@ CEnemyManager::CEnemyManager()
 	m_fTimer = 0.0f;
 	m_pHead = nullptr;
 	m_pTail = nullptr;
+	m_pObjectFrame = nullptr;
+	m_pObjectGauge = nullptr;
 }
 
 //=====================================================
@@ -149,9 +157,6 @@ HRESULT CEnemyManager::Init(void)
 
 	// 読込処理
 	Load();
-
-	// 最初の敵をスポーン
-	SpawnGroup(0);
 
 	if (m_pCursor == nullptr)
 	{// カーソル生成
@@ -288,6 +293,8 @@ void CEnemyManager::Uninit(void)
 		m_pInfoGroup = nullptr;
 	}
 
+	DeleteGauge();
+
 	Release();
 }
 
@@ -296,6 +303,18 @@ void CEnemyManager::Uninit(void)
 //=====================================================
 void CEnemyManager::Update(void)
 {
+	// ロックオンゲージの制御
+	if (m_pEnemyLockon != nullptr)
+	{
+		CreateGauge();
+
+		ControlGauge();
+	}
+	else
+	{
+		DeleteGauge();
+	}
+
 #ifdef _DEBUG
 
 	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
@@ -432,6 +451,98 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 	}
 
 	return m_pEnemyLockon;
+}
+
+//=====================================================
+// 敵体力ゲージの生成
+//=====================================================
+void CEnemyManager::CreateGauge(void)
+{
+	if (m_pObjectFrame == nullptr)
+	{// フレームの生成
+		m_pObjectFrame = CFan2D::Create();
+
+		if (m_pObjectFrame != nullptr)
+		{
+			m_pObjectFrame->SetPosition(D3DXVECTOR3(GAUGE_POS.x, GAUGE_POS.y, 0.0f));
+			m_pObjectFrame->SetAngleMax(ANGLE_MAX);
+			m_pObjectFrame->SetRotation(INITIAL_ROT);
+			m_pObjectFrame->SetRadius(RADIUS_GAUGE);
+			m_pObjectFrame->SetVtx();
+
+			D3DXCOLOR col = universal::ConvertRGB(255, 255, 255, 60);
+
+			m_pObjectFrame->SetCol(col);
+
+			int nIdx = CTexture::GetInstance()->Regist(TEXTURE_PATH);
+			m_pObjectFrame->SetIdxTexture(nIdx);
+		}
+	}
+
+	if (m_pObjectGauge == nullptr)
+	{// ブーストゲージの生成
+		m_pObjectGauge = CFan2D::Create();
+
+		if (m_pObjectGauge != nullptr)
+		{
+			m_pObjectGauge->SetPosition(D3DXVECTOR3(GAUGE_POS.x, GAUGE_POS.y, 0.0f));
+			m_pObjectGauge->SetAngleMax(ANGLE_MAX);
+			m_pObjectGauge->SetRotation(INITIAL_ROT);
+			m_pObjectGauge->SetRadius(RADIUS_GAUGE);
+			m_pObjectGauge->SetVtx();
+
+			D3DXCOLOR col = universal::ConvertRGB(255, 60, 38, 255);
+
+			m_pObjectGauge->SetCol(col);
+
+			int nIdx = CTexture::GetInstance()->Regist(TEXTURE_PATH);
+			m_pObjectGauge->SetIdxTexture(nIdx);
+		}
+	}
+}
+
+//=====================================================
+// 敵体力ゲージの破棄
+//=====================================================
+void CEnemyManager::DeleteGauge(void)
+{
+	if (m_pObjectFrame != nullptr)
+	{
+		m_pObjectFrame->Uninit();
+		m_pObjectFrame = nullptr;
+	}
+
+	if (m_pObjectGauge != nullptr)
+	{
+		m_pObjectGauge->Uninit();
+		m_pObjectGauge = nullptr;
+	}
+}
+
+//=====================================================
+// 敵体力ゲージの制御
+//=====================================================
+void CEnemyManager::ControlGauge(void)
+{
+	if (m_pEnemyLockon == nullptr)
+		return;
+
+	float fLifeInitial = m_pEnemyLockon->GetLifeInitial();
+	float fLife = m_pEnemyLockon->GetLife();
+
+	float fRate = fLife / fLifeInitial;
+
+	if (m_pObjectGauge != nullptr)
+	{// ゲージの設定
+		// 向きの設定
+		float fRot = INITIAL_ROT + ANGLE_MAX * (1.0f - fRate);
+
+		m_pObjectGauge->SetRotation(fRot);
+
+		// サイズ設定
+		m_pObjectGauge->SetRateAngle(fRate);
+		m_pObjectGauge->SetVtx();
+	}
 }
 
 //=====================================================

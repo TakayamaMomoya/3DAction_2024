@@ -209,7 +209,7 @@ HRESULT CEnemy::Init(void)
 	CreateCollision();
 
 	// パラメーター初期設定
-	m_info.fLife = INITIAL_LIFE;
+	SetLife(INITIAL_LIFE, true);
 	SetMoveSpeed(INITIAL_SPEED);
 	m_info.fDistLock = INITIAL_DIST_LOCK;
 	m_info.bStamp = true;
@@ -632,8 +632,11 @@ void CEnemy::Attack(void)
 //=====================================================
 // 体力設定
 //=====================================================
-void CEnemy::SetLife(float fLife)
+void CEnemy::SetLife(float fLife, bool bInit)
 {
+	if (bInit)
+		m_info.fLifeInitial = fLife;
+
 	m_info.fLife = fLife;
 
 	if (m_info.fLife < 0)
