@@ -1,12 +1,12 @@
 //*****************************************************
 //
-// ブースト表示の処理[boost.h]
+// 体力表示の処理[life.h]
 // Author:髙山桃也
 //
 //*****************************************************
 
-#ifndef _BOOST_H_
-#define _BOOST_H_
+#ifndef _LIFE_H_
+#define _LIFE_H_
 
 #include "Object.h"
 
@@ -18,13 +18,13 @@ class CFan2D;
 //*****************************************************
 // クラスの定義
 //*****************************************************
-class CBoost : public CObject
+class CLife : public CObject
 {
 public:
-	CBoost(int nPriority = 6);	// コンストラクタ
-	~CBoost();	// デストラクタ
+	CLife(int nPriority = 6);	// コンストラクタ
+	~CLife();	// デストラクタ
 
-	static CBoost *Create(void);
+	static CLife *Create(void);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);

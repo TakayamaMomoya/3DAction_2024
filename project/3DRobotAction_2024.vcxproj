@@ -196,6 +196,7 @@
     <ClCompile Include="code\inputkeyboard.cpp" />
     <ClCompile Include="code\inputManager.cpp" />
     <ClCompile Include="code\inputmouse.cpp" />
+    <ClCompile Include="code\life.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
@@ -272,6 +273,7 @@
     <ClInclude Include="code\inputkeyboard.h" />
     <ClInclude Include="code\inputManager.h" />
     <ClInclude Include="code\inputmouse.h" />
+    <ClInclude Include="code\life.h" />
     <ClInclude Include="code\light.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />

@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// ブーストの処理[boost.cpp]
+// 体力表示の処理[life.cpp]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -8,7 +8,7 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "boost.h"
+#include "life.h"
 #include "texture.h"
 #include "fan2D.h"
 #include "player.h"
@@ -20,15 +20,15 @@ namespace
 {
 const D3DXVECTOR3 GAUGE_POS = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };	// ゲージの位置
 const char* TEXTURE_PATH = "data\\TEXTURE\\UI\\boost00.png";	// ゲージのパス
-const float RADIUS_GAUGE = 330.0f;	// ゲージの半径
-const float INITIAL_ROT = D3DX_PI * 0.5f;
+const float RADIUS_GAUGE = 315.0f;	// ゲージの半径
+const float INITIAL_ROT = D3DX_PI * 1.2f;
 const float ANGLE_MAX = D3DX_PI * 0.3f;
 }
 
 //=====================================================
 // コンストラクタ
 //=====================================================
-CBoost::CBoost(int nPriority) : CObject(nPriority)
+CLife::CLife(int nPriority) : CObject(nPriority)
 {
 	m_pObjectGauge = nullptr;
 	m_pObjectFrame = nullptr;
@@ -37,7 +37,7 @@ CBoost::CBoost(int nPriority) : CObject(nPriority)
 //=====================================================
 // デストラクタ
 //=====================================================
-CBoost::~CBoost()
+CLife::~CLife()
 {
 
 }
@@ -45,7 +45,7 @@ CBoost::~CBoost()
 //=====================================================
 // 初期化処理
 //=====================================================
-HRESULT CBoost::Init(void)
+HRESULT CLife::Init(void)
 {
 	if (m_pObjectFrame == nullptr)
 	{// フレームの生成
@@ -69,7 +69,7 @@ HRESULT CBoost::Init(void)
 	}
 
 	if (m_pObjectGauge == nullptr)
-	{// ブーストゲージの生成
+	{// ゲージの生成
 		m_pObjectGauge = CFan2D::Create();
 
 		if (m_pObjectGauge != nullptr)
@@ -80,7 +80,7 @@ HRESULT CBoost::Init(void)
 			m_pObjectGauge->SetRadius(RADIUS_GAUGE);
 			m_pObjectGauge->SetVtx();
 
-			D3DXCOLOR col = universal::ConvertRGB(51, 218, 255, 255);
+			D3DXCOLOR col = universal::ConvertRGB(0, 240, 156, 255);
 
 			m_pObjectGauge->SetCol(col);
 
@@ -95,7 +95,7 @@ HRESULT CBoost::Init(void)
 //=====================================================
 // 終了処理
 //=====================================================
-void CBoost::Uninit(void)
+void CLife::Uninit(void)
 {
 	if (m_pObjectGauge != nullptr)
 	{
@@ -115,10 +115,10 @@ void CBoost::Uninit(void)
 //=====================================================
 // 更新処理
 //=====================================================
-void CBoost::Update(void)
+void CLife::Update(void)
 {
 	// 変数宣言
-	float fBoost = 0.0f;
+	float fLife = 0.0f;
 	float fRate;
 	D3DXVECTOR3 pos;
 
@@ -130,17 +130,16 @@ void CBoost::Update(void)
 		return;
 	}
 
-	// プレイヤー情報の取得
-	fBoost = pPlayer->GetBoost();
+	fLife = pPlayer->GetLife();
 	CPlayer::SParam param = pPlayer->GetParam();
 
-	// ブーストの割合を算出
-	fRate = fBoost / param.fInitialBoost;
+	// 割合を算出
+	fRate = fLife / param.fInitialLife;
 
 	if (m_pObjectGauge != nullptr)
 	{// ゲージの設定
 		// 向きの設定
-		float fRot = INITIAL_ROT + ANGLE_MAX * (1.0f - fRate);
+		float fRot = INITIAL_ROT - ANGLE_MAX * (1.0f - fRate);
 
 		m_pObjectGauge->SetRotation(fRot);
 
@@ -153,7 +152,7 @@ void CBoost::Update(void)
 //=====================================================
 // 描画処理
 //=====================================================
-void CBoost::Draw(void)
+void CLife::Draw(void)
 {
 
 }
@@ -161,19 +160,19 @@ void CBoost::Draw(void)
 //=====================================================
 // 生成処理
 //=====================================================
-CBoost *CBoost::Create(void)
+CLife *CLife::Create(void)
 {
-	CBoost *pBoost = nullptr;
+	CLife *pLife = nullptr;
 
-	if (pBoost == nullptr)
+	if (pLife == nullptr)
 	{
-		pBoost = new CBoost;
+		pLife = new CLife;
 
-		if (pBoost != nullptr)
+		if (pLife != nullptr)
 		{
-			pBoost->Init();
+			pLife->Init();
 		}
 	}
 
-	return pBoost;
+	return pLife;
 }

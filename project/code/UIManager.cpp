@@ -13,6 +13,7 @@
 #include "UI.h"
 #include "inputkeyboard.h"
 #include "boost.h"
+#include "life.h"
 #include "texture.h"
 
 //*****************************************************
@@ -82,8 +83,8 @@ HRESULT CUIManager::Init(void)
 		m_pFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
 	}
 
-	// ブースト表示の生成
 	CBoost::Create();
+	CLife::Create();
 
 	return S_OK;
 }

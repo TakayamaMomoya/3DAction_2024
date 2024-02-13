@@ -528,4 +528,22 @@ int RandRange(int nMax, int nMin)
 
 	return nRand;
 }
+
+//========================================
+// RGB‚ğD3DXCOLOR‚É•ÏŠ·‚·‚éˆ—
+//========================================
+D3DXCOLOR ConvertRGB(BYTE r, BYTE g, BYTE b, BYTE a)
+{
+	D3DXCOLOR col;
+
+	col =
+	{
+		(float)r / 255.0f,
+		(float)g / 255.0f,
+		(float)b / 255.0f,
+		(float)a / 255.0f,
+	};
+
+	return col;
+}
 }	// namespace universal
