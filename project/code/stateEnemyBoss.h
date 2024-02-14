@@ -151,6 +151,7 @@ class CStateBossBeamAir : public CStateBoss
 
 	CAnim3D *m_pAnim;
 	float m_fRotDest;
+	float m_fCounter;
 };
 
 //=====================================================

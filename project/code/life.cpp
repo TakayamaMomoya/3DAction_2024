@@ -138,11 +138,6 @@ void CLife::Update(void)
 
 	if (m_pObjectGauge != nullptr)
 	{// ゲージの設定
-		// 向きの設定
-		float fRot = INITIAL_ROT - ANGLE_MAX * (1.0f - fRate);
-
-		m_pObjectGauge->SetRotation(fRot);
-
 		// サイズ設定
 		m_pObjectGauge->SetRateAngle(fRate);
 		m_pObjectGauge->SetVtx();

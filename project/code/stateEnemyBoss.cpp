@@ -28,6 +28,7 @@
 #include "effect3D.h"
 #include "beam.h"
 #include "game.h"
+#include "explosionAttack.h"
 
 //*****************************************************
 // 定数定義
@@ -54,11 +55,14 @@ const float RADIUS_BLADE = 70.0f;	// ブレードの半径
 const float SPEED_EXPAND_BLADE = 0.01f;	// ブレードの膨らむ速度
 const float DIST_CLOSE = 3000.0f;	// 近距離判定の距離
 const float DIST_FAR = 7000.0f;	// 遠距離判定の距離
-const float HEIGHT_JUMP_BEAM = 0.0f;	// ジャンプ打ちするときの高さ
-const float WIDTH_AIRBEAM = 100.0f;	// 空中ビームの幅
-const float LENGTH_AIRBEAM = 1000.0f;	// 空中ビームの長さ
+const float HEIGHT_JUMP_BEAM = -100.0f;	// ジャンプ打ちするときの高さ
+const float WIDTH_AIRBEAM = 500.0f;	// 空中ビームの幅
+const float LENGTH_AIRBEAM = 9000.0f;	// 空中ビームの長さ
 const float SPEED_ROTATION_BEAM = 0.02f;	// 空中ビームの回転速度
 const float LIMIT_ROT_BEAM = D3DX_PI * 0.8f;	// 空中ビームの回転制御
+const float RADIUS_PLASMA = 300.0f;	// プラズマの半径
+const float TIME_SETEXPL = 0.005f;	// 爆発設置タイマー
+const int RAND_PLASMA = 700;	// プラズマのランダム範囲
 }
 
 CStateBoss::CStateBoss()
@@ -305,13 +309,19 @@ void CStateBossTrans::Move(CEnemyBoss *pBoss)
 	int nMotion = pBoss->GetMotion();
 	bool bFinish = pBoss->IsFinish();
 
+	float fTime = 6.0f;
+
+#ifdef _DEBUG
+	fTime = 0.5f;
+#endif
+
 	if (pFade != nullptr)
 	{
 		CFade::FADE state = pFade->GetState();
 
 		if (state == CFade::FADE::FADE_NONE)
 		{
-			if (m_fTimeTrans > 6.0f)
+			if (m_fTimeTrans > fTime)
 			{// フェードで第二形態に移る
 				Evolve(pBoss);
 			}
@@ -324,7 +334,7 @@ void CStateBossTrans::Move(CEnemyBoss *pBoss)
 				TransMovie(pBoss);
 			}
 
-			if (m_fTimeTrans > 6.0f)
+			if (m_fTimeTrans > fTime)
 			{// 地形の変動
 				// ブロック削除
 				CBlockManager *pBlockManager = CBlockManager::GetInstance();
@@ -433,7 +443,7 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// 行動に遷移
-		pBoss->ChangeState(new CStateBossSlash);
+		pBoss->ChangeState(new CStateBossSelect);
 
 		// 当たり判定再生成
 		pBoss->CreateCollision(Boss::RADIUS_COLLISION);
@@ -830,7 +840,7 @@ void CStateBossJump::Move(CEnemyBoss *pBoss)
 		pBoss->SetRotation(rot);
 	}
 
-	if (universal::DistCmpFlat(pos, m_posDest, RANGE_SLASH, nullptr))
+	if (universal::DistCmp(pos, m_posDest, RANGE_SLASH, nullptr))
 	{// 空中ビームに移行
 		pBoss->ChangeState(new CStateBossBeamAir);
 	}
@@ -850,6 +860,8 @@ CStateBossBeamAir::~CStateBossBeamAir()
 
 void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
 {
+	m_fCounter = 0.0f;
+
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_BEAMSMALL);
 
 	if (m_pAnim == nullptr)
@@ -867,6 +879,7 @@ void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
 				rot.x += D3DX_PI;
 				universal::LimitRot(&rot.x);
 
+				m_pAnim->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 				m_pAnim->EnableZtest(false);
 				m_pAnim->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
 				m_pAnim->SetSize(0.0f, 0.0f);
@@ -913,21 +926,75 @@ void CStateBossBeamAir::Rotation(CEnemyBoss *pBoss)
 		D3DXVECTOR3 pos = pBoss->GetMtxPos(5);
 		pos +=
 		{
-			sinf(rot.x + D3DX_PI * 0.5f) * sinf(rot.y) * fHeight,
-				cosf(rot.x + D3DX_PI * 0.5f) * fHeight,
-				sinf(rot.x + D3DX_PI * 0.5f) * cosf(rot.y) * fHeight
+			sinf(rot.x + D3DX_PI * 0.5f) * sinf(rot.y) * fHeight * 0.9f,
+			cosf(rot.x + D3DX_PI * 0.5f) * fHeight * 0.9f,
+			sinf(rot.x + D3DX_PI * 0.5f) * cosf(rot.y) * fHeight * 0.9f
 		};
 
 		m_pAnim->SetPosition(pos);
 		m_pAnim->SetRotation(rot);
 		m_pAnim->SetSize(fWidth, fHeight);
 		m_pAnim->SetVtx();
+
+		float fDeltaTime = CManager::GetDeltaTime();
+
+		m_fCounter += fDeltaTime;
+
+		//if (fDeltaTime > TIME_SETEXPL)
+		{
+			// 爆発の設置
+			D3DXVECTOR3 posCollision =
+			{
+				pos.x + sinf(rot.x + D3DX_PI * 0.5f) * sinf(rot.y) * fHeight * 0.32f,
+				pos.y + cosf(rot.x + D3DX_PI * 0.5f) * fHeight * 0.32f,
+				pos.z + sinf(rot.x + D3DX_PI * 0.5f) * cosf(rot.y) * fHeight * 0.32f
+			};
+
+#ifdef _DEBUG
+			//CEffect3D::Create(posCollision, 400.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+#endif
+
+			CMeshField *pMesh = CMeshField::GetInstance();
+
+			if (pMesh != nullptr)
+			{
+				posCollision +=
+				{
+					(float)universal::RandRange(RAND_PLASMA, -RAND_PLASMA),
+					0.0f,
+					(float)universal::RandRange(RAND_PLASMA, -RAND_PLASMA)
+				};
+
+				float fHeight = pMesh->GetHeight(posCollision, nullptr);
+
+				D3DXVECTOR3 posExplosion =
+				{
+					posCollision.x,
+					fHeight,
+					posCollision.z
+				};
+
+				CExplAttack::Create(posExplosion, RADIUS_PLASMA);
+
+#ifdef _DEBUG
+				//CEffect3D::Create(posExplosion, 400.0f, 100, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+#endif
+			}
+
+			m_fCounter = 0.0f;
+		}
 	}
 
 	m_fRotDest -= SPEED_ROTATION_BEAM;
 
 	if (-LIMIT_ROT_BEAM > m_fRotDest)
 	{// 放熱モーション
+		if (m_pAnim != nullptr)
+		{
+			m_pAnim->Uninit();
+			m_pAnim = nullptr;
+		}
+
 		m_fRotDest = -LIMIT_ROT_BEAM;
 
 		pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_RADIATION);

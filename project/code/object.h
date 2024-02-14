@@ -70,6 +70,7 @@ public:
 	void EnableAdd(bool bAdd) { m_bAdd = bAdd; }
 	void EnableNotStop(bool bNotStop);
 	void SetAlphaTest(DWORD dValue) { m_dAlpha = dValue; }
+	DWORD GetAlpha(void) { return m_dAlpha; }
 
 protected:
 	void Release(void);	// ŒÂ•ÊƒŠƒŠ[ƒXˆ—

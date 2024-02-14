@@ -38,6 +38,7 @@ public:
 		TYPE_EXPLOSION,	// 爆発
 		TYPE_HIT00,	// 命中
 		TYPE_BOOST,	// ブースト
+		TYPE_PLASMA,	// プラズマ
 		TYPE_MAX
 	};
 
