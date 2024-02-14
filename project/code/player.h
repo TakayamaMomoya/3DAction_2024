@@ -44,6 +44,8 @@ public:
 		MOTION_THROW,	// 投げモーション
 		MOTION_STAMP,	// 踏みつけモーション
 		MOTION_DEATH,	// 死亡モーション
+		MOTION_NEUTRAL_TITLE,	// タイトル待機
+		MOTION_LAUNCH,	// 出撃
 		MOTION_MAX
 	};
 	enum STATE

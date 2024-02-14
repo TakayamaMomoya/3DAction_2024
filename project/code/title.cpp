@@ -23,6 +23,7 @@
 #include "object3D.h"
 #include "objectX.h"
 #include "skybox.h"
+#include "player.h"
 
 //*****************************************************
 // マクロ定義
@@ -62,6 +63,7 @@ CTitle::CTitle()
 	m_pLogo = nullptr;
 	m_pLogoLate = nullptr;
 	m_pStart = nullptr;
+	m_pMotion = nullptr;
 	m_nFadeCnt = 0;
 	m_bIsAlphaChange = false;
 	m_fSizeX = LOGO_WIDTH;
@@ -155,11 +157,13 @@ HRESULT CTitle::Init(void)
 	}
 
 	// プレイヤーモデルの設置
-	CMotion *pMotion = CMotion::Create("data\\MOTION\\motionArms01.txt");
+	m_pMotion = CMotion::Create("data\\MOTION\\motionArms01.txt");
 
-	if (pMotion != nullptr)
+	if (m_pMotion != nullptr)
 	{
-		pMotion->SetPosition(D3DXVECTOR3(-154.31f, 82.62f, 600.51f));
+		m_pMotion->SetPosition(D3DXVECTOR3(-154.31f, 82.62f, 600.51f));
+		m_pMotion->SetMotion(CPlayer::MOTION::MOTION_NEUTRAL_TITLE);
+		m_pMotion->InitPose(CPlayer::MOTION::MOTION_NEUTRAL_TITLE);
 	}
 
 	return S_OK;
@@ -342,4 +346,9 @@ void CTitle::SetFadeIn(void)
 
 	// フェードアウトに設定
 	m_state = STATE_OUT;
+
+	if (m_pMotion != nullptr)
+	{
+		m_pMotion->SetMotion(CPlayer::MOTION::MOTION_LAUNCH);
+	}
 }

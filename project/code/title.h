@@ -20,6 +20,7 @@
 //*****************************************************
 class CMenu;
 class CObject2D;
+class CMotion;
 
 //*****************************************************
 // 定数定義
@@ -56,6 +57,7 @@ private:
 	CObject2D* m_pLogo;		// タイトルロゴのポインタ
 	CObject2D* m_pLogoLate; // 遅れてくるロゴのポインタ
 	CObject2D *m_pStart;	// スタート表示のポインタ
+	CMotion *m_pMotion;	// プレイヤーモデル
 
 	int m_nFadeCnt;			// フェードまでのカウント
 	bool m_bIsAlphaChange;	// α値の変化
