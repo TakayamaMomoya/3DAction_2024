@@ -27,6 +27,7 @@
 #include "fade.h"
 #include "inputManager.h"
 #include "block.h"
+#include "debrisSpawner.h"
 
 //*****************************************************
 // 静的メンバ変数宣言
@@ -108,6 +109,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// パーティクルの読込
 	CParticle::Load();
 
+	// 破片スポナーの読込
+	CDebrisSpawner::Load();
+
 	SetMode(m_mode);
 
 	return S_OK;
@@ -133,6 +137,9 @@ void CManager::Uninit(void)
 
 	// パーティクル情報破棄
 	CParticle::Unload();
+
+	// 破片スポナー破棄
+	CDebrisSpawner::Unload();
 
 	// レンダラー終了
 	CRenderer *pRenderer = CRenderer::GetInstance();

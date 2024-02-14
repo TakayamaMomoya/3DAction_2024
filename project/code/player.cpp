@@ -26,6 +26,7 @@
 #include "cameraBehavior.h"
 #include "heat.h"
 #include "particle.h"
+#include "debrisSpawner.h"
 #include "game.h"
 #include "boostEffect.h"
 #include "animEffect3D.h"
@@ -166,7 +167,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// パラメーターに初期値を入れる
-	m_param.fInitialLife = 300.0f;
+	m_param.fInitialLife = 30.0f;
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
@@ -371,11 +372,14 @@ void CPlayer::Update(void)
 	// ロックオン
 	Lockon();
 
-	// 入力
-	Input();
+	if (m_info.state != CPlayer::STATE::STATE_DEATH)
+	{
+		// 入力
+		Input();
 
-	// プレイヤーの回転
-	Rotation();
+		// プレイヤーの回転
+		Rotation();
+	}
 
 	// 位置の反映
 	D3DXVECTOR3 pos = GetPosition();
@@ -1105,7 +1109,14 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (m_fragMotion.bStamp || nMotion == MOTION_STAMP)
+	if (nMotion == MOTION_DEATH)
+	{
+		if (bFinish)
+		{
+			Death();
+		}
+	}
+	else if (m_fragMotion.bStamp || nMotion == MOTION_STAMP)
 	{// 踏みつけモーション
 		if (nMotion != MOTION_STAMP)
 		{
@@ -1701,9 +1712,7 @@ void CPlayer::Hit(float fDamage)
 
 			m_info.state = STATE_DEATH;
 
-			Uninit();
-
-			CGame::SetState(CGame::STATE::STATE_END);
+			SetMotion(MOTION::MOTION_DEATH);
 		}
 		else
 		{// ダメージ判定
@@ -1846,6 +1855,34 @@ void CPlayer::AddMoveStamp(void)
 
 		SetMove(move);
 	}
+}
+
+//=====================================================
+// 死亡処理
+//=====================================================
+void CPlayer::Death(void)
+{
+	D3DXVECTOR3 pos = GetMtxPos(0);
+
+	// エフェクト発生
+	CAnimEffect3D *pAnimManager = CAnimEffect3D::GetInstance();
+
+	if (pAnimManager != nullptr)
+	{
+		CAnim3D *pAnim = pAnimManager->CreateEffect(pos, CAnimEffect3D::TYPE_EXPLOSION);
+
+		if (pAnim != nullptr)
+		{
+			pAnim->SetSize(600.0f, 600.0f);
+		}
+	}
+
+	// 破片生成
+	CDebrisSpawner::Create(pos, CDebrisSpawner::TYPE::TYPE_DEATH);
+	
+	Uninit();
+
+	CGame::SetState(CGame::STATE_END);
 }
 
 //=====================================================

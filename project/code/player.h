@@ -43,6 +43,7 @@ public:
 		MOTION_GRAB,	// 掴みモーション
 		MOTION_THROW,	// 投げモーション
 		MOTION_STAMP,	// 踏みつけモーション
+		MOTION_DEATH,	// 死亡モーション
 		MOTION_MAX
 	};
 	enum STATE
@@ -159,6 +160,7 @@ private:
 	void AddBoost(float fValue);
 	void ToggleLockTarget(void);
 	void AddMoveStamp(void);
+	void Death(void);
 	void Debug(void);
 
 	SInfo m_info;	// 自身の情報
