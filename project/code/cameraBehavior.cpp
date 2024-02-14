@@ -110,26 +110,41 @@ void CLookEnemy::Update(CCamera *pCamera)
 		rotDest.x = atan2f(fLegnthFlat, vecDiff.y) + D3DX_PI * 0.01f;
 		rotDest.y = atan2f(vecDiff.x, vecDiff.z);
 
+		float fLengthView = pInfoCamera->fLength;
+
 		// 注視点位置の設定
 		pInfoCamera->posRDest = posPlayer + vecDiff * 0.5f;
 
-		float fLengthView = fLegnthDiff + pInfoCamera->fLength;
+		if (fLegnthDiff > 7000.0f)
+		{// 敵が遠いときの制限
+			posPlayer = pPlayer->GetMtxPos(0);
+
+			fLengthView = pInfoCamera->fLength * 0.4f;
+
+			pInfoCamera->posRDest.y -= fLegnthDiff * 0.1f;
+
+			rotDest.x += 0.3f;
+		}
 
 		universal::FactingRot(&pRot->x, rotDest.x, 0.1f);
 		universal::FactingRot(&pRot->y, rotDest.y, 0.1f);
 
+		CDebugProc::GetInstance()->Print("\n距離[%f]", fLegnthDiff);
+
 		// 視点位置の設定
 		pInfoCamera->posVDest =
 		{
-			posEnemy.x - sinf(pRot->x) * sinf(pRot->y) * fLengthView,
-			posEnemy.y - cosf(pRot->x) * fLengthView,
-			posEnemy.z - sinf(pRot->x) * cosf(pRot->y) * fLengthView
+			posPlayer.x - sinf(pRot->x) * sinf(pRot->y) * fLengthView,
+			posPlayer.y - cosf(pRot->x) * fLengthView,
+			posPlayer.z - sinf(pRot->x) * cosf(pRot->y) * fLengthView
 		};
 
-		float fDiff = universal::LimitDistCylinder(1000.0f, &pInfoCamera->posV, pInfoCamera->posR);
+		universal::LimitDistSphereInSide(1000.0f, &pInfoCamera->posVDest, posPlayer);
+
+		float fDiff = universal::LimitDistCylinder(1000.0f, &pInfoCamera->posV, posEnemy);
 
 		if (fDiff < 1000.0f)
-		{// カメラ距離が制限されてる時
+		{// カメラ距離が制限されてる時カメラ向きを設定
 			D3DXVECTOR3 vecDiffCamera = pInfoCamera->posR - pInfoCamera->posV;
 
 			float fLengthCameraFlat = sqrtf(vecDiffCamera.x * vecDiffCamera.x + vecDiffCamera.z * vecDiffCamera.z);

@@ -28,6 +28,8 @@
 #include "particle.h"
 #include "game.h"
 #include "boostEffect.h"
+#include "animEffect3D.h"
+#include "anim3D.h"
 
 //*****************************************************
 // 定数定義
@@ -172,10 +174,6 @@ HRESULT CPlayer::Init(void)
 	m_info.state = STATE_NORMAL;
 	m_info.stateBoost = STATEBOOST_NORMAL;
 	m_info.bLand = true;
-
-	// 影の有効化
-	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
-	EnableShadow(true);
 
 	SetMotion(MOTION_WALK_FRONT);
 
@@ -1621,6 +1619,19 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 
 	// 熱量を加算
 	m_info.aParam[PARAM_GUN] += 0.3f;
+
+	// エフェクト発生
+	CAnimEffect3D *pAnimManager = CAnimEffect3D::GetInstance();
+
+	if (pAnimManager != nullptr)
+	{
+		CAnim3D *pAnim = pAnimManager->CreateEffect(posMazzle, CAnimEffect3D::TYPE_MUZZLEFLUSH);
+
+		if (pAnim != nullptr)
+		{
+			pAnim->EnableZtest(false);
+		}
+	}
 }
 
 //=====================================================

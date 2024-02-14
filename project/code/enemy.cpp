@@ -221,7 +221,7 @@ HRESULT CEnemy::Init(void)
 	SetPositionOld(GetPosition());
 
 	// 影の有効可
-	EnableShadow(true);
+	//EnableShadow(true);
 	SetPosShadow(D3DXVECTOR3(0.0f, 0.5f, 0.0f));
 
 	for (int i = 0; i < MOVESTATE_MAX; i++)
@@ -654,21 +654,11 @@ void CEnemy::Hit(float fDamage)
 	{
 		m_info.fLife -= fDamage;
 
-		// ダメージエフェクトの生成
-		CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
-
 		CSound* pSound = CSound::GetInstance();
 
 		if (pSound != nullptr)
 		{
-			pSound->Play(pSound->LABEL_SE_HIT);
-		}
-
-		if (pAnim3D != nullptr)
-		{
-			D3DXVECTOR3 pos = GetPosition();
-
-			pAnim3D->CreateEffect(pos,CAnimEffect3D::TYPE::TYPE_HIT00);
+			//pSound->Play(pSound->LABEL_SE_HIT);
 		}
 
 		if (m_info.fLife <= 0.0f)
@@ -679,16 +669,6 @@ void CEnemy::Hit(float fDamage)
 
 			// スコア管理
 			ManageScore();
-
-			if (pAnim3D != nullptr)
-			{
-				D3DXVECTOR3 pos = GetPosition();
-
-				pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_HIT00);
-			}
-
-			// トマト汁
-			CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_EXPLOSION);
 
 			// 死亡処理
 			Death();

@@ -862,7 +862,7 @@ void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
 {
 	m_fCounter = 0.0f;
 
-	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_BEAMSMALL);
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_AIRBEAM);
 
 	if (m_pAnim == nullptr)
 	{// アニメーションエフェクトの生成
@@ -896,14 +896,58 @@ void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
 void CStateBossBeamAir::Attack(CEnemyBoss *pBoss)
 {
 	int nMotion = pBoss->GetMotion();
+	bool bFinish = pBoss->IsFinish();
 
 	if (nMotion == CEnemyBoss::MOTION::MOTION_RADIATION)
 	{
 		Radiation(pBoss);
 	}
-	else
+	else if(nMotion == CEnemyBoss::MOTION::MOTION_BEAMSMALL)
 	{
 		Rotation(pBoss);
+	}
+	else
+	{
+		// ビームを伸ばす
+		D3DXVECTOR3 rot = pBoss->GetRotation();
+
+		float fWidth = m_pAnim->GetWidth();
+
+		fWidth += (WIDTH_AIRBEAM - fWidth) * 0.4f;
+
+		float fHeight = m_pAnim->GetHeight();
+
+		fHeight += (LENGTH_AIRBEAM - fHeight) * 0.1f;
+
+		rot.x += D3DX_PI;
+		universal::LimitRot(&rot.x);
+
+		D3DXVECTOR3 pos = pBoss->GetMtxPos(5);
+		pos +=
+		{
+			sinf(rot.x + D3DX_PI * 0.5f) * sinf(rot.y) * fHeight * 0.6f,
+			cosf(rot.x + D3DX_PI * 0.5f) * fHeight * 0.9f,
+			sinf(rot.x + D3DX_PI * 0.5f) * cosf(rot.y) * fHeight * 0.6f
+		};
+
+		rot = pBoss->GetRotation();
+
+		m_pAnim->SetPosition(pos);
+		m_pAnim->SetRotation(rot);
+		m_pAnim->SetSize(fWidth, fHeight);
+		m_pAnim->SetVtx();
+
+		// 正面を向かせる
+		universal::FactingRot(&rot.x, 0.0f, 0.15f);
+
+		pBoss->SetRotation(rot);
+
+		pBoss->AimPlayerFlat(0.0f, false);
+
+		if (bFinish)
+		{// 回転に移行
+			pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_BEAMSMALL);
+		}
 	}
 }
 

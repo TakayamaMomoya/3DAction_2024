@@ -242,6 +242,47 @@ void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict)
 }
 
 //=====================================================
+// プレイヤーを平面で狙う処理
+//=====================================================
+void CEnemyBoss::AimPlayerFlat(float fSpeed, bool bPridict)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr)
+	{
+		// 目標向きの取得
+		D3DXVECTOR3 pos = GetMtxPos(15);
+
+		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
+		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
+		D3DXVECTOR3 posPridiction;
+
+		if (bPridict)
+		{
+			posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
+		}
+		else
+		{
+			posPridiction = posPlayer;
+		}
+
+		D3DXVECTOR3 vecDiff = posPridiction - pos;
+
+		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
+		rotDest.x -= D3DX_PI * 0.5f;
+		rotDest.y -= D3DX_PI;
+
+		// 向きの補正
+		D3DXVECTOR3 rot = GetRotation();
+
+		universal::FactingRot(&rot.x, 0.0f, 0.15f);
+		universal::FactingRot(&rot.y, rotDest.y, 0.15f);
+
+		SetRotation(rot);
+	}
+}
+
+//=====================================================
 // 後退の処理
 //=====================================================
 void CEnemyBoss::Back(void)
@@ -445,7 +486,7 @@ void CEnemyBoss::Hit(float fDamage)
 {
 	CEnemy::STATE state = CEnemy::GetState();
 
-	if (state == CEnemy::STATE_NORMAL)
+	if (state == CEnemy::STATE_DAMAGE)
 	{
 		float fLife = CEnemy::GetLife();
 

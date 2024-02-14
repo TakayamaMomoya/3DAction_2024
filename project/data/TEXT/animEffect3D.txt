@@ -64,7 +64,7 @@ EFFECTSET		#5 命中アニメーション
 	PATH = data\TEXTURE\EFFECT\hit01.png
 	NUM_ANIM = 15
 	SPEED_ANIM = 1
-	SIZE = 300.0
+	SIZE = 600.0
 	COL = 1.0 0.6 0.00 1.00
 	IS_ADD = 1
 	IS_LOOP = 0

@@ -58,6 +58,7 @@ public:
 		MOTION_BEAMSMALL,	// 小ビーム
 		MOTION_JUMP,	// 飛び上がり
 		MOTION_RADIATION,	// 放熱
+		MOTION_PRE_AIRBEAM,	// 空中ビーム予備動作
 		MOTION_MAX
 	};
 
@@ -73,7 +74,8 @@ public:
 	void Hit(float fDamage);
 	void ChangeState(CStateBoss *pNext);
 	void Event(EVENT_INFO *pEventInfo);
-	void AimPlayer(float fSpeed = 500.0f,bool bPridict = true);
+	void AimPlayer(float fSpeed = 500.0f, bool bPridict = true);
+	void AimPlayerFlat(float fSpeed = 500.0f,bool bPridict = true);
 	void Back(void);
 	void EnableTrans(bool bTrans) { m_info.bTrans = bTrans; }
 	void BeamBlade(void);

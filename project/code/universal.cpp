@@ -85,7 +85,7 @@ void LimitPosInSq(float fWidth, float fHeight, D3DXVECTOR3 *pPos)
 }
 
 //========================================
-// ãÖÇÃãóó£êßå¿
+// â~íåÇÃãóó£êßå¿
 //========================================
 float LimitDistCylinder(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget)
 {
@@ -99,6 +99,32 @@ float LimitDistCylinder(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget)
 	float fDistDiff = D3DXVec3Length(&vecDiff);
 
 	if (fLength >= fDistDiff)
+	{
+		fDistDiff = fLength;
+
+		D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+		vecDiff *= fLength;
+
+		*pPos = posTarget - vecDiff;
+	}
+
+	return fDistDiff;
+}
+
+//========================================
+// ãÖÇÃãóó£êßå¿Åiì‡ë§Åj
+//========================================
+float LimitDistSphereInSide(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTarget)
+{
+	if (pPos == nullptr)
+		return 0.0f;
+
+	D3DXVECTOR3 vecDiff = posTarget - *pPos;
+
+	float fDistDiff = D3DXVec3Length(&vecDiff);
+
+	if (fLength <= fDistDiff)
 	{
 		fDistDiff = fLength;
 

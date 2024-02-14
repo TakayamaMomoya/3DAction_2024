@@ -21,6 +21,8 @@
 #include "object3D.h"
 #include "debugproc.h"
 #include "slow.h"
+#include "anim3D.h"
+#include "animEffect3D.h"
 
 //*****************************************************
 // 定数定義
@@ -252,6 +254,16 @@ bool CBullet::BulletHit(CCollision::TAG tag)
 
 			// 当たったオブジェクトのヒット処理
 			pObj->Hit(m_fDamage);
+
+			// ダメージエフェクトの生成
+			CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
+
+			if (pAnim3D != nullptr)
+			{
+				D3DXVECTOR3 pos = GetPosition();
+
+				pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_HIT00);
+			}
 		}
 	}
 

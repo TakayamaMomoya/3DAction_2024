@@ -21,6 +21,7 @@
 #include "enemyManager.h"
 #include "enemy.h"
 #include "effect3D.h"
+#include "meshfield.h"
 
 //*****************************************************
 // マクロ定義
@@ -32,6 +33,7 @@
 #define INITIAL_ANGLE	(45.0f)	// 初期の視野角
 #define ANGLE_GAME	(D3DX_PI * 0.4f)	// ゲーム中のカメラの角度
 #define RATE_CAMERA_MOVE	(1.5f)	// カメラがどれだけプレイヤーの先を見るかの倍率
+#define HEIGHT_CAMERA (20.0f)	// カメラの高さ
 
 //====================================================
 // 初期化処理
@@ -96,6 +98,29 @@ void CCamera::Update(void)
 //====================================================
 void CCamera::MoveDist(float fFact)
 {
+	// メッシュフィールドとの当たり判定
+	CMeshField *pMesh = CMeshField::GetInstance();
+
+	if(pMesh)
+	{
+		float fHeight = pMesh->GetHeight(m_camera.posVDest, nullptr);
+
+		fHeight += HEIGHT_CAMERA;
+
+		if (fHeight > m_camera.posVDest.y)
+		{
+			// 位置補正
+			m_camera.posVDest.y = fHeight;
+
+			// 角度をその場で再設定
+			D3DXVECTOR3 vecDiff = m_camera.posRDest - m_camera.posVDest;
+
+			D3DXVECTOR3 rot = universal::VecToRot(-vecDiff);
+
+			m_camera.rot.x = rot.x;
+		}
+	}
+
 	// 目標位置に補正
 	m_camera.posV += (m_camera.posVDest - m_camera.posV) * fFact;
 	m_camera.posR += (m_camera.posRDest - m_camera.posR) * fFact;
