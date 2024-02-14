@@ -17,9 +17,9 @@
 #include "fade.h"
 #include "texture.h"
 #include "camera.h"
+#include "cameraBehavior.h"
 #include "renderer.h"
 #include "sound.h"
-
 #include "object3D.h"
 #include "objectX.h"
 #include "skybox.h"
@@ -33,10 +33,7 @@
 //*****************************************************
 namespace
 {
-	const float FIELD_WIDTH = 10000.0f;		// フィールドの幅
-	const float FIELD_HEIGHT = 10000.0f;	// フィールドの高さ
-
-	const D3DXVECTOR3 LOGO_POS = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 150.0f, 0.0f);	// ロゴの位置
+	const D3DXVECTOR3 LOGO_POS = D3DXVECTOR3(SCREEN_WIDTH * 0.27f, 150.0f, 0.0f);	// ロゴの位置
 	const float LOGO_WIDTH = 875.0f * 0.35f;	// ロゴの幅
 	const float LOGO_HEIGHT = 320.0f * 0.35f;	// ロゴの高さ
 	const char* LOGO_PATH = "data\\TEXTURE\\UI\\logo000.png";	// ロゴのパス
@@ -116,40 +113,12 @@ HRESULT CTitle::Init(void)
 		return E_FAIL;
 	}
 
-	// スカイボックスの生成
-	CSkybox* pSkyBox = CSkybox::Create();
-
-	if (pSkyBox == nullptr)
-	{
-		return E_FAIL;
-	}
-
-	// 地面の生成
-	CObject3D* pField = CObject3D::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-
-	if (pField != nullptr)
-	{
-		pField->SetSize(FIELD_WIDTH, FIELD_HEIGHT);
-		int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\BG\\field00.jpg");
-		pField->SetIdxTexture(nIdx);
-		pField->SetTex(D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(30.0f, 30.0f));
-		pField->SetVtx();
-	}
-	else if (pField == nullptr)
-	{
-		return E_FAIL;
-	}
-
-	// フォグをかける
+	// フォグをかけない
 	CRenderer *pRenderer = CRenderer::GetInstance();
 
 	if (pRenderer != nullptr)
 	{
-		pRenderer->EnableFog(true);
-	}
-	else if (pRenderer == nullptr)
-	{
-		return E_FAIL;
+		pRenderer->EnableFog(false);
 	}
 
 	// サウンドインスタンスの取得
@@ -163,6 +132,36 @@ HRESULT CTitle::Init(void)
 	else if (pSound == nullptr)
 	{
 		return E_FAIL;
+	}
+
+	// カメラ位置の設定
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera == nullptr)
+		return E_FAIL;
+
+	//Camera::ChangeBehavior(new CMoveControl);
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
+	pInfoCamera->posV = { 45.38f,84.71f,270.10f };
+	pInfoCamera->posR = { -454.28f,331.03f,878.09f };
+
+	// 背景オブジェクトの生成
+	CObjectX* pArsenal = CObjectX::Create();
+
+	if (pArsenal != nullptr)
+	{
+		int nIdx = CModel::Load("data\\MODEL\\other\\arsenal.x");
+		pArsenal->BindModel(nIdx);
+	}
+
+	// プレイヤーモデルの設置
+	CMotion *pMotion = CMotion::Create("data\\MOTION\\motionArms01.txt");
+
+	if (pMotion != nullptr)
+	{
+		pMotion->SetPosition(D3DXVECTOR3(-154.31f, 82.62f, 600.51f));
 	}
 
 	return S_OK;
@@ -200,6 +199,15 @@ void CTitle::Update(void)
 
 	if (m_state == STATE_NONE)
 	{
+		// カメラ位置の設定
+		CCamera *pCamera = CManager::GetCamera();
+
+		if (pCamera != nullptr)
+		{
+			//pCamera->Update();
+			//pCamera->MoveDist(0.1f);
+		}
+
 		if (pKeyboard != nullptr && pMouse != nullptr && pJoypad != nullptr)
 		{
 			if (pKeyboard->GetTrigger(DIK_RETURN) ||
