@@ -81052,7 +81052,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {
@@ -81067,7 +81067,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {
@@ -81076,7 +81076,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {
@@ -81085,7 +81085,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvï«.png";
+    "data\\TEXTURE\\MATERIAL\\uvwall.png";
    }
   }
   Material {
@@ -81094,7 +81094,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {
@@ -81103,7 +81103,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {
@@ -81112,7 +81112,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {
@@ -81121,7 +81121,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvï«.png";
+    "data\\TEXTURE\\MATERIAL\\uvwall.png";
    }
   }
   Material {
@@ -81130,7 +81130,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvï«.png";
+    "data\\TEXTURE\\MATERIAL\\uvwall.png";
    }
   }
   Material {
@@ -81139,7 +81139,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvï«.png";
+    "data\\TEXTURE\\MATERIAL\\uvwall.png";
    }
   }
   Material {
@@ -81148,7 +81148,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uväO.png";
+    "data\\TEXTURE\\MATERIAL\\uvoutside.png";
    }
   }
   Material {
@@ -81157,7 +81157,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvï«.png";
+    "data\\TEXTURE\\MATERIAL\\uvwall.png";
    }
   }
   Material {
@@ -81166,7 +81166,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\äiî[å…[FM5]ver1.0\\uvè∞.png";
+    "data\\TEXTURE\\MATERIAL\\uvfloor.png";
    }
   }
   Material {

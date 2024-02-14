@@ -140,8 +140,6 @@ HRESULT CTitle::Init(void)
 	if (pCamera == nullptr)
 		return E_FAIL;
 
-	//Camera::ChangeBehavior(new CMoveControl);
-
 	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
 
 	pInfoCamera->posV = { 45.38f,84.71f,270.10f };
@@ -328,9 +326,6 @@ void CTitle::UpdateFade(void)
 //=====================================================
 void CTitle::SetFadeIn(void)
 {
-	// î•ñæ“¾
-	CCamera* pCamera = CManager::GetCamera();
-	
 	if (m_pLogoLate == nullptr)
 	{
 		m_pLogoLate = CObject2D::Create(7);
