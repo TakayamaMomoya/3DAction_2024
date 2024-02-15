@@ -1124,7 +1124,7 @@ void CStateBossDeath::Move(CEnemyBoss *pBoss)
 
 	D3DXVECTOR3 move = pBoss->GetMove();
 
-	move.y -= GRAVITY;
+	move.y -= GRAVITY * 2.0f;
 
 	pBoss->SetMove(move);
 
@@ -1148,14 +1148,25 @@ void CStateBossDeath::Move(CEnemyBoss *pBoss)
 
 				if (pAnim != nullptr)
 				{
-					pAnim->SetSize(2000.0f, 1500.0f);
+					pAnim->SetSize(5000.0f, 4000.0f);
 				}
 			}
 
 			// 破片生成
 			CDebrisSpawner::Create(posParticle, CDebrisSpawner::TYPE::TYPE_DEATH);
 
+			// パーティクル
+			CParticle::Create(posParticle, CParticle::TYPE_EXPLOSION_SMOKE_BIG);
+			CParticle::Create(posParticle, CParticle::TYPE_EXPLOSION_FIRE_BIG);
+
+			// カメラ揺れ
+			CCamera *pCamera = CManager::GetCamera();
+
+			if (pCamera != nullptr)
+				pCamera->SetQuake(2.0f, 2.0f, 60);
+
 			pBoss->ChangeState(new CStateBossAfterDeath);
+
 		}
 	}
 	else

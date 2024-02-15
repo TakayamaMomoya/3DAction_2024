@@ -40,6 +40,7 @@ public:
 		TYPE_BOOST,	// ブースト
 		TYPE_PLASMA,	// プラズマ
 		TYPE_BEAMFLASH,	// ビーム閃光
+		TYPE_BIGEXPLOSION,	// でかい爆発
 		TYPE_MAX
 	};
 
