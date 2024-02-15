@@ -17,7 +17,7 @@ class CObject3D;
 namespace Boss
 {
 const float RADIUS_COLLISION = 300.0f;	// 当たり判定の半径
-const float INITIAL_LIFE = 40.0f;	// 初期体力
+const float INITIAL_LIFE = 4.0f;	// 初期体力
 }
 
 //*****************************************************
@@ -59,6 +59,8 @@ public:
 		MOTION_JUMP,	// 飛び上がり
 		MOTION_RADIATION,	// 放熱
 		MOTION_PRE_AIRBEAM,	// 空中ビーム予備動作
+		MOTION_LAST_SHOOTING,	// ラストシューティングモーション
+		MOTION_AFTER_DEATH,	// 死後
 		MOTION_MAX
 	};
 

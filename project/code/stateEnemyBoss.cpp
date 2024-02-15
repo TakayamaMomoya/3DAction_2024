@@ -29,6 +29,7 @@
 #include "beam.h"
 #include "game.h"
 #include "explosionAttack.h"
+#include "debrisSpawner.h"
 
 //*****************************************************
 // 定数定義
@@ -301,6 +302,11 @@ void CStateBossTrans::Init(CEnemyBoss *pBoss)
 void CStateBossTrans::Move(CEnemyBoss *pBoss)
 {
 	CheckPointer(pBoss);
+
+	// 爆発エフェクト
+	D3DXVECTOR3 pos = pBoss->GetMtxPos(1);
+
+	CParticle::Create(pos, CParticle::TYPE::TYPE_TURN_EXPLOSION);
 
 	m_fTimeTrans += CManager::GetDeltaTime();
 
@@ -1090,9 +1096,24 @@ void CStateBossBeamAir::Radiation(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossDeath::Init(CEnemyBoss *pBoss)
 {
-	CGame::SetState(CGame::STATE::STATE_END);
+	//CGame::SetState(CGame::STATE::STATE_END);
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
+
+	// 大爆発の生成
+	CAnimEffect3D *pAnimEffect = CAnimEffect3D::GetInstance();
+
+	if (pAnimEffect != nullptr)
+	{
+		D3DXVECTOR3 pos = pBoss->GetMtxPos(0);
+
+		CAnim3D *pAnim = pAnimEffect->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_EXPLOSION);
+
+		if (pAnim != nullptr)
+		{
+			pAnim->SetSize(2000.0f, 1400.0f);
+		}
+	}
 }
 
 void CStateBossDeath::Move(CEnemyBoss *pBoss)
@@ -1106,4 +1127,59 @@ void CStateBossDeath::Move(CEnemyBoss *pBoss)
 	move.y -= GRAVITY;
 
 	pBoss->SetMove(move);
+
+	bool bFinish = pBoss->IsFinish();
+	int nMotion = pBoss->GetMotion();
+
+	if (nMotion == CEnemyBoss::MOTION::MOTION_LAST_SHOOTING)
+	{
+		pBoss->AimPlayerFlat();
+
+		CParticle::Create(posParticle, CParticle::TYPE_TURN_EXPLOSION);
+
+		if (bFinish)
+		{// 大爆発して死ぬ
+			// エフェクト発生
+			CAnimEffect3D *pAnimManager = CAnimEffect3D::GetInstance();
+
+			if (pAnimManager != nullptr)
+			{
+				CAnim3D *pAnim = pAnimManager->CreateEffect(posParticle, CAnimEffect3D::TYPE_EXPLOSION);
+
+				if (pAnim != nullptr)
+				{
+					pAnim->SetSize(2000.0f, 1500.0f);
+				}
+			}
+
+			// 破片生成
+			CDebrisSpawner::Create(posParticle, CDebrisSpawner::TYPE::TYPE_DEATH);
+
+			pBoss->ChangeState(new CStateBossAfterDeath);
+		}
+	}
+	else
+	{
+		if (bFinish)
+		{
+			pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_LAST_SHOOTING);
+		}
+	}
+}
+
+//=====================================================
+// 死亡中
+//=====================================================
+void CStateBossAfterDeath::Init(CEnemyBoss *pBoss)
+{
+	CGame::SetState(CGame::STATE::STATE_END);
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_AFTER_DEATH);
+}
+
+void CStateBossAfterDeath::Move(CEnemyBoss *pBoss)
+{
+	D3DXVECTOR3 posParticle = pBoss->GetMtxPos(CEnemyBoss::IDX_BODY);
+
+	CParticle::Create(posParticle, CParticle::TYPE_SMOKE_DEATH);
 }

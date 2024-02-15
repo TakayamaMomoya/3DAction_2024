@@ -158,8 +158,15 @@ class CStateBossBeamAir : public CStateBoss
 // Œ‚”j
 //=====================================================
 class CStateBossDeath : public CStateBoss
+{// Ž€–S‚·‚é
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
+};
+
+class CStateBossAfterDeath : public CStateBoss
 {// Ž€–S’†
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
 };
+
 #endif

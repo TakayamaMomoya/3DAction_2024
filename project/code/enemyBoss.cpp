@@ -18,6 +18,8 @@
 #include "game.h"
 #include "bullet.h"
 #include "effect3D.h"
+#include "anim3D.h"
+#include "animEffect3D.h"
 #include "sound.h"
 #include "frame.h"
 #include "particle.h"
@@ -344,6 +346,77 @@ void CEnemyBoss::BeamBlade(void)
 }
 
 //=====================================================
+// ヒット処理
+//=====================================================
+void CEnemyBoss::Hit(float fDamage)
+{
+	CEnemy::STATE state = CEnemy::GetState();
+
+	if (state != CEnemy::STATE_DAMAGE)
+	{
+		float fLife = CEnemy::GetLife();
+
+		fLife -= fDamage;
+
+		CSound *pSound = CSound::GetInstance();
+
+		if (pSound != nullptr)
+		{// ヒットサウンド
+			//pSound->Play(CSound::LABEL_SE_HIT_BOSS);
+		}
+
+		if (fLife <= 0.0f)
+		{// 死亡状態
+
+			fLife = 0.0f;
+
+			// スコア管理
+			ManageScore();
+
+			// 当たり判定削除
+			DeleteCollision();
+
+			CSlow *pSlow = CSlow::GetInstance();
+
+			if (pSlow != nullptr)
+				pSlow->SetSlowTime(0.5f, 0.1f);
+
+			if (m_info.bTrans == false)
+			{
+				ChangeState(new CStateBossTrans);
+
+				CFade *pFade = CFade::GetInstance();
+
+				if (pFade != nullptr)
+				{
+					pFade->SetFade(CScene::MODE_GAME, false);
+				}
+			}
+			else
+			{
+				ChangeState(new CStateBossDeath);
+
+				if (pSlow != nullptr)
+					pSlow->SetSlowTime(3.0f, 0.1f);
+
+				CCamera *pCamera = CManager::GetCamera();
+
+				if (pCamera != nullptr)
+					pCamera->SetQuake(1.5f, 1.5f, 160);
+			}
+		}
+		else
+		{
+			state = CEnemy::STATE_DAMAGE;
+		}
+
+		CEnemy::SetLife(fLife);
+	}
+
+	CEnemy::SetState(state);
+}
+
+//=====================================================
 // イベントの管理
 //=====================================================
 void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
@@ -401,6 +474,21 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 				{
 					pObj->Hit(DAMAGE_SLASH);
 				}
+			}
+		}
+	}
+
+	if (nMotion == MOTION_DEATH)
+	{// 大爆発の生成
+		CAnimEffect3D *pAnimEffect = CAnimEffect3D::GetInstance();
+
+		if (pAnimEffect != nullptr)
+		{
+			CAnim3D *pAnim = pAnimEffect->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_EXPLOSION);
+
+			if (pAnim != nullptr)
+			{
+				pAnim->SetSize(2000.0f, 1400.0f);
 			}
 		}
 	}
@@ -477,77 +565,6 @@ void CEnemyBoss::ChangeState(CStateBoss *pNext)
 	{
 		m_info.pState->Init(this);
 	}
-}
-
-//=====================================================
-// ヒット処理
-//=====================================================
-void CEnemyBoss::Hit(float fDamage)
-{
-	CEnemy::STATE state = CEnemy::GetState();
-
-	if (state == CEnemy::STATE_DAMAGE)
-	{
-		float fLife = CEnemy::GetLife();
-
-		fLife -= fDamage;
-
-		CSound *pSound = CSound::GetInstance();
-
-		if (pSound != nullptr)
-		{// ヒットサウンド
-			//pSound->Play(CSound::LABEL_SE_HIT_BOSS);
-		}
-
-		if (fLife <= 0.0f)
-		{// 死亡状態
-
-			fLife = 0.0f;
-
-			// スコア管理
-			ManageScore();
-
-			// 当たり判定削除
-			DeleteCollision();
-
-			CSlow *pSlow = CSlow::GetInstance();
-
-			if (pSlow != nullptr)
-				pSlow->SetSlowTime(0.5f,0.1f);
-
-			if (m_info.bTrans == false)
-			{
-				ChangeState(new CStateBossTrans);
-
-				CFade *pFade = CFade::GetInstance();
-
-				if (pFade != nullptr)
-				{
-					pFade->SetFade(CScene::MODE_GAME, false);
-				}
-			}
-			else
-			{
-				ChangeState(new CStateBossDeath);
-
-				if (pSlow != nullptr)
-					pSlow->SetSlowTime(3.0f, 0.1f);
-
-				CCamera *pCamera = CManager::GetCamera();
-
-				if (pCamera != nullptr)
-					pCamera->SetQuake(1.5f, 1.5f, 160);
-			}
-		}
-		else
-		{
-			state = CEnemy::STATE_DAMAGE;
-		}
-
-		CEnemy::SetLife(fLife);
-	}
-
-	CEnemy::SetState(state);
 }
 
 //=====================================================
