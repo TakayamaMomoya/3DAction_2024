@@ -38,6 +38,7 @@ CObject::CObject(int nPriority)
 	m_bNotStop = false;
 	m_bLighting = true;
 	m_bAdd = false;
+	m_bFog = true;
 	m_type = TYPE::TYPE_NONE;
 	m_nID = -1;
 	m_dAlpha = 0;
@@ -349,6 +350,8 @@ void CObject::DrawAll(void)
 			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 			pDevice->SetRenderState(D3DRS_ALPHAREF, pObject->m_dAlpha);
+
+			pDevice->SetRenderState(D3DRS_FOGENABLE, pObject->m_bFog);
 
 			// •`‰æˆ—
 			pObject->Draw();
