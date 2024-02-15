@@ -236,7 +236,7 @@ void CObject3D::SetVtxStretchBillboard(void)
 	// â°ïùÇÇ∏ÇÁÇ∑åvéZ
 	D3DXVECTOR3 vecSide;
 
-	D3DXVec3Cross(&vecSide, &nor, &vecPolygon);
+	D3DXVec3Cross(&vecSide, &nor, &-vecPolygon);
 
 	D3DXVec3Normalize(&vecSide, &vecSide);
 
