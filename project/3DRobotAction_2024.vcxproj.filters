@@ -267,6 +267,9 @@
     <ClCompile Include="code\explosionAttack.cpp">
       <Filter>ソース ファイル\enemy</Filter>
     </ClCompile>
+    <ClCompile Include="code\continue.cpp">
+      <Filter>ソース ファイル\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -496,6 +499,9 @@
     </ClInclude>
     <ClInclude Include="code\explosionAttack.h">
       <Filter>ソース ファイル\enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="code\continue.h">
+      <Filter>ソース ファイル\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

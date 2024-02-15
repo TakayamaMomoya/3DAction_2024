@@ -34,6 +34,8 @@ public:
 	void Update(void);
 	void Draw(void);
 	int GetNumCheckPoint(void) { return m_nNumCheckPoint; }
+	int GetProgress(void) { return m_nProgress; }
+	void SetProgress(int nProgress) { m_nProgress = nProgress; }
 
 private:
 
@@ -47,5 +49,10 @@ private:
 	CObject2D *m_pCursor;	// カーソルのポインタ
 	static CCheckPointManager *m_pCheckPointManager;	// 自身のポインタ
 };
+
+namespace CheckPoint
+{
+void SetProgress(int nProgress);
+}
 
 #endif

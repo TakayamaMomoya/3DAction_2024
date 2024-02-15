@@ -1,6 +1,6 @@
 //*****************************************************
 //
-//セーブデータ管理[saveDataManager.cpp]
+// セーブデータ管理[saveDataManager.cpp]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -9,6 +9,7 @@
 // インクルード
 //*****************************************************
 #include "saveDataManager.h"
+#include "checkPointManager.h"
 #include <stdio.h>
 
 //*****************************************************
@@ -93,6 +94,11 @@ void CSaveDataManager::Load(void)
 
 				(void)fscanf(pFile, "%d", &m_nProgress);
 			}
+
+			if (strcmp(cTemp, "END_SCRIPT") == 0)
+			{
+				break;
+			}
 		}
 	}
 }
@@ -104,7 +110,7 @@ void CSaveDataManager::Uninit(void)
 {
 	m_pSaveDataManager = nullptr;
 
-	Release();
+	delete this;
 }
 
 //=====================================================
@@ -112,33 +118,24 @@ void CSaveDataManager::Uninit(void)
 //=====================================================
 void CSaveDataManager::Save(void)
 {
-	FILE *pFile = NULL;
+	CCheckPointManager *pCheck = CCheckPointManager::GetInstance();
+
+	if (pCheck == nullptr)
+		assert(("保存失敗！",false));
+
+	int nProgress = pCheck->GetProgress();
+
+	FILE *pFile = nullptr;
 
 	pFile = fopen(SAVE_PATH, "w");
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{
 		// 進行状況
-		fprintf(pFile, "PROGRESS = %d\n", m_nProgress);
+		fprintf(pFile, "PROGRESS = %d\n", nProgress);
 
-		fprintf(pFile, "END_SCRIPT\n");
+		fprintf(pFile, "END_SCRIPT");
 
 		fclose(pFile);
 	}
-}
-
-//=====================================================
-// 更新処理
-//=====================================================
-void CSaveDataManager::Update(void)
-{
-
-}
-
-//=====================================================
-// 描画処理
-//=====================================================
-void CSaveDataManager::Draw(void)
-{
-
 }

@@ -28,6 +28,7 @@
 #include "inputManager.h"
 #include "block.h"
 #include "debrisSpawner.h"
+#include "saveDataManager.h"
 
 //*****************************************************
 // 静的メンバ変数宣言
@@ -112,6 +113,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// 破片スポナーの読込
 	CDebrisSpawner::Load();
 
+	// セーブデータ管理生成
+	CSaveDataManager::Create();
+
 	SetMode(m_mode);
 
 	return S_OK;
@@ -147,6 +151,14 @@ void CManager::Uninit(void)
 	if (pRenderer != nullptr)
 	{
 		pRenderer->Uninit();
+	}
+
+	// セーブデータ終了
+	CSaveDataManager *pSave = CSaveDataManager::GetInstance();
+
+	if (pSave != nullptr)
+	{
+		pSave->Uninit();
 	}
 
 	// 入力マネージャー終了

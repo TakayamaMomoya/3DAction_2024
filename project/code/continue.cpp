@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// ポーズの処理[pause.cpp]
+// コンティニューの処理[continue.cpp]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -8,7 +8,7 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "pause.h"
+#include "continue.h"
 #include "manager.h"
 #include "object2D.h"
 #include "inputkeyboard.h"
@@ -28,20 +28,20 @@
 #define MOVE_FACT	(0.15f)	// 移動速度
 #define LINE_ARRIVAL	(90.0f)	// 到着したとされるしきい値
 #define LINE_UNINIT	(3.0f)	// 終了するまでのしきい値
-#define SPEED_FADE	(0.03f)	// 背景のフェード速度
+#define SPEED_FADE	(0.006f)	// 背景のフェード速度
 #define ALPHA_BG	(0.5f)	// 背景の不透明度
 
 //*****************************************************
 // 静的メンバ変数宣言
 //*****************************************************
-CPause *CPause::m_pPause = nullptr;	// 自身のポインタ
+CContinue *CContinue::m_pContinue = nullptr;	// 自身のポインタ
 
 //====================================================
 // コンストラクタ
 //====================================================
-CPause::CPause()
+CContinue::CContinue()
 {
-	m_menu = MENU_RESUME;
+	m_menu = MENU_RETRY_FROM_CHECKPOINT;
 	m_state = STATE_NONE;
 	ZeroMemory(&m_apMenu[0], sizeof(m_apMenu));
 	ZeroMemory(&m_aPosDest[0], sizeof(D3DXVECTOR3) * MENU_MAX);
@@ -51,7 +51,7 @@ CPause::CPause()
 //====================================================
 // デストラクタ
 //====================================================
-CPause::~CPause()
+CContinue::~CContinue()
 {
 
 }
@@ -59,39 +59,31 @@ CPause::~CPause()
 //====================================================
 // 生成処理
 //====================================================
-CPause *CPause::Create(void)
+CContinue *CContinue::Create(void)
 {
-	if (m_pPause == nullptr)
+	if (m_pContinue == nullptr)
 	{
-		m_pPause = new CPause;
+		m_pContinue = new CContinue;
 
-		if (m_pPause != nullptr)
+		if (m_pContinue != nullptr)
 		{
-			m_pPause->Init();
+			m_pContinue->Init();
 		}
 	}
 
-	return m_pPause;
+	return m_pContinue;
 }
 
 //====================================================
 // 初期化処理
 //====================================================
-HRESULT CPause::Init(void)
+HRESULT CContinue::Init(void)
 {
-	// ゲームを停止する
-	CGame *pGame = CGame::GetInstance();
+	CSound* pSound = CSound::GetInstance();
 
-	if (pGame != nullptr)
+	if (pSound != nullptr)
 	{
-		pGame->EnableStop(true);
-
-		CSound* pSound = CSound::GetInstance();
-
-		if (pSound != nullptr)
-		{
-			pSound->Play(pSound->LABEL_SE_PAUSE_MENU);
-		}
+		pSound->Play(pSound->LABEL_SE_PAUSE_MENU);
 	}
 
 	// 背景の生成
@@ -108,10 +100,9 @@ HRESULT CPause::Init(void)
 		m_pBg->SetVtx();
 	}
 
-	char *pPath[MENU_MAX] = 
+	char *pPath[MENU_MAX] =
 	{// メニュー項目のパス
 		"data\\TEXTURE\\UI\\menu_return.png",
-		"data\\TEXTURE\\UI\\menu_resume.png",
 		"data\\TEXTURE\\UI\\menu_retry.png",
 		"data\\TEXTURE\\UI\\menu_quit.png",
 	};
@@ -156,16 +147,8 @@ HRESULT CPause::Init(void)
 //====================================================
 // 終了処理
 //====================================================
-void CPause::Uninit(void)
+void CContinue::Uninit(void)
 {
-	// ゲームを再開する
-	CGame *pGame = CGame::GetInstance();
-
-	if (pGame != nullptr)
-	{
-		pGame->EnableStop(false);
-	}
-
 	if (m_pBg != nullptr)
 	{
 		m_pBg->Uninit();
@@ -182,7 +165,7 @@ void CPause::Uninit(void)
 		}
 	}
 
-	m_pPause = nullptr;
+	m_pContinue = nullptr;
 
 	Release();
 }
@@ -190,7 +173,7 @@ void CPause::Uninit(void)
 //====================================================
 // 更新処理
 //====================================================
-void CPause::Update(void)
+void CContinue::Update(void)
 {
 	// 状態管理
 	ManageState();
@@ -199,7 +182,7 @@ void CPause::Update(void)
 //====================================================
 // 状態管理
 //====================================================
-void CPause::ManageState(void)
+void CContinue::ManageState(void)
 {
 	if (m_state != STATE_OUT)
 	{
@@ -264,7 +247,7 @@ void CPause::ManageState(void)
 //====================================================
 // 背景の管理
 //====================================================
-void CPause::ManageBg(void)
+void CContinue::ManageBg(void)
 {
 	if (m_pBg == nullptr)
 	{
@@ -275,17 +258,25 @@ void CPause::ManageBg(void)
 
 	switch (m_state)
 	{
-	case CPause::STATE_IN:
+	case CContinue::STATE_IN:
 
 		col.a += SPEED_FADE;
 
-		if (col.a >= ALPHA_BG)
+		if (col.a > ALPHA_BG)
 		{
+			// ゲームを停止する
+			CGame *pGame = CGame::GetInstance();
+
+			if (pGame != nullptr)
+			{
+				pGame->EnableStop(true);
+			}
+
 			col.a = ALPHA_BG;
 		}
 
 		break;
-	case CPause::STATE_OUT:
+	case CContinue::STATE_OUT:
 
 		col.a -= SPEED_FADE;
 
@@ -305,7 +296,7 @@ void CPause::ManageBg(void)
 //====================================================
 // 操作処理
 //====================================================
-void CPause::Input(void)
+void CContinue::Input(void)
 {
 	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
 	CInputJoypad *pJoypad = CInputJoypad::GetInstance();
@@ -328,15 +319,6 @@ void CPause::Input(void)
 
 	if (pInputManager == nullptr)
 	{
-		return;
-	}
-
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_PAUSE) || 
-		pInputManager->GetTrigger(CInputManager::BUTTON_BACK))
-	{// ポーズ解除、以降の操作を受け付けない
-		m_state = STATE_OUT;
-		m_aPosDest[0].x = -MENU_WIDTH;
-
 		return;
 	}
 
@@ -382,7 +364,7 @@ void CPause::Input(void)
 //====================================================
 // フェードする処理
 //====================================================
-void CPause::Fade(MENU menu)
+void CContinue::Fade(MENU menu)
 {
 	CFade *pFade = CFade::GetInstance();
 
@@ -393,19 +375,12 @@ void CPause::Fade(MENU menu)
 
 	switch (menu)
 	{
-	case CPause::MENU_RETRY_FROM_CHECKPOINT:
+	case CContinue::MENU_RETRY_FROM_CHECKPOINT:
 
-		CGame::SetState(CGame::STATE_END);
 		pFade->SetFade(CScene::MODE_GAME);
 
 		break;
-	case CPause::MENU_RESUME:
-
-		m_state = STATE_OUT;
-		m_aPosDest[0].x = -MENU_WIDTH;
-
-		break;
-	case CPause::MENU_RESTART:
+	case CContinue::MENU_RESTART:
 
 		CGame::SetState(CGame::STATE_END);
 		pFade->SetFade(CScene::MODE_GAME);
@@ -413,7 +388,7 @@ void CPause::Fade(MENU menu)
 		CheckPoint::SetProgress(0);
 
 		break;
-	case CPause::MENU_QUIT:
+	case CContinue::MENU_QUIT:
 	{
 		pFade->SetFade(CScene::MODE_TITLE);
 	}
@@ -426,7 +401,7 @@ void CPause::Fade(MENU menu)
 //====================================================
 // 描画処理
 //====================================================
-void CPause::Draw(void)
+void CContinue::Draw(void)
 {
 
 }

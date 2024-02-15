@@ -9,6 +9,7 @@
 // インクルード
 //*****************************************************
 #include "checkPointManager.h"
+#include "saveDataManager.h"
 #include "object2D.h"
 #include "texture.h"
 #include "player.h"
@@ -80,7 +81,7 @@ CCheckPointManager *CCheckPointManager::GetInstance(void)
 {
 	if (m_pCheckPointManager == nullptr)
 	{
-		Create();
+		//Create();
 	}
 
 	return m_pCheckPointManager;
@@ -94,13 +95,29 @@ HRESULT CCheckPointManager::Init(void)
 	// 読込
 	Load();
 
+	// セーブデータの取得
+	CSaveDataManager *pSave = CSaveDataManager::GetInstance();
+
+	if (pSave != nullptr)
+	{
+		m_nProgress = pSave->GetProgress();
+
+		CPlayer *pPlayer = CPlayer::GetInstance();
+
+		if (pPlayer != nullptr)
+		{
+			D3DXVECTOR3 pos = m_pPosCheckPoint[m_nProgress];
+
+			pPlayer->SetPosition(m_pPosCheckPoint[m_nProgress]);
+		}
+	}
+
 	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
 	if (pEnemyManager != nullptr)
 	{
 		pEnemyManager->SpawnGroup(m_nProgress);
 	}
-
 
 	if (m_pCursor == nullptr)
 	{// カーソル生成
@@ -382,4 +399,17 @@ void CCheckPointManager::Draw(void)
 	CDebugProc::GetInstance()->Print("\n進行状況[%d]", m_nProgress);
 
 #endif
+}
+
+namespace CheckPoint
+{
+void SetProgress(int nProgress)
+{
+	CCheckPointManager *pCheck = CCheckPointManager::GetInstance();
+
+	if (pCheck != nullptr)
+	{
+		pCheck->SetProgress(nProgress);
+	}
+}
 }

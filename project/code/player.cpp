@@ -31,6 +31,8 @@
 #include "boostEffect.h"
 #include "animEffect3D.h"
 #include "anim3D.h"
+#include "continue.h"
+#include "pause.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -521,6 +523,16 @@ void CPlayer::Input(void)
 
 	// UŒ‚‘€ì
 	InputAttack();
+
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager != nullptr)
+	{
+		if (pInputManager->GetTrigger(CInputManager::BUTTON_PAUSE))
+		{
+			CPause::Create();
+		}
+	}
 }
 
 //=====================================================
@@ -1882,7 +1894,7 @@ void CPlayer::Death(void)
 	
 	Uninit();
 
-	CGame::SetState(CGame::STATE_END);
+	CContinue::Create();
 }
 
 //=====================================================

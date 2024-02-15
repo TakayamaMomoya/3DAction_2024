@@ -31,6 +31,7 @@
 #include "player.h"
 #include "slow.h"
 #include "checkPointManager.h"
+#include "saveDataManager.h"
 #include "blockManager.h"
 #include "meshfield.h"
 #include "enemyBoss.h"
@@ -66,6 +67,11 @@ HRESULT CGame::Init(void)
 {
 	m_pGame = this;
 
+	CSaveDataManager *pSave = CSaveDataManager::GetInstance();
+
+	if (pSave != nullptr)
+		pSave->Load();
+
 	m_state = STATE_NORMAL;
 	m_bStop = false;
 
@@ -77,9 +83,6 @@ HRESULT CGame::Init(void)
 
 	// ブロック管理の生成
 	CBlockManager::Create();
-
-	// チェックポイント管理の生成
-	CCheckPointManager::Create();
 
 	// 敵マネージャーの生成
 	CEnemyManager *pEnemyManager = CEnemyManager::Create();
@@ -106,6 +109,9 @@ HRESULT CGame::Init(void)
 	// プレイヤーの生成
 	CPlayer::Create();
 
+	// チェックポイント管理の生成
+	CCheckPointManager::Create();
+
 	// スロー管理の生成
 	CSlow::Create();
 
@@ -122,6 +128,11 @@ HRESULT CGame::Init(void)
 //=====================================================
 void CGame::Uninit(void)
 {
+	CSaveDataManager *pSave = CSaveDataManager::GetInstance();
+
+	if (pSave != nullptr)
+		pSave->Save();
+
 	// オブジェクト全棄
 	CObject::ReleaseAll();
 
@@ -146,26 +157,11 @@ void CGame::Update(void)
 
 		// カーソルを中心に固定
 		SetCursorPos((int)(SCREEN_WIDTH * 0.5f), (int)(SCREEN_HEIGHT * 0.5f));
-
-		if (pInputManager != nullptr)
-		{
-			if (pInputManager->GetTrigger(CInputManager::BUTTON_PAUSE))
-			{
-				CPause::Create();
-			}
-		}
 	}
 	else
 	{
 		// 停止しないオブジェクトの更新
 		CObject::UpdateNotStop();
-
-		CPause *pPause = CPause::GetInstance();
-
-		if (pPause != nullptr)
-		{
-			pPause->Update();
-		}
 	}
 
 	// カメラ更新
@@ -296,4 +292,5 @@ void CGame::Draw(void)
 	};
 
 	pDebugProc->Print("\nゲームの状態[%s]\n", apString[m_state]);
+	pDebugProc->Print("停止[%d]\n", m_bStop);
 }

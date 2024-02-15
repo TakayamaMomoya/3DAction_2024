@@ -177,7 +177,7 @@ void CEnemyNormal::Attack(void)
 
 				moveBullet = vecDiffBullet * SPEED_BULLET;
 
-				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.01f);
+				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 10.0f);
 
 				m_fTimeFire = 0;
 			}
