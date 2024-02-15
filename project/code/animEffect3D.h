@@ -39,6 +39,7 @@ public:
 		TYPE_HIT00,	// 命中
 		TYPE_BOOST,	// ブースト
 		TYPE_PLASMA,	// プラズマ
+		TYPE_BEAMFLASH,	// ビーム閃光
 		TYPE_MAX
 	};
 

@@ -717,6 +717,21 @@ void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 			pBeam->SetShrink(2.5f);
 			pBeam->SetExpand(160.0f);
 			pBeam->SetExtend(100.0f);
+
+			CAnimEffect3D *pAnimEffect = CAnimEffect3D::GetInstance();
+
+			if (pAnimEffect != nullptr)
+			{
+				CAnim3D *pAnim = pAnimEffect->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_BEAMFLASH);
+
+				if (pAnim != nullptr)
+				{
+					D3DXVECTOR3 pos = pBoss->GetMtxPos(5);
+
+					pAnim->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+					pAnim->SetVtx();
+				}
+			}
 		}
 
 		m_nCnt++;

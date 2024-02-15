@@ -55,6 +55,7 @@ CBullet::CBullet(int nPriority) : CObject(nPriority)
 	m_pCollisionSphere = nullptr;
 	m_pObject3D = nullptr;
 	m_nIdxPlayer = -1;
+	m_fLengthDest = 0.0f;
 
 	// 総数カウントアップ
 	m_nNumAll++;
@@ -104,6 +105,7 @@ HRESULT CBullet::Init(void)
 			m_pObject3D->SetIdxTexture(nIdx);
 			m_pObject3D->SetColor(m_col);
 			m_pObject3D->EnableAdd(true);
+			m_pObject3D->SetFactSB(40.0f);
 		}
 	}
 
