@@ -10,7 +10,7 @@
 //*****************************************************
 #include "checkPointManager.h"
 #include "saveDataManager.h"
-#include "object2D.h"
+#include "UI.h"
 #include "texture.h"
 #include "player.h"
 #include "fade.h"
@@ -111,17 +111,10 @@ HRESULT CCheckPointManager::Init(void)
 			pPlayer->SetPosition(m_pPosCheckPoint[m_nProgress]);
 		}
 	}
-
-	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
-
-	if (pEnemyManager != nullptr)
-	{
-		pEnemyManager->SpawnGroup(m_nProgress);
-	}
-
+	
 	if (m_pCursor == nullptr)
 	{// ÉJÅ[É\Éãê∂ê¨
-		m_pCursor = CObject2D::Create(7);
+		m_pCursor = CUI::Create();
 
 		if (m_pCursor != nullptr)
 		{

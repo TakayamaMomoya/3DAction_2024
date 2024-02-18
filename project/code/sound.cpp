@@ -22,8 +22,8 @@ CSound::CSound()
 	ZeroMemory(&m_apDataAudio[0],sizeof(m_apDataAudio));					// オーディオデータ
 	ZeroMemory(&m_aSizeAudio[0],sizeof(m_aSizeAudio));;					// オーディオデータサイズ
 	m_fadeSound = FADESTATE_NONE;								// フェード状態
-	m_SoundLabelNow = LABEL_BGM000;								// 現在のサウンドラベル
-	m_SoundLabelNext = LABEL_BGM000;								// 次のサウンドラベル
+	m_SoundLabelNow = LABEL_BGM_TITLE;								// 現在のサウンドラベル
+	m_SoundLabelNext = LABEL_BGM_TITLE;								// 次のサウンドラベル
 	m_fSpeedFadeSound = 0.0f;									// サウンドがフェードするスピード
 	m_fVolumeSound = 0.0f;										// サウンドのボリューム
 }

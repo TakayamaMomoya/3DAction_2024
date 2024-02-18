@@ -177,7 +177,7 @@ void CEnemyNormal::Attack(void)
 
 				moveBullet = vecDiffBullet * SPEED_BULLET;
 
-				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 10.0f);
+				CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.25f);
 
 				m_fTimeFire = 0;
 			}
@@ -223,7 +223,7 @@ void CEnemyNormal::KeepDistance(void)
 		SetMove(move);
 
 #ifdef _DEBUG
-		CEffect3D::Create(posDest, 20.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		CEffect3D::Create(posDest, 20.0f, 10, D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.01f));
 #endif
 
 	}

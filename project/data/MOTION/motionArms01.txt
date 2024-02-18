@@ -599,7 +599,7 @@ MOTIONSET
         KEY = 2
         FRAME = 1
         PARENT = 5
-        POS = 0.0 -40.0 0.0
+        POS = 0.0 -130.0 0.0
     END_EVENTSET
 
     KEYSET     #---<< 0 / 4 >>

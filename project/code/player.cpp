@@ -169,7 +169,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// パラメーターに初期値を入れる
-	m_param.fInitialLife = 30.0f;
+	m_param.fInitialLife = 300.0f;
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
@@ -368,9 +368,6 @@ void CPlayer::Update(void)
 {
 	CSlow *pSlow = CSlow::GetInstance();
 
-	// 継承クラスの更新
-	CMotion::Update();
-
 	// ロックオン
 	Lockon();
 
@@ -487,6 +484,9 @@ void CPlayer::Update(void)
 
 	// ブーストエフェクト制御
 	Boost();
+
+	// 継承クラスの更新
+	CMotion::Update();
 
 // デバッグ処理
 #if _DEBUG
@@ -1364,9 +1364,19 @@ void CPlayer::Boost(void)
 			rot.x += D3DX_PI;
 
 			float fHeight = m_info.pThruster[i].pFire->GetHeight();
+			
+			if (!m_info.bLand)
+			{
+				fSpeed *= 0.5f;
+			}
+
+			if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
+			{
+				fSpeed = 1.0f;
+			}
 
 			float fDest = m_info.pThruster[i].size.y * fSpeed;
-
+			
 			float fDiff = fDest - fHeight;
 
 			float fFact = 0.2f;

@@ -16,7 +16,7 @@
 //*****************************************************
 // 前方宣言
 //*****************************************************
-class CObject2D;
+class CUI;
 
 //*****************************************************
 // クラスの定義
@@ -46,7 +46,7 @@ private:
 	int m_nProgress;	// 現在の進行状況
 	int m_nNumCheckPoint;	// チェックポイントの数
 	D3DXVECTOR3 *m_pPosCheckPoint;	// チェックポイントの座標情報
-	CObject2D *m_pCursor;	// カーソルのポインタ
+	CUI *m_pCursor;	// カーソルのポインタ
 	static CCheckPointManager *m_pCheckPointManager;	// 自身のポインタ
 };
 

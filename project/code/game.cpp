@@ -84,9 +84,6 @@ HRESULT CGame::Init(void)
 	// ブロック管理の生成
 	CBlockManager::Create();
 
-	// 敵マネージャーの生成
-	CEnemyManager *pEnemyManager = CEnemyManager::Create();
-
 	// ３Dアニメーション管理の生成
 	CAnimEffect3D::Create();
 
@@ -111,6 +108,9 @@ HRESULT CGame::Init(void)
 
 	// チェックポイント管理の生成
 	CCheckPointManager::Create();
+
+	// 敵マネージャーの生成
+	CEnemyManager *pEnemyManager = CEnemyManager::Create();
 
 	// スロー管理の生成
 	CSlow::Create();
@@ -170,9 +170,9 @@ void CGame::Update(void)
 	// 状態管理
 	ManageState();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	Debug();
-#endif
+//#endif
 }
 
 //=====================================================

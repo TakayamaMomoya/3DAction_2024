@@ -28,9 +28,7 @@ public:
 	void Load(void);
 
 private:
-
 	int m_nProgress;	// 現在の進行状況
-
 	static CSaveDataManager *m_pSaveDataManager;	// 自身のポインタ
 };
 

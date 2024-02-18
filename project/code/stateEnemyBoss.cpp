@@ -1096,8 +1096,6 @@ void CStateBossBeamAir::Radiation(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossDeath::Init(CEnemyBoss *pBoss)
 {
-	//CGame::SetState(CGame::STATE::STATE_END);
-
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
 
 	// СеФЪФ≠ВћРґРђ

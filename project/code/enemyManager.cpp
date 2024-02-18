@@ -22,6 +22,7 @@
 #include "UI.h"
 #include "fan2D.h"
 #include "texture.h"
+#include "caution.h"
 #include "debugproc.h"
 #include <stdio.h>
 
@@ -158,6 +159,11 @@ HRESULT CEnemyManager::Init(void)
 	// 読込処理
 	Load();
 
+	int nProgress = pCheckPointManager->GetProgress();
+
+	// 初期敵のスポーン
+	SpawnGroup(nProgress);
+
 	if (m_pCursor == nullptr)
 	{// カーソル生成
 		m_pCursor = CUI::Create();
@@ -236,6 +242,15 @@ void CEnemyManager::Load(void)
 								(void)fscanf(pFile, "%f", &Info->pos.x);
 								(void)fscanf(pFile, "%f", &Info->pos.y);
 								(void)fscanf(pFile, "%f", &Info->pos.z);
+							}
+
+							if (strcmp(cTemp, "POSDEST") == 0)
+							{// 初期目標位置
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%f", &Info->posDestInitial.x);
+								(void)fscanf(pFile, "%f", &Info->posDestInitial.y);
+								(void)fscanf(pFile, "%f", &Info->posDestInitial.z);
 							}
 
 							if (strcmp(cTemp, "TYPE") == 0)
@@ -673,7 +688,14 @@ void CEnemyManager::SpawnGroup(int nIdx)
 			D3DXVECTOR3 pos = m_pInfoGroup[nIdx].pInfoEnemy[i].pos;
 			int nType = m_pInfoGroup[nIdx].pInfoEnemy[i].nType;
 
-			CreateEnemy(pos, (CEnemy::TYPE)nType);
+			CEnemy *pEnemy = CreateEnemy(pos, (CEnemy::TYPE)nType);
+
+			if (pEnemy != nullptr)
+			{
+				pEnemy->SetPosDest(m_pInfoGroup[nIdx].pInfoEnemy[i].posDestInitial);
+			}
+
+			CCaution::Create(m_pInfoGroup[nIdx].pInfoEnemy[i].pos);
 		}
 	}
 }

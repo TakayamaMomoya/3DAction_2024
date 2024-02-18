@@ -73,6 +73,7 @@ public:
 	void SetCntState(int nCnt) { m_info.nTimerState = nCnt; }
 	float GetSpeed(void) { return m_info.fMoveSpeed; }
 	void SetMoveSpeed(float fSpeed) { m_info.fMoveSpeed = fSpeed; }
+	void SetMoveState(MOVESTATE state) { m_info.moveState = state; }
 	MOVESTATE GetMoveState(void) { return m_info.moveState; }
 	void SetPosDest(D3DXVECTOR3 pos) { m_info.posDest = pos; }
 	void CreateCollision(float fRadius = 90.0f);

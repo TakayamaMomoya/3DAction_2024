@@ -17,7 +17,7 @@ class CObject3D;
 namespace Boss
 {
 const float RADIUS_COLLISION = 300.0f;	// 当たり判定の半径
-const float INITIAL_LIFE = 4.0f;	// 初期体力
+const float INITIAL_LIFE = 100.0f;	// 初期体力
 }
 
 //*****************************************************
@@ -99,6 +99,7 @@ private:
 	void ManageCollision(void);
 	void FollowCollision(void);
 	bool FollowDest(void);
+	void Wait(void) override {};
 
 	static CEnemyBoss *m_pEnemyBoss;	// 自身のポインタ
 	Sinfo m_info;	// 自身の情報

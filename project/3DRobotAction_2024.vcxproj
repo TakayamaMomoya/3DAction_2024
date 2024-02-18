@@ -169,6 +169,7 @@
     <ClCompile Include="code\bullet.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\cameraBehavior.cpp" />
+    <ClCompile Include="code\caution.cpp" />
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\checkPointManager.cpp" />
     <ClCompile Include="code\collision.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="code\bullet.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\cameraBehavior.h" />
+    <ClInclude Include="code\caution.h" />
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\checkPointManager.h" />
     <ClInclude Include="code\collision.h" />

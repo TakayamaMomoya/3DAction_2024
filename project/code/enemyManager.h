@@ -69,6 +69,7 @@ private:
 	struct SInfoEnemy
 	{// 敵の配置情報
 		D3DXVECTOR3 pos;	// 位置
+		D3DXVECTOR3 posDestInitial;	// 初期目標位置
 		int nType;	// 種類
 	};
 	struct SInfoEnemyGroup
