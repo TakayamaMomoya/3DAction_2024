@@ -490,6 +490,10 @@ void CEnemy::CollisionThrown(void)
 		{
 			// “–‚½‚Á‚½“G‚Éƒ_ƒ[ƒW‚ð—^‚¦‚é
 			m_info.pCollisionSphere->DamageAll(CCollision::TAG_ENEMY, DAMAGE_THROWN);
+
+			D3DXVECTOR3 move = { 0.0f,0.0f,0.0f };
+
+			SetMove(move);
 		}
 
 		if (m_info.pCollisionSphere != nullptr)

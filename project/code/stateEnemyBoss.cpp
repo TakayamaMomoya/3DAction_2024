@@ -64,6 +64,8 @@ const float LIMIT_ROT_BEAM = D3DX_PI * 0.8f;	// 空中ビームの回転制御
 const float RADIUS_PLASMA = 300.0f;	// プラズマの半径
 const float TIME_SETEXPL = 0.005f;	// 爆発設置タイマー
 const int RAND_PLASMA = 700;	// プラズマのランダム範囲
+const float LIMIT_BACKSTEP = 5000.0f;	// バックスステップの制限距離
+const float LIMIT_BACKSTEP_LOW = 3000.0f;	// バックスステップの最低距離
 }
 
 CStateBoss::CStateBoss()
@@ -74,6 +76,113 @@ CStateBoss::CStateBoss()
 CStateBoss::~CStateBoss()
 {
 
+}
+
+//=====================================================
+// 行動選択
+//=====================================================
+void CStateBossSelect::Init(CEnemyBoss *pBoss)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	// プレイヤーとの距離によって行動が変化
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+	D3DXVECTOR3 pos = pBoss->GetPosition();
+	D3DXVECTOR3 vecDiff = posPlayer - pos;
+
+	float fDest = D3DXVec3Length(&vecDiff);
+
+	int nRand = universal::RandRange(100, 0);
+
+	if (fDest < DIST_CLOSE)
+	{// 近距離
+		Close(nRand, pBoss);
+#ifdef _DEBUG
+		CEffect3D::Create(pBoss->GetMtxPos(0), 600.0f, 60, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+#endif
+	}
+	else if (fDest > DIST_FAR)
+	{// 遠距離
+		Far(nRand, pBoss);
+#ifdef _DEBUG
+		CEffect3D::Create(pBoss->GetMtxPos(0), 1000.0f, 60, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
+#endif
+	}
+	else
+	{// 中距離
+		Middle(nRand, pBoss);
+#ifdef _DEBUG
+		CEffect3D::Create(pBoss->GetMtxPos(0), 600.0f, 60, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+#endif
+	}
+}
+
+//=====================================================
+// 第一形態行動選択
+//=====================================================
+void CStateBossSelect1st::Close(int nRand, CEnemyBoss *pBoss)
+{// 近距離
+
+}
+
+void CStateBossSelect1st::Middle(int nRand, CEnemyBoss *pBoss)
+{// 中距離
+
+}
+
+void CStateBossSelect1st::Far(int nRand, CEnemyBoss *pBoss)
+{// 遠距離
+
+}
+
+//=====================================================
+// 第二形態行動選択
+//=====================================================
+void CStateBossSelect2nd::Close(int nRand, CEnemyBoss *pBoss)
+{// 近距離
+	if (nRand < 30)
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
+	else
+	{// ステップ回避
+		pBoss->ChangeState(new CStateBossStep);
+	}
+}
+
+void CStateBossSelect2nd::Middle(int nRand, CEnemyBoss *pBoss)
+{// 中距離
+	if (nRand < 40)
+	{
+		pBoss->ChangeState(new CStateBossBeamSmall);
+	}
+	else if (nRand < 60)
+	{
+		pBoss->ChangeState(new CStateBossJump);
+	}
+	else if (nRand < 80)
+	{
+		pBoss->ChangeState(new CStateBossStep);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
+}
+
+void CStateBossSelect2nd::Far(int nRand, CEnemyBoss *pBoss)
+{// 遠距離
+	if (nRand < 60)
+	{
+		pBoss->ChangeState(new CStateBossBeamSmall);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossSlash);
+	}
 }
 
 //=====================================================
@@ -449,99 +558,13 @@ void CStateBossBeforeTrans::Move(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// 行動に遷移
-		pBoss->ChangeState(new CStateBossSelect);
+		pBoss->ChangeState(new CStateBossSelect2nd);
 
 		// 当たり判定再生成
 		pBoss->CreateCollision(Boss::RADIUS_COLLISION);
 
 		// ライフリセット
 		pBoss->SetLife(Boss::INITIAL_LIFE);
-	}
-}
-
-//=====================================================
-// 行動選択
-//=====================================================
-void CStateBossSelect::Init(CEnemyBoss *pBoss)
-{
-	CPlayer *pPlayer = CPlayer::GetInstance();
-
-	if (pPlayer == nullptr)
-		return;
-
-	// プレイヤーとの距離によって行動が変化
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-	D3DXVECTOR3 pos = pBoss->GetPosition();
-	D3DXVECTOR3 vecDiff = posPlayer - pos;
-
-	float fDest = D3DXVec3Length(&vecDiff);
-
-	int nRand = universal::RandRange(100, 0);
-
-	if (fDest < DIST_CLOSE)
-	{// 近距離
-		Close(nRand,pBoss);
-#ifdef _DEBUG
-		CEffect3D::Create(pBoss->GetMtxPos(0), 600.0f,60, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-#endif
-	}
-	else if (fDest > DIST_FAR)
-	{// 遠距離
-		Far(nRand, pBoss);
-#ifdef _DEBUG
-		CEffect3D::Create(pBoss->GetMtxPos(0), 1000.0f, 60, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
-#endif
-	}
-	else
-	{// 中距離
-		Middle(nRand, pBoss);
-#ifdef _DEBUG
-		CEffect3D::Create(pBoss->GetMtxPos(0), 600.0f, 60, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-#endif
-	}
-}
-
-void CStateBossSelect::Close(int nRand, CEnemyBoss *pBoss)
-{// 近距離
-	if (nRand < 30)
-	{
-		pBoss->ChangeState(new CStateBossSlash);
-	}
-	else
-	{// ステップ回避
-		pBoss->ChangeState(new CStateBossStep);
-	}
-}
-
-void CStateBossSelect::Middle(int nRand, CEnemyBoss *pBoss)
-{// 中距離
-	if (nRand < 40)
-	{
-		pBoss->ChangeState(new CStateBossBeamSmall);
-	}
-	else if (nRand < 60)
-	{
-		pBoss->ChangeState(new CStateBossJump);
-	}
-	else if (nRand < 80)
-	{
-		pBoss->ChangeState(new CStateBossStep);
-	}
-	else
-	{
-		pBoss->ChangeState(new CStateBossSlash);
-	}
-}
-
-void CStateBossSelect::Far(int nRand, CEnemyBoss *pBoss)
-{// 遠距離
-	if (nRand < 60)
-	{
-		pBoss->ChangeState(new CStateBossBeamSmall);
-	}
-	else
-	{
-		pBoss->ChangeState(new CStateBossSlash);
 	}
 }
 
@@ -676,7 +699,7 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 				m_pBlade = nullptr;
 			}
 
-			pBoss->ChangeState(new CStateBossSelect);
+			pBoss->ChangeState(new CStateBossSelect2nd);
 		}
 	}
 }
@@ -744,7 +767,7 @@ void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 
 		if (m_nCnt > NUM_BEAMSMALL)
 		{
-			pBoss->ChangeState(new CStateBossSelect);
+			pBoss->ChangeState(new CStateBossSelect2nd);
 		}
 	}
 }
@@ -766,7 +789,12 @@ void CStateBossStep::Init(CEnemyBoss *pBoss)
 
 	// 目的地を設定
 	m_posDest = universal::RelativeInversPos(posPlayer,POS_CENTER,1.0f);
+	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW, &m_posDest, posPlayer);
+	universal::LimitDistSphereInSide(LIMIT_BACKSTEP, &m_posDest, posPlayer);
+
 	m_posDestMid = universal::RelativeInversPos(posPlayer, POS_CENTER, 0.0f);
+	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW * 0.5f, &m_posDestMid, posPlayer);
+	universal::LimitDistSphereInSide(LIMIT_BACKSTEP * 0.5f, &m_posDestMid, posPlayer);
 
 	m_bMid = false;
 }
@@ -787,7 +815,7 @@ void CStateBossStep::Move(CEnemyBoss *pBoss)
 
 		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
 		{
-			pBoss->ChangeState(new CStateBossSelect);
+			pBoss->ChangeState(new CStateBossSelect2nd);
 		}
 	}
 	else
@@ -1087,7 +1115,7 @@ void CStateBossBeamAir::Radiation(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{
-		pBoss->ChangeState(new CStateBossSelect);
+		pBoss->ChangeState(new CStateBossSelect2nd);
 	}
 }
 

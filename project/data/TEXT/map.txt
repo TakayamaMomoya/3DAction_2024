@@ -106,14 +106,14 @@ END_INFOBLOCK
 INFOBLOCK
  TAG = HighBill
  MODEL = data\\MODEL\\BLOCK\\bill03.x
- SNAG = 0
+ SNAG = 1
 END_INFOBLOCK
 
 #14î‘ñ⁄ÇÃÉuÉçÉbÉN
 INFOBLOCK
  TAG = warehouse
  MODEL = data\\MODEL\\BLOCK\\bill02.x
- SNAG = 0
+ SNAG = 1
 END_INFOBLOCK
 
 #====================================================================

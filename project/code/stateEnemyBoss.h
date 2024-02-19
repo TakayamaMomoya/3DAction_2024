@@ -38,6 +38,32 @@ private:
 };
 
 //=====================================================
+// 行動選択
+//=====================================================
+class CStateBossSelect : public CStateBoss
+{// 行動選択
+	void Init(CEnemyBoss *pBoss) override;
+
+	virtual void Close(int nRand, CEnemyBoss *pBoss) = 0;
+	virtual void Middle(int nRand, CEnemyBoss *pBoss) = 0;
+	virtual void Far(int nRand, CEnemyBoss *pBoss) = 0;
+};
+
+class CStateBossSelect1st : public CStateBossSelect
+{// 第一形態の行動選択
+	void Close(int nRand, CEnemyBoss *pBoss) override;
+	void Middle(int nRand, CEnemyBoss *pBoss) override;
+	void Far(int nRand, CEnemyBoss *pBoss) override;
+};
+
+class CStateBossSelect2nd : public CStateBossSelect
+{// 第二形態の行動選択
+	void Close(int nRand, CEnemyBoss *pBoss) override;
+	void Middle(int nRand, CEnemyBoss *pBoss) override;
+	void Far(int nRand, CEnemyBoss *pBoss) override;
+};
+
+//=====================================================
 // 第一形態
 //=====================================================
 class CStateBossApper : public CStateBoss
@@ -94,15 +120,6 @@ class CStateBossBeforeTrans : public CStateBoss
 {// 第二形態への移行時
 	void Init(CEnemyBoss *pBoss) override;
 	void Move(CEnemyBoss *pBoss) override;
-};
-
-class CStateBossSelect : public CStateBoss
-{// 行動選択
-	void Init(CEnemyBoss *pBoss) override;
-
-	void Close(int nRand, CEnemyBoss *pBoss);
-	void Middle(int nRand, CEnemyBoss *pBoss);
-	void Far(int nRand, CEnemyBoss *pBoss);
 };
 
 class CStateBossSlash : public CStateBoss
