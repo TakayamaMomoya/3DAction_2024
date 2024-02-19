@@ -145,7 +145,7 @@ void CSaveDataManager::Save(void)
 	CPlayer *pPlayer = CPlayer::GetInstance();
 	CGame *pGame = CGame::GetInstance();
 
-	if (pCheck == nullptr || pPlayer == nullptr || pGame != nullptr)
+	if (pCheck == nullptr || pPlayer == nullptr || pGame == nullptr)
 		assert(("•Û‘¶Ž¸”sI",false));
 
 	int nProgress = pCheck->GetProgress();
