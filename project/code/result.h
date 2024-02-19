@@ -14,9 +14,18 @@
 #include "scene.h"
 
 //*****************************************************
+// 定数定義
+//*****************************************************
+namespace Result
+{
+const int BASE_REWARD = 100000;	// 基本報酬
+}
+
+//*****************************************************
 // 前方宣言
 //*****************************************************
 class CMeshCylinder;
+class CResultBehavior;
 
 //*****************************************************
 // クラスの定義
@@ -32,7 +41,10 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void ChangeBehavior(CResultBehavior *pBehavior);
+
 private:
+	CResultBehavior *m_pBehavior;
 	CMeshCylinder *m_pCylinder;	// 背景のシリンダー
 };
 

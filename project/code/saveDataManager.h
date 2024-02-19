@@ -21,6 +21,7 @@ public:
 		int nProgress;	// 進行状況
 		float fInitialLife;	// 初期体力
 		float fLife;	// 体力
+		int nAddReward;	// 加算報酬
 	};
 
 	CSaveDataManager();	// コンストラクタ

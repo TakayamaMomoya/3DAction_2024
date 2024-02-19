@@ -11,6 +11,7 @@
 #include "saveDataManager.h"
 #include "checkPointManager.h"
 #include "player.h"
+#include "game.h"
 #include <stdio.h>
 
 //*****************************************************
@@ -90,10 +91,31 @@ void CSaveDataManager::Load(void)
 			(void)fscanf(pFile, "%s", &cTemp[0]);
 
 			if (strcmp(cTemp, "PROGRESS") == 0)
-			{// isó‹µ“Çž
+			{// isó‹µ
 				(void)fscanf(pFile, "%s", &cTemp[0]);
 
 				(void)fscanf(pFile, "%d", &m_info.nProgress);
+			}
+
+			if (strcmp(cTemp, "LIFE_PLAYER") == 0)
+			{// ‘Ì—Í
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_info.fLife);
+			}
+
+			if (strcmp(cTemp, "INITIALLIFE_PLAYER") == 0)
+			{// ‰Šú‘Ì—Í
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_info.fInitialLife);
+			}
+
+			if (strcmp(cTemp, "ADDREWARD") == 0)
+			{// ‰ÁŽZ•ñV
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%d", &m_info.nAddReward);
 			}
 
 			if (strcmp(cTemp, "END_SCRIPT") == 0)
@@ -121,13 +143,15 @@ void CSaveDataManager::Save(void)
 {
 	CCheckPointManager *pCheck = CCheckPointManager::GetInstance();
 	CPlayer *pPlayer = CPlayer::GetInstance();
+	CGame *pGame = CGame::GetInstance();
 
-	if (pCheck == nullptr || pPlayer == nullptr)
+	if (pCheck == nullptr || pPlayer == nullptr || pGame != nullptr)
 		assert(("•Û‘¶Ž¸”sI",false));
 
 	int nProgress = pCheck->GetProgress();
 	float fIntialLife = pPlayer->GetParam().fInitialLife;
 	float fLife = pPlayer->GetLife();
+	int nAddReward = pGame->GetAddReward();
 
 	FILE *pFile = nullptr;
 
@@ -140,6 +164,8 @@ void CSaveDataManager::Save(void)
 		fprintf(pFile, "LIFE_PLAYER = %.2f\n", fLife);
 
 		fprintf(pFile, "INITIALLIFE_PLAYER = %.2f\n", fIntialLife);
+
+		fprintf(pFile, "ADDREWARD = %d\n", nAddReward);
 
 		fprintf(pFile, "END_SCRIPT");
 

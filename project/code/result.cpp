@@ -9,6 +9,7 @@
 // インクルード
 //*****************************************************
 #include "result.h"
+#include "resultBehavior.h"
 #include "fade.h"
 #include "inputManager.h"
 #include "object.h"
@@ -16,6 +17,7 @@
 #include "texture.h"
 #include "camera.h"
 #include "manager.h"
+#include "saveDataManager.h"
 
 //*****************************************************
 // 定数定義
@@ -32,6 +34,7 @@ const float HEIGHT_CYLINDER = 800.0f;	// シリンダーの高さ
 CResult::CResult()
 {
 	m_pCylinder = nullptr;
+	m_pBehavior = nullptr;
 }
 
 //=====================================================
@@ -70,6 +73,16 @@ HRESULT CResult::Init(void)
 	pInfoCamera->posV = { 0.0f,HEIGHT_CYLINDER * 0.5f,0.0f };
 	pInfoCamera->posR = { 0.0f,HEIGHT_CYLINDER * 0.5f,1.0f };
 
+	// データの読込
+	CSaveDataManager *pSave = CSaveDataManager::GetInstance();
+
+	if (pSave != nullptr)
+	{
+		pSave->Load();
+	}
+
+	ChangeBehavior(new CResultPlayerScore);
+
 	return S_OK;
 }
 
@@ -82,6 +95,12 @@ void CResult::Uninit(void)
 	{
 		m_pCylinder->Uninit();
 		m_pCylinder = nullptr;
+	}
+
+	if (m_pBehavior != nullptr)
+	{
+		delete m_pBehavior;
+		m_pBehavior = nullptr;
 	}
 
 	CObject::ReleaseAll();
@@ -118,6 +137,11 @@ void CResult::Update(void)
 
 		m_pCylinder->SetRotation(rot);
 	}
+
+	if (m_pBehavior != nullptr)
+	{
+		m_pBehavior->Update(this);
+	}
 }
 
 //=====================================================
@@ -126,4 +150,22 @@ void CResult::Update(void)
 void CResult::Draw(void)
 {
 
+}
+
+//=====================================================
+// ビヘイビアの変更
+//=====================================================
+void CResult::ChangeBehavior(CResultBehavior *pBehavior)
+{
+	if (m_pBehavior != nullptr)
+	{
+		delete m_pBehavior;
+	}
+
+	m_pBehavior = pBehavior;
+
+	if (m_pBehavior != nullptr)
+	{
+		m_pBehavior->Init(this);
+	}
 }

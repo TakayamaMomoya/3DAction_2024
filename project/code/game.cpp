@@ -56,6 +56,7 @@ CGame *CGame::m_pGame = nullptr;	// 自身のポインタ
 //=====================================================
 CGame::CGame()
 {
+	m_nAddReward = 0;
 	m_nCntState = 0;
 	m_bStop = false;
 }
