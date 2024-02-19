@@ -1,12 +1,12 @@
 //*****************************************************
 //
-// ランキングの処理[Ranking.h]
-// Author:酒井南勝
+// リザルトの処理[result.h]
+// Author:高山桃也
 //
 //*****************************************************
 
-#ifndef _RANKING_H_
-#define _RANKING_H_
+#ifndef _RESULT_H_
+#define _RESULT_H_
 
 //*****************************************************
 // インクルード
@@ -16,22 +16,24 @@
 //*****************************************************
 // 前方宣言
 //*****************************************************
-// 
+class CMeshCylinder;
+
 //*****************************************************
 // クラスの定義
 //*****************************************************
-class CRanking : public CScene
+class CResult : public CScene
 {
 public:
 	
-	CRanking();	// コンストラクタ
-	~CRanking();	// デストラクタ
+	CResult();	// コンストラクタ
+	~CResult();	// デストラクタ
 
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
 private:
+	CMeshCylinder *m_pCylinder;	// 背景のシリンダー
 };
 
 #endif

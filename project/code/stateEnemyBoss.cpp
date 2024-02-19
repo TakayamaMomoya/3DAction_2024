@@ -125,17 +125,31 @@ void CStateBossSelect::Init(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossSelect1st::Close(int nRand, CEnemyBoss *pBoss)
 {// 近距離
-
+	pBoss->ChangeState(new CStateBossStep1st);
 }
 
 void CStateBossSelect1st::Middle(int nRand, CEnemyBoss *pBoss)
 {// 中距離
-
+	if (nRand < 50)
+	{
+		pBoss->ChangeState(new CStateBossAttackMachinegun);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossAttackMissile);
+	}
 }
 
 void CStateBossSelect1st::Far(int nRand, CEnemyBoss *pBoss)
 {// 遠距離
-
+	if (nRand < 10)
+	{
+		pBoss->ChangeState(new CStateBossAttackBeam);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossAttackMissile);
+	}
 }
 
 //=====================================================
@@ -143,7 +157,7 @@ void CStateBossSelect1st::Far(int nRand, CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossSelect2nd::Close(int nRand, CEnemyBoss *pBoss)
 {// 近距離
-	if (nRand < 30)
+	if (nRand < 10)
 	{
 		pBoss->ChangeState(new CStateBossSlash);
 	}
@@ -203,7 +217,7 @@ void CStateBossApper::Move(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// モーション終了で次の状態へ移る
-		pBoss->ChangeState(new CStateBossAttackMachinegun);
+		pBoss->ChangeState(new CStateBossSelect1st);
 	}
 }
 
@@ -227,7 +241,7 @@ void CStateBossAttackBeam::Attack(CEnemyBoss *pBoss)
 
 	if (bFinish)
 	{// モーション終了で次の状態へ移る
-		pBoss->ChangeState(new CStateBossLaunchDrone);
+		pBoss->ChangeState(new CStateBossSelect1st);
 	}
 }
 
@@ -274,7 +288,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 		if (m_nCnt > NUM_MISSILE)
 		{// 一定数撃ったら次の行動へ
-			pBoss->ChangeState(new CStateBossAttackMachinegun);
+			pBoss->ChangeState(new CStateBossSelect1st);
 		}
 	}
 
@@ -324,7 +338,7 @@ void CStateBossLaunchDrone::Attack(CEnemyBoss *pBoss)
 
 		if (m_nCnt > NUM_DRONE)
 		{// 一定数撃ったら次の行動へ
-			pBoss->ChangeState(new CStateBossAttackMissile);
+			pBoss->ChangeState(new CStateBossSelect1st);
 		}
 	}
 
@@ -388,13 +402,75 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 
 		if (m_nCnt > NUM_MG)
 		{// 一定数撃ったら次の行動へ
-			pBoss->ChangeState(new CStateBossAttackBeam);
+			pBoss->ChangeState(new CStateBossSelect1st);
 		}
 	}
 
 	// 後退処理
-	pBoss->Back();
 	pBoss->AimPlayer();
+}
+
+//=====================================================
+// ステップ回避
+//=====================================================
+void CStateBossStep1st::Init(CEnemyBoss *pBoss)
+{
+	// 目的地を設定
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
+
+	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+
+	// 目的地を設定
+	m_posDest = universal::RelativeInversPos(posPlayer, POS_CENTER, 1.0f);
+	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW, &m_posDest, posPlayer);
+	universal::LimitDistSphereInSide(LIMIT_BACKSTEP, &m_posDest, posPlayer);
+
+	m_posDestMid = universal::RelativeInversPos(posPlayer, POS_CENTER, 0.0f);
+	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW * 0.5f, &m_posDestMid, posPlayer);
+	universal::LimitDistSphereInSide(LIMIT_BACKSTEP * 0.5f, &m_posDestMid, posPlayer);
+
+	m_bMid = false;
+}
+
+void CStateBossStep1st::Move(CEnemyBoss *pBoss)
+{
+	D3DXVECTOR3 pos = pBoss->GetPosition();
+	D3DXVECTOR3 posDest = {};
+
+	// 残像を出す
+	pBoss->SetAfterImage(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.4f), 20);
+
+	if (m_bMid)
+	{// 中間地点への移動
+		posDest = m_posDest;
+
+		universal::MoveToDest(&pos, posDest, SPEED_STEP);
+
+		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
+		{
+			pBoss->ChangeState(new CStateBossSelect1st);
+		}
+	}
+	else
+	{// 最終目標への移動
+		posDest = m_posDestMid;
+
+		universal::MoveToDest(&pos, posDest, SPEED_STEP);
+
+		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
+		{
+			m_bMid = true;
+		}
+	}
+
+	pBoss->SetPosition(pos);
+
+	pBoss->AimPlayer(0.0f, false);
 }
 
 //=====================================================

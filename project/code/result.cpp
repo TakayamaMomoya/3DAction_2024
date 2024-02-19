@@ -1,39 +1,43 @@
 //*****************************************************
 //
-// ランキングの処理[Ranking.cpp]
-// Author:酒井南勝
+// リザルトの処理[result.cpp]
+// Author:高山桃也
 //
 //*****************************************************
 
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "ranking.h"
+#include "result.h"
 #include "fade.h"
 #include "inputManager.h"
-#include "object2D.h"
 #include "object.h"
+#include "meshcylinder.h"
+#include "texture.h"
+#include "camera.h"
+#include "manager.h"
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
-
+const float SPEED_ROTATION = 0.003f;	// 回るスピード
+const float HEIGHT_CYLINDER = 800.0f;	// シリンダーの高さ
 }
 
 //=====================================================
 // コンストラクタ
 //=====================================================
-CRanking::CRanking()
+CResult::CResult()
 {
-
+	m_pCylinder = nullptr;
 }
 
 //=====================================================
 // デストラクタ
 //=====================================================
-CRanking::~CRanking()
+CResult::~CResult()
 {
 
 }
@@ -41,9 +45,30 @@ CRanking::~CRanking()
 //=====================================================
 // 初期化処理
 //=====================================================
-HRESULT CRanking::Init(void)
+HRESULT CResult::Init(void)
 {
-	CObject2D::Create();
+	m_pCylinder = CMeshCylinder::Create();
+
+	if (m_pCylinder != nullptr)
+	{
+		m_pCylinder->SetRadius(1500.0f);
+		m_pCylinder->SetHeight(HEIGHT_CYLINDER);
+		m_pCylinder->SetVtx();
+
+		int nIdx = Texture::GetIdx("data\\TEXTURE\\BG\\result.jpg");
+		m_pCylinder->SetIdxTexture(nIdx);
+	}
+
+	// カメラ位置の設定
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera == nullptr)
+		return E_FAIL;
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
+	pInfoCamera->posV = { 0.0f,HEIGHT_CYLINDER * 0.5f,0.0f };
+	pInfoCamera->posR = { 0.0f,HEIGHT_CYLINDER * 0.5f,1.0f };
 
 	return S_OK;
 }
@@ -51,16 +76,23 @@ HRESULT CRanking::Init(void)
 //=====================================================
 // 終了処理
 //=====================================================
-void CRanking::Uninit(void)
+void CResult::Uninit(void)
 {
+	if (m_pCylinder != nullptr)
+	{
+		m_pCylinder->Uninit();
+		m_pCylinder = nullptr;
+	}
+
 	CObject::ReleaseAll();
 }
 
 //=====================================================
 // 更新処理
 //=====================================================
-void CRanking::Update(void)
+void CResult::Update(void)
 {
+	// フェードする操作
 	CInputManager *pInputManager = CInputManager::GetInstance();
 
 	if (pInputManager != nullptr)
@@ -75,12 +107,23 @@ void CRanking::Update(void)
 			}
 		}
 	}
+
+	if (m_pCylinder != nullptr)
+	{
+		D3DXVECTOR3 rot = m_pCylinder->GetRotation();
+
+		rot.y += SPEED_ROTATION;
+
+		universal::LimitRot(&rot.y);
+
+		m_pCylinder->SetRotation(rot);
+	}
 }
 
 //=====================================================
 // 描画処理
 //=====================================================
-void CRanking::Draw(void)
+void CResult::Draw(void)
 {
 
 }

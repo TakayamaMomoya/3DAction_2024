@@ -219,7 +219,7 @@
     <ClCompile Include="code\parts.cpp" />
     <ClCompile Include="code\pause.cpp" />
     <ClCompile Include="code\player.cpp" />
-    <ClCompile Include="code\ranking.cpp" />
+    <ClCompile Include="code\result.cpp" />
     <ClCompile Include="code\renderer.cpp" />
     <ClCompile Include="code\saveDataManager.cpp" />
     <ClCompile Include="code\scene.cpp" />
@@ -299,7 +299,7 @@
     <ClInclude Include="code\parts.h" />
     <ClInclude Include="code\pause.h" />
     <ClInclude Include="code\player.h" />
-    <ClInclude Include="code\ranking.h" />
+    <ClInclude Include="code\result.h" />
     <ClInclude Include="code\renderer.h" />
     <ClInclude Include="code\saveDataManager.h" />
     <ClInclude Include="code\scene.h" />

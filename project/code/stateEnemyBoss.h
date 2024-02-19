@@ -102,6 +102,16 @@ class CStateBossAttackMachinegun : public CStateBoss
 	int m_nCnt; // 射出カウンター
 };
 
+class CStateBossStep1st : public CStateBoss
+{// ステップの逃げ
+	void Init(CEnemyBoss *pBoss) override;
+	void Move(CEnemyBoss *pBoss) override;
+
+	D3DXVECTOR3 m_posDestMid;
+	D3DXVECTOR3 m_posDest;
+	bool m_bMid;	// 中間のステップを終えたか
+};
+
 class CStateBossTrans : public CStateBoss
 {// 第二形態へ移行する
 	void Init(CEnemyBoss *pBoss) override;

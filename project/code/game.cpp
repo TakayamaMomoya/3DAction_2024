@@ -212,7 +212,7 @@ void CGame::ManageState(void)
 
 		if (m_nCntState >= TRANS_TIME && pFade != nullptr)
 		{
-			pFade->SetFade(CScene::MODE_RANKING);
+			pFade->SetFade(CScene::MODE_RESULT);
 		}
 
 		break;

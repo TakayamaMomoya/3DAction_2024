@@ -10,6 +10,7 @@
 //*****************************************************
 #include "saveDataManager.h"
 #include "checkPointManager.h"
+#include "player.h"
 #include <stdio.h>
 
 //*****************************************************
@@ -30,7 +31,7 @@ CSaveDataManager *CSaveDataManager::m_pSaveDataManager = nullptr;	// é©êgÇÃÉ|ÉCÉ
 //=====================================================
 CSaveDataManager::CSaveDataManager()
 {
-	m_nProgress = 0;
+	ZeroMemory(&m_info, sizeof(SInfo));
 }
 
 //=====================================================
@@ -92,7 +93,7 @@ void CSaveDataManager::Load(void)
 			{// êiçsèÛãµì«çû
 				(void)fscanf(pFile, "%s", &cTemp[0]);
 
-				(void)fscanf(pFile, "%d", &m_nProgress);
+				(void)fscanf(pFile, "%d", &m_info.nProgress);
 			}
 
 			if (strcmp(cTemp, "END_SCRIPT") == 0)
@@ -119,11 +120,14 @@ void CSaveDataManager::Uninit(void)
 void CSaveDataManager::Save(void)
 {
 	CCheckPointManager *pCheck = CCheckPointManager::GetInstance();
+	CPlayer *pPlayer = CPlayer::GetInstance();
 
-	if (pCheck == nullptr)
+	if (pCheck == nullptr || pPlayer == nullptr)
 		assert(("ï€ë∂é∏îsÅI",false));
 
 	int nProgress = pCheck->GetProgress();
+	float fIntialLife = pPlayer->GetParam().fInitialLife;
+	float fLife = pPlayer->GetLife();
 
 	FILE *pFile = nullptr;
 
@@ -131,8 +135,11 @@ void CSaveDataManager::Save(void)
 
 	if (pFile != nullptr)
 	{
-		// êiçsèÛãµ
 		fprintf(pFile, "PROGRESS = %d\n", nProgress);
+
+		fprintf(pFile, "LIFE_PLAYER = %.2f\n", fLife);
+
+		fprintf(pFile, "INITIALLIFE_PLAYER = %.2f\n", fIntialLife);
 
 		fprintf(pFile, "END_SCRIPT");
 

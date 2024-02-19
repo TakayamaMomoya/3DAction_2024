@@ -159,7 +159,7 @@
     <ClCompile Include="code\scene.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
-    <ClCompile Include="code\ranking.cpp">
+    <ClCompile Include="code\result.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
     <ClCompile Include="code\camera.cpp">
@@ -395,7 +395,7 @@
     <ClInclude Include="code\scene.h">
       <Filter>ソース ファイル\scene</Filter>
     </ClInclude>
-    <ClInclude Include="code\ranking.h">
+    <ClInclude Include="code\result.h">
       <Filter>ソース ファイル\scene</Filter>
     </ClInclude>
     <ClInclude Include="code\camera.h">

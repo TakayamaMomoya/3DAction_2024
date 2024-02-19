@@ -334,7 +334,7 @@ void CCheckPointManager::Update(void)
 
 				if (pFade != nullptr)
 				{
-					pFade->SetFade(CScene::MODE_RANKING,false);
+					pFade->SetFade(CScene::MODE_RESULT,false);
 
 					if (m_pCursor != nullptr)
 					{
