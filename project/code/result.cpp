@@ -18,6 +18,9 @@
 #include "camera.h"
 #include "manager.h"
 #include "saveDataManager.h"
+#include <fstream>
+#include <sstream>
+#include <string>
 
 //*****************************************************
 // 定数定義
@@ -26,6 +29,7 @@ namespace
 {
 const float SPEED_ROTATION = 0.003f;	// 回るスピード
 const float HEIGHT_CYLINDER = 800.0f;	// シリンダーの高さ
+const std::string PATH_RANKING = "data\\TEXT\\ranking.txt";	// ランキングのパス
 }
 
 //=====================================================
@@ -81,9 +85,65 @@ HRESULT CResult::Init(void)
 		pSave->Load();
 	}
 
+	LoadRanking();
+
 	ChangeBehavior(new CResultPlayerScore);
 
 	return S_OK;
+}
+
+//=====================================================
+// ランキングの読込
+//=====================================================
+void CResult::LoadRanking(void)
+{
+	std::ifstream file(PATH_RANKING);
+
+	if (file.is_open())
+	{
+		std::string temp;
+
+		while (std::getline(file, temp))
+		{// 読み込むものがなくなるまで読込
+			if (temp == "PLAYER")
+			{// プレイヤー情報読込
+				SInfoRanking info;
+
+				while (std::getline(file, temp))
+				{
+					std::istringstream iss(temp);
+					std::string key;
+					iss >> key;
+
+					if (key == "RANK")
+					{// ランク
+						iss >> info.nRank;
+					}
+
+					if (key == "NAME")
+					{// 名前
+						iss >> info.name;
+					}
+
+					if (key == "REWARD")
+					{// 報酬額
+						iss >> info.nReward;
+					}
+
+					if (temp == "END_PLAYER")
+					{
+						m_listRanking.push_back(info);
+
+						break;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		assert(("ランキングファイルが開けませんでした", false));
+	}
 }
 
 //=====================================================
