@@ -13,6 +13,7 @@
 //*****************************************************
 class CResult;
 class CNumber;
+class CObject2D;
 
 //*****************************************************
 // クラスの定義
@@ -49,6 +50,19 @@ private:
 	void Update(CResult *pResult) override;
 
 	CNumber *m_apNumber[TYPE_MAX];	// 数値
+	CObject2D *m_apCaption[TYPE_MAX];	// 項目の見出し
+	CObject2D *m_pFrame;	// フレーム
+};
+
+class CResultRanking : public CResultBehavior
+{
+public:
+	CResultRanking();
+	~CResultRanking() override;
+
+private:
+	void Init(CResult *pResult) override;
+	void Update(CResult *pResult) override;
 };
 
 #endif

@@ -50,6 +50,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	void ChangeBehavior(CResultBehavior *pBehavior);
+	std::list<SInfoRanking> GetListRanking(void) { return m_listRanking; }
 
 private:
 	void LoadRanking(void);

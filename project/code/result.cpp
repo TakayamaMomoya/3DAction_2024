@@ -13,6 +13,7 @@
 #include "fade.h"
 #include "inputManager.h"
 #include "object.h"
+#include "object2D.h"
 #include "meshcylinder.h"
 #include "texture.h"
 #include "camera.h"
@@ -30,6 +31,8 @@ namespace
 const float SPEED_ROTATION = 0.003f;	// 回るスピード
 const float HEIGHT_CYLINDER = 800.0f;	// シリンダーの高さ
 const std::string PATH_RANKING = "data\\TEXT\\ranking.txt";	// ランキングのパス
+const D3DXVECTOR2 SIZE_CAPTION = { SCREEN_WIDTH * 0.5f,100.0f };	// 見出しのサイズ
+const D3DXVECTOR3 POS_CAPTION = { SCRN_MID.x,SIZE_CAPTION.y,0.0f };	// 見出しの位置
 }
 
 //=====================================================
@@ -54,6 +57,22 @@ CResult::~CResult()
 //=====================================================
 HRESULT CResult::Init(void)
 {
+	// 見出しの生成
+	CObject2D *pCaption = nullptr;
+
+	pCaption = CObject2D::Create();
+
+	if (pCaption != nullptr)
+	{
+		pCaption->SetPosition(POS_CAPTION);
+		pCaption->SetSize(SIZE_CAPTION.x, SIZE_CAPTION.y);
+		pCaption->SetVtx();
+
+		int nIdx = Texture::GetIdx("data\\TEXTURE\\UI\\result.png");
+		pCaption->SetIdxTexture(nIdx);
+	}
+
+	// シリンダーの生成
 	m_pCylinder = CMeshCylinder::Create();
 
 	if (m_pCylinder != nullptr)
@@ -171,22 +190,6 @@ void CResult::Uninit(void)
 //=====================================================
 void CResult::Update(void)
 {
-	// フェードする操作
-	CInputManager *pInputManager = CInputManager::GetInstance();
-
-	if (pInputManager != nullptr)
-	{
-		if (pInputManager->GetTrigger(CInputManager::BUTTON_ENTER))
-		{
-			CFade *pFade = CFade::GetInstance();
-
-			if (pFade != nullptr)
-			{
-				pFade->SetFade(CScene::MODE_TITLE);
-			}
-		}
-	}
-
 	if (m_pCylinder != nullptr)
 	{
 		D3DXVECTOR3 rot = m_pCylinder->GetRotation();
