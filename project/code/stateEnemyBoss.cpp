@@ -427,12 +427,14 @@ void CStateBossStep1st::Init(CEnemyBoss *pBoss)
 
 	// –Ú“I’n‚ðÝ’è
 	m_posDest = universal::RelativeInversPos(posPlayer, POS_CENTER, 1.0f);
-	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW, &m_posDest, posPlayer);
-	universal::LimitDistSphereInSide(LIMIT_BACKSTEP, &m_posDest, posPlayer);
+	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW * 2.0f, &m_posDest, posPlayer);
+	universal::LimitDistSphereInSide(LIMIT_BACKSTEP * 2.0f, &m_posDest, posPlayer);
+	m_posDest.y = 0.0f;
 
 	m_posDestMid = universal::RelativeInversPos(posPlayer, POS_CENTER, 0.0f);
-	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW * 0.5f, &m_posDestMid, posPlayer);
-	universal::LimitDistSphereInSide(LIMIT_BACKSTEP * 0.5f, &m_posDestMid, posPlayer);
+	universal::LimitDistCylinder(LIMIT_BACKSTEP_LOW, &m_posDestMid, posPlayer);
+	universal::LimitDistSphereInSide(LIMIT_BACKSTEP, &m_posDestMid, posPlayer);
+	m_posDestMid.y = 3500.0f;
 
 	m_bMid = false;
 }
@@ -451,7 +453,7 @@ void CStateBossStep1st::Move(CEnemyBoss *pBoss)
 
 		universal::MoveToDest(&pos, posDest, SPEED_STEP);
 
-		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
+		if (universal::DistCmp(pos, posDest, RANGE_SLASH, nullptr))
 		{
 			pBoss->ChangeState(new CStateBossSelect1st);
 		}

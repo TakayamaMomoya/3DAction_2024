@@ -269,9 +269,6 @@ void CEnemy::Update(void)
 	// ˆÚ“®ó‘ÔŠÇ—
 	ManageMoveState();
 
-	// “–‚½‚è”»’è‚ÌŠÇ—
-	ManageCollision();
-
 	// ˆÚ“®—Ê‚ğ”½‰f
 	D3DXVECTOR3 pos = GetPosition();
 	D3DXVECTOR3 move = GetMove();
@@ -294,6 +291,9 @@ void CEnemy::Update(void)
 	}
 
 	SetPosition(pos);
+
+	// “–‚½‚è”»’è‚ÌŠÇ—
+	ManageCollision();
 
 	// ˆÚ“®—Ê‚ÌŒ¸Š
 	move *= 0.95f;
