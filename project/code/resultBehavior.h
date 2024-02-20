@@ -26,6 +26,7 @@ public:
 
 	virtual void Init(CResult *pResult) = 0;
 	virtual void Update(CResult *pResult) = 0;
+	virtual void Uninit(CResult *pResult) = 0;
 private:
 
 };
@@ -48,6 +49,7 @@ public:
 private:
 	void Init(CResult *pResult) override;
 	void Update(CResult *pResult) override;
+	void Uninit(CResult *pResult) override;
 
 	CNumber *m_apNumber[TYPE_MAX];	// ”’l
 	CObject2D *m_apCaption[TYPE_MAX];	// €–Ú‚ÌŒ©o‚µ
@@ -63,6 +65,8 @@ public:
 private:
 	void Init(CResult *pResult) override;
 	void Update(CResult *pResult) override;
+	void Uninit(CResult *pResult) override {};
+
 };
 
 #endif

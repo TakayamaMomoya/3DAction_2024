@@ -57,10 +57,26 @@ CResult::~CResult()
 //=====================================================
 HRESULT CResult::Init(void)
 {
+	if (m_pCylinder == nullptr)
+	{
+		// シリンダーの生成
+		m_pCylinder = CMeshCylinder::Create();
+
+		if (m_pCylinder != nullptr)
+		{
+			m_pCylinder->SetRadius(1500.0f);
+			m_pCylinder->SetHeight(HEIGHT_CYLINDER);
+			m_pCylinder->SetVtx();
+
+			int nIdx = Texture::GetIdx("data\\TEXTURE\\BG\\result.jpg");
+			m_pCylinder->SetIdxTexture(nIdx);
+		}
+	}
+
 	// 見出しの生成
 	CObject2D *pCaption = nullptr;
 
-	pCaption = CObject2D::Create();
+	pCaption = CObject2D::Create(4);
 
 	if (pCaption != nullptr)
 	{
@@ -70,19 +86,6 @@ HRESULT CResult::Init(void)
 
 		int nIdx = Texture::GetIdx("data\\TEXTURE\\UI\\result.png");
 		pCaption->SetIdxTexture(nIdx);
-	}
-
-	// シリンダーの生成
-	m_pCylinder = CMeshCylinder::Create();
-
-	if (m_pCylinder != nullptr)
-	{
-		m_pCylinder->SetRadius(1500.0f);
-		m_pCylinder->SetHeight(HEIGHT_CYLINDER);
-		m_pCylinder->SetVtx();
-
-		int nIdx = Texture::GetIdx("data\\TEXTURE\\BG\\result.jpg");
-		m_pCylinder->SetIdxTexture(nIdx);
 	}
 
 	// カメラ位置の設定
@@ -222,6 +225,8 @@ void CResult::ChangeBehavior(CResultBehavior *pBehavior)
 {
 	if (m_pBehavior != nullptr)
 	{
+		m_pBehavior->Uninit(this);
+
 		delete m_pBehavior;
 	}
 

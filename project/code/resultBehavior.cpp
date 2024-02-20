@@ -69,26 +69,7 @@ CResultPlayerScore::CResultPlayerScore()
 
 CResultPlayerScore::~CResultPlayerScore()
 {// デストラクタ
-	for (int i = 0; i < TYPE_NUMBER::TYPE_MAX; i++)
-	{
-		if (m_apNumber[i] != nullptr)
-		{
-			m_apNumber[i]->Uninit();
-			m_apNumber[i] = nullptr;
-		}
 
-		if (m_apCaption[i] != nullptr)
-		{
-			m_apCaption[i]->Uninit();
-			m_apCaption[i] = nullptr;
-		}
-	}
-
-	if (m_pFrame != nullptr)
-	{
-		m_pFrame->Uninit();
-		m_pFrame = nullptr;
-	}
 }
 
 void CResultPlayerScore::Init(CResult *pResult)
@@ -170,6 +151,30 @@ void CResultPlayerScore::Init(CResult *pResult)
 	}
 }
 
+void CResultPlayerScore::Uninit(CResult *pResult)
+{// 終了
+	for (int i = 0; i < TYPE_NUMBER::TYPE_MAX; i++)
+	{
+		if (m_apNumber[i] != nullptr)
+		{
+			m_apNumber[i]->Uninit();
+			m_apNumber[i] = nullptr;
+		}
+
+		if (m_apCaption[i] != nullptr)
+		{
+			m_apCaption[i]->Uninit();
+			m_apCaption[i] = nullptr;
+		}
+	}
+
+	if (m_pFrame != nullptr)
+	{
+		m_pFrame->Uninit();
+		m_pFrame = nullptr;
+	}
+}
+
 void CResultPlayerScore::Update(CResult *pResult)
 {// 更新
 	CInputManager *pInputManager = CInputManager::GetInstance();
@@ -178,10 +183,21 @@ void CResultPlayerScore::Update(CResult *pResult)
 	{
 		if (pInputManager->GetTrigger(CInputManager::BUTTON_ENTER))
 		{// ランキング表示に移行
-			pResult->ChangeBehavior(new CResultRanking);
+			CFade *pFade = CFade::GetInstance();
 
-			return;
+			if (pFade != nullptr)
+			{
+				pFade->SetFade(CScene::MODE_TITLE);
+
+				return;
+			}
+
+			//pResult->ChangeBehavior(new CResultRanking);
+
+			//return;
 		}
+
+		
 	}
 }
 
