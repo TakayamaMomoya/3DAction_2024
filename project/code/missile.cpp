@@ -17,6 +17,8 @@
 #include "particle.h"
 #include "collision.h"
 #include "orbit.h"
+#include "anim3D.h"
+#include "animEffect3D.h"
 
 //*****************************************************
 // 定数定義
@@ -93,7 +95,13 @@ void CMissile::Death(void)
 {
 	D3DXVECTOR3 pos = GetPosition();
 
-	CParticle::Create(pos, CParticle::TYPE::TYPE_EXPLOSION);
+	// アニメエフェクト生成
+	CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
+
+	if (pAnim3D != nullptr)
+	{
+		pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_EXPLOSION);
+	}
 
 	// 自身の終了
 	Uninit();

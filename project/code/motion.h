@@ -93,6 +93,7 @@ public:
 	void SetMove(D3DXVECTOR3 move) { m_move = move; }
 	D3DXVECTOR3 GetMove(void) { return m_move; }	// 取得処理
 	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; }
+	void Rotation(D3DXVECTOR3 rot) { m_rot += rot; }
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	void SetMotion(int nMotionType);
 	int GetMotion(void) { return m_motionType; }
@@ -119,7 +120,6 @@ public:
 	virtual void Event(EVENT_INFO *pEventInfo) {};
 	void EnableMotion(int nIdx, bool bMotion);
 	void ResetEnableMotion(void);
-	void DeleteParts(int nIdx);
 
 private:
 	Parts *m_apParts[MAX_PARTS];	// パーツの構造体

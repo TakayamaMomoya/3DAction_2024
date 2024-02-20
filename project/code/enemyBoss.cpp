@@ -494,6 +494,13 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 			}
 		}
 	}
+
+	if (nMotion == MOTION_APPER)
+	{// èoåªéûÇÃâå
+		D3DXVECTOR3 posParticle = GetPosition();
+
+		CParticle::Create(posParticle, CParticle::TYPE::TYPE_APPER_SMOKE);
+	}
 }
 
 //=====================================================

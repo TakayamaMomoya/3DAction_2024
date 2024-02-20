@@ -207,6 +207,8 @@ void CStateBossApper::Init(CEnemyBoss *pBoss)
 	CheckPointer(pBoss);
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_APPER);
+
+	pBoss->Rotation(D3DXVECTOR3(0.0f, 1.57f, 0.0f));
 }
 
 void CStateBossApper::Move(CEnemyBoss *pBoss)
