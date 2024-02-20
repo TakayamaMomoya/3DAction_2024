@@ -172,13 +172,16 @@ class CStateBossBeamAir : public CStateBoss
 {// ãÛíÜÉrÅ[ÉÄ
 	~CStateBossBeamAir();
 	void Init(CEnemyBoss *pBoss) override;
+	void DisideRotDest(CEnemyBoss *pBoss);
 	void Attack(CEnemyBoss *pBoss) override;
 	void Rotation(CEnemyBoss *pBoss);
 	void Radiation(CEnemyBoss *pBoss);
 
 	CAnim3D *m_pAnim;
-	float m_fRotDest;
-	float m_fCounter;
+	D3DXVECTOR3 m_rotDest;
+	D3DXVECTOR3 m_posAim;
+	D3DXVECTOR3 m_moveAim;
+	float m_fTimer;
 };
 
 //=====================================================

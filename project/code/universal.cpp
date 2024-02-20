@@ -139,6 +139,16 @@ float LimitDistSphereInSide(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTar
 }
 
 //========================================
+// ベクトルを長さで補正する処理
+//========================================
+void VecConvertLength(D3DXVECTOR3 *pVec, float fLength)
+{
+	D3DXVec3Normalize(pVec, pVec);
+
+	*pVec *= fLength;
+}
+
+//========================================
 // 反対の相対座標を出す処理
 //========================================
 D3DXVECTOR3 RelativeInversPos(D3DXVECTOR3 pos, D3DXVECTOR3 posCenter, float fRate)

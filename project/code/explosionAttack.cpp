@@ -74,7 +74,7 @@ HRESULT CExplAttack::Init(void)
 
 		if (m_pCollision != nullptr)
 		{
-			m_pCollision->SetRadius(m_fRadius);
+			m_pCollision->SetRadius(m_fRadius * 2);
 			m_pCollision->SetPosition(m_pos);
 		}
 	}

@@ -76,8 +76,8 @@ public:
 	void Hit(float fDamage);
 	void ChangeState(CStateBoss *pNext);
 	void Event(EVENT_INFO *pEventInfo);
-	void AimPlayer(float fSpeed = 500.0f, bool bPridict = true);
-	void AimPlayerFlat(float fSpeed = 500.0f,bool bPridict = true);
+	void AimPlayer(float fSpeed = 500.0f, bool bPridict = true, float fFact = 0.15f);
+	void AimPlayerFlat(float fSpeed = 500.0f, bool bPridict = true, float fFact = 0.15f, D3DXVECTOR3 rotAdd = { 0.0f,0.0f,0.0f });
 	void Back(void);
 	void EnableTrans(bool bTrans) { m_info.bTrans = bTrans; }
 	void BeamBlade(void);

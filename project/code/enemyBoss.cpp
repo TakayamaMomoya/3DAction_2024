@@ -110,7 +110,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE,true);
 
 	// 状態設定
-	ChangeState(new CStateBossApper);
+	ChangeState(new CStateBossTrans);
 
 	SetMoveState(CEnemy::MOVESTATE::MOVESTATE_ATTACK);
 
@@ -207,7 +207,7 @@ void CEnemyBoss::ManageCollision(void)
 //=====================================================
 // プレイヤーを狙う処理
 //=====================================================
-void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict)
+void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict, float fFact)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -238,8 +238,8 @@ void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict)
 		// 向きの補正
 		D3DXVECTOR3 rot = GetRotation();
 
-		universal::FactingRot(&rot.x, rotDest.x, 0.15f);
-		universal::FactingRot(&rot.y, rotDest.y, 0.15f);
+		universal::FactingRot(&rot.x, rotDest.x, fFact);
+		universal::FactingRot(&rot.y, rotDest.y, fFact);
 
 		SetRotation(rot);
 	}
@@ -248,7 +248,7 @@ void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict)
 //=====================================================
 // プレイヤーを平面で狙う処理
 //=====================================================
-void CEnemyBoss::AimPlayerFlat(float fSpeed, bool bPridict)
+void CEnemyBoss::AimPlayerFlat(float fSpeed, bool bPridict, float fFact, D3DXVECTOR3 rotAdd)
 {
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -279,8 +279,10 @@ void CEnemyBoss::AimPlayerFlat(float fSpeed, bool bPridict)
 		// 向きの補正
 		D3DXVECTOR3 rot = GetRotation();
 
-		universal::FactingRot(&rot.x, 0.0f, 0.15f);
-		universal::FactingRot(&rot.y, rotDest.y, 0.15f);
+		rotDest.y += rotAdd.y;
+
+		universal::FactingRot(&rot.x, 0.0f, fFact);
+		universal::FactingRot(&rot.y, rotDest.y, fFact);
 
 		SetRotation(rot);
 	}
