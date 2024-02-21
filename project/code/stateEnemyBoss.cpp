@@ -273,7 +273,6 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 		{
 			D3DXVECTOR3 rot = pBoss->GetRotation();
 
-
 			if (m_nCnt % 2 == 0)
 			{
 				rot.x = -D3DX_PI * 0.3f;
@@ -286,6 +285,15 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 			}
 
 			pMissile->SetRotation(rot);
+
+			D3DXVECTOR3 moveMissile =
+			{
+				sinf(rot.x) * sinf(rot.y + D3DX_PI) * 500.0f,
+				cosf(rot.x) * 500.0f,
+				sinf(rot.x) * cosf(rot.y + D3DX_PI) * 500.0f
+			};
+
+			pMissile->SetMove(moveMissile);
 		}
 
 		m_nCnt++;
@@ -845,6 +853,37 @@ void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 			}
 		}
 
+		// ƒ~ƒTƒCƒ‹‚ÌUŒ‚
+		CMissile *pMissile = CMissile::Create(pBoss->GetMtxPos(1));
+
+		if (pMissile != nullptr)
+		{
+			D3DXVECTOR3 rot = pBoss->GetRotation();
+
+			if (m_nCnt % 2 == 0)
+			{
+				rot.x = -D3DX_PI * 0.3f;
+				rot.y = D3DX_PI * 0.3f;
+			}
+			else
+			{
+				rot.x = -D3DX_PI * 0.3f;
+				rot.y = -D3DX_PI * 0.3f;
+			}
+
+			pMissile->SetRotation(rot);
+
+			D3DXVECTOR3 moveMissile =
+			{
+				sinf(rot.x) * sinf(rot.y + D3DX_PI) * 6000.0f,
+				cosf(rot.x) * 6000.0f,
+				sinf(rot.x) * cosf(rot.y + D3DX_PI) * 6000.0f
+			};
+
+			pMissile->SetMove(moveMissile);
+			pMissile->SetChaseSpeed(10.0f);
+		}
+
 		m_nCnt++;
 
 		if (m_nCnt > NUM_BEAMSMALL)
@@ -1049,7 +1088,7 @@ void CStateBossBeamAir::DisideRotDest(CEnemyBoss *pBoss)
 	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 	D3DXVECTOR3 vecDiffAim = posPlayer - m_posAim;
 
-	universal::VecConvertLength(&vecDiffAim, 7.0f);
+	universal::VecConvertLength(&vecDiffAim, 4.0f);
 
 	m_moveAim += vecDiffAim;
 

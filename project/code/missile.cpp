@@ -25,7 +25,8 @@
 //*****************************************************
 namespace
 {
-const float MAX_SPEED = 30.0f;	// 移動速度
+const float MAX_SPEED = 100.0f;	// 移動速度
+const float MAX_ACCL = 8.0f;	// 最大加速度
 const float CHASE_SPEED = 3.0f;	// 追跡速度
 const int INITIAL_LIFE = 1;	// 初期体力
 const int DEATH_TIME = 240;	// 自滅までの時間
@@ -36,7 +37,10 @@ const int DEATH_TIME = 240;	// 自滅までの時間
 //=====================================================
 CMissile::CMissile()
 {
+	m_fTimerHit = 0.0f;
 	m_nDeathTimer = 0;
+	m_bEndChase = false;
+	m_fChaseSpeed = 0.0f;
 }
 
 //=====================================================
@@ -72,6 +76,8 @@ CMissile *CMissile::Create(D3DXVECTOR3 pos)
 //=====================================================
 HRESULT CMissile::Init(void)
 {
+	m_fChaseSpeed = MAX_ACCL;
+
 	Load("data\\MOTION\\motionMissileSmall.txt");
 
 	// 継承クラスの初期化
@@ -84,6 +90,8 @@ HRESULT CMissile::Init(void)
 	{
 		pCollision->SetTag(CCollision::TAG::TAG_ROCKET);
 	}
+
+	m_fTimerHit = 5.0f;
 
 	return S_OK;
 }
@@ -130,18 +138,6 @@ void CMissile::Update(void)
 	// 追跡処理
 	ChasePlayer();
 
-	// 速度制限
-	vecMove = GetMove();
-
-	if (D3DXVec3Length(&vecMove) > MAX_SPEED)
-	{
-		D3DXVec3Normalize(&vecMove, &vecMove);
-
-		vecMove *= MAX_SPEED;
-
-		SetMove(vecMove);
-	}
-
 	m_nDeathTimer++;
 
 	if (m_nDeathTimer > DEATH_TIME)
@@ -157,7 +153,11 @@ void CMissile::Update(void)
 
 	if (pCollision != nullptr)
 	{
-		if (pCollision->IsTriggerEnter(CCollision::TAG_PLAYER))
+		float fRadius = pCollision->GetRadius();
+
+		pCollision->SetRadius(fRadius * 1.4);
+		
+		if (pCollision->OnEnter(CCollision::TAG_PLAYER))
 		{
 			CObject *pObj = pCollision->GetOther();
 
@@ -167,8 +167,12 @@ void CMissile::Update(void)
 				pObj->Hit(0.3f);
 
 				Death();
+
+				return;
 			}
 		}
+
+		pCollision->SetRadius(fRadius);
 	}
 
 	CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_MISSILE_SMOKE);
@@ -182,6 +186,9 @@ void CMissile::Update(void)
 //=====================================================
 void CMissile::ChasePlayer(void)
 {
+	if (m_bEndChase)
+		return;
+
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
 	if (pPlayer != nullptr)
@@ -193,32 +200,45 @@ void CMissile::ChasePlayer(void)
 		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
 		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 
+		posPlayer = universal::LinePridiction(pos, MAX_SPEED, posPlayer, movePlayer * 0.1f);
+
 		float fSpeed = D3DXVec3Length(&move);
-		D3DXVECTOR3 posPridiction = universal::LinePridiction(pos, fSpeed, posPlayer, movePlayer);
-		
+
 		D3DXVECTOR3 vecDiff = posPlayer - pos;
+		float fLengthDiff = D3DXVec3Length(&vecDiff);
 
-		vecDiff.y *= -1;
-
-		D3DXVECTOR3 rotDest = universal::VecToRot(vecDiff);
-
-		// 向きの補正
-		D3DXVECTOR3 rot = GetRotation();
-
-		universal::FactingRot(&rot.x, rotDest.x, 0.35f);
-		universal::FactingRot(&rot.y, rotDest.y, 0.35f);
-
-		SetRotation(rot);
-
-		// 移動量を正面に足す
-		move +=
+		if (fLengthDiff < 1000.0f)
 		{
-			sinf(rot.x) * sinf(rot.y) * CHASE_SPEED,
-			cosf(rot.x) * CHASE_SPEED,
-			sinf(rot.x) * cosf(rot.y) * CHASE_SPEED
-		};
+			m_bEndChase = true;
+		}
 
-		SetMove(move);
+		float fDeltaTime = CManager::GetDeltaTime();
+
+		m_fTimerHit -= fDeltaTime;
+
+		if (m_fTimerHit > 0.0f)
+		{
+			D3DXVECTOR3 acceleration = 2.0f * (vecDiff - move);
+
+			if (D3DXVec3Length(&acceleration) > m_fChaseSpeed)
+			{
+				D3DXVec3Normalize(&acceleration, &acceleration);
+
+				acceleration *= m_fChaseSpeed;
+			}
+
+			// 移動量を正面に足す
+			move += acceleration;
+
+			if (D3DXVec3Length(&move) > MAX_SPEED)
+			{
+				D3DXVec3Normalize(&move, &move);
+
+				move *= MAX_SPEED;
+			}
+
+			SetMove(move);
+		}
 	}
 }
 

@@ -15,6 +15,7 @@
 #include "inputManager.h"
 #include "fade.h"
 #include "texture.h"
+#include "string2D.h"
 
 //*****************************************************
 // 定数定義
@@ -183,18 +184,18 @@ void CResultPlayerScore::Update(CResult *pResult)
 	{
 		if (pInputManager->GetTrigger(CInputManager::BUTTON_ENTER))
 		{// ランキング表示に移行
-			CFade *pFade = CFade::GetInstance();
+			/*CFade *pFade = CFade::GetInstance();
 
 			if (pFade != nullptr)
 			{
 				pFade->SetFade(CScene::MODE_TITLE);
 
 				return;
-			}
+			}*/
 
-			//pResult->ChangeBehavior(new CResultRanking);
+			pResult->ChangeBehavior(new CResultRanking);
 
-			//return;
+			return;
 		}
 
 		
@@ -216,7 +217,14 @@ CResultRanking::~CResultRanking()
 
 void CResultRanking::Init(CResult *pResult)
 {// 初期化
+	CString2D::Create();
 
+	std::list<CResult::SInfoRanking> listRanking = pResult->GetListRanking();
+
+	for (auto item : listRanking)
+	{
+
+	}
 }
 
 void CResultRanking::Update(CResult *pResult)

@@ -206,6 +206,7 @@
     <ClCompile Include="code\meshcylinder.cpp" />
     <ClCompile Include="code\meshfield.cpp" />
     <ClCompile Include="code\missile.cpp" />
+    <ClCompile Include="code\missileBehavior.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
     <ClCompile Include="code\number.cpp" />
@@ -228,6 +229,7 @@
     <ClCompile Include="code\slow.cpp" />
     <ClCompile Include="code\sound.cpp" />
     <ClCompile Include="code\stateEnemyBoss.cpp" />
+    <ClCompile Include="code\string2D.cpp" />
     <ClCompile Include="code\texture.cpp" />
     <ClCompile Include="code\title.cpp" />
     <ClCompile Include="code\tutorial.cpp" />
@@ -287,6 +289,7 @@
     <ClInclude Include="code\meshcylinder.h" />
     <ClInclude Include="code\meshfield.h" />
     <ClInclude Include="code\missile.h" />
+    <ClInclude Include="code\missileBehavior.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
     <ClInclude Include="code\number.h" />
@@ -309,6 +312,7 @@
     <ClInclude Include="code\slow.h" />
     <ClInclude Include="code\sound.h" />
     <ClInclude Include="code\stateEnemyBoss.h" />
+    <ClInclude Include="code\string2D.h" />
     <ClInclude Include="code\texture.h" />
     <ClInclude Include="code\title.h" />
     <ClInclude Include="code\tutorial.h" />

@@ -9,6 +9,12 @@
 #define _RESULTBEHAVIOR_H_
 
 //*****************************************************
+// インクルード
+//*****************************************************
+#include <iostream>
+#include <list>
+
+//*****************************************************
 // 前方宣言
 //*****************************************************
 class CResult;
@@ -66,7 +72,6 @@ private:
 	void Init(CResult *pResult) override;
 	void Update(CResult *pResult) override;
 	void Uninit(CResult *pResult) override {};
-
 };
 
 #endif

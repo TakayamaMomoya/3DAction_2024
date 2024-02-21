@@ -86,6 +86,7 @@ public:
 	float GetDistLock(void) { return m_info.fDistLock; }
 	bool IsStamp(void) { return m_info.bStamp; }
 	void EnableStamp(bool bStamp) { m_info.bStamp = bStamp; }
+	void SetMovefact(float fFact) { m_info.fFactMove = fFact; }
 
 protected:
 	void ManageScore(void);
@@ -115,6 +116,7 @@ private:
 		float fDistLock;	// ƒƒbƒN‰Â”\‹——£
 		float aDistMoveState[MOVESTATE_MAX];	// ˆÚ“®ó‘Ô‚ª‚©‚í‚é‹——£
 		bool bStamp;	// “¥‚ß‚é‚©‚Ç‚¤‚©
+		float fFactMove;	// ˆÚ“®Œ¸ŠŒW”
 	};
 	void ManageState(void);
 	void ManageMoveState(void);

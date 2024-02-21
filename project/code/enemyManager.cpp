@@ -162,7 +162,7 @@ HRESULT CEnemyManager::Init(void)
 	int nProgress = pCheckPointManager->GetProgress();
 
 	// 初期敵のスポーン
-	SpawnGroup(nProgress);
+	//SpawnGroup(nProgress);
 
 	if (m_pCursor == nullptr)
 	{// カーソル生成

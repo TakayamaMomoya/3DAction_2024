@@ -213,6 +213,7 @@ HRESULT CEnemy::Init(void)
 	SetMoveSpeed(INITIAL_SPEED);
 	m_info.fDistLock = INITIAL_DIST_LOCK;
 	m_info.bStamp = true;
+	m_info.fFactMove = 0.98f;
 
 	// ’Êíó‘Ô‚É‚·‚é
 	m_info.state = STATE_NORMAL;
@@ -296,7 +297,7 @@ void CEnemy::Update(void)
 	ManageCollision();
 
 	// ˆÚ“®—Ê‚ÌŒ¸Š
-	move *= 0.95f;
+	move *= m_info.fFactMove;
 	SetMove(move);
 }
 

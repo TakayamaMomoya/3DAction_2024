@@ -100,15 +100,15 @@ HRESULT CCheckPointManager::Init(void)
 
 	if (pSave != nullptr)
 	{
-		m_nProgress = pSave->GetProgress();
+		m_nProgress = pSave->GetProgress() - 1;
 
 		CPlayer *pPlayer = CPlayer::GetInstance();
 
 		if (pPlayer != nullptr)
 		{
-			D3DXVECTOR3 pos = m_pPosCheckPoint[m_nProgress];
+			D3DXVECTOR3 pos = m_pPosCheckPoint[m_nProgress + 1];
 
-			pPlayer->SetPosition(m_pPosCheckPoint[m_nProgress]);
+			pPlayer->SetPosition(pos);
 		}
 	}
 	

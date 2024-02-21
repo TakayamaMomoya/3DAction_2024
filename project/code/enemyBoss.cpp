@@ -110,7 +110,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE,true);
 
 	// ó‘ÔÝ’è
-	ChangeState(new CStateBossTrans);
+	ChangeState(new CStateBossApper);
 
 	SetMoveState(CEnemy::MOVESTATE::MOVESTATE_ATTACK);
 
@@ -189,7 +189,7 @@ void CEnemyBoss::Update(void)
 	{
 		if (pKeyboard->GetTrigger(DIK_Q))
 		{
-			ChangeState(new CStateBossJump);
+			ChangeState(new CStateBossAttackMissile);
 		}
 	}
 #endif // DEBUG
