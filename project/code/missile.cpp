@@ -19,6 +19,7 @@
 #include "orbit.h"
 #include "anim3D.h"
 #include "animEffect3D.h"
+#include "missileBehavior.h"
 
 //*****************************************************
 // 定数定義
@@ -41,6 +42,8 @@ CMissile::CMissile()
 	m_nDeathTimer = 0;
 	m_bEndChase = false;
 	m_fChaseSpeed = 0.0f;
+	m_fSpeedMax = 0.0f;
+	m_pBehavior = nullptr;
 }
 
 //=====================================================
@@ -54,7 +57,7 @@ CMissile::~CMissile()
 //=====================================================
 // 生成処理
 //=====================================================
-CMissile *CMissile::Create(D3DXVECTOR3 pos)
+CMissile *CMissile::Create(D3DXVECTOR3 pos, TYPE type)
 {
 	CMissile *pMissile = nullptr;
 
@@ -66,6 +69,22 @@ CMissile *CMissile::Create(D3DXVECTOR3 pos)
 
 		// 初期化処理
 		pMissile->Init();
+
+		switch (type)
+		{
+		case CMissile::TYPE_LINE:
+			pMissile->m_pBehavior = new CMissileLine;
+
+			break;
+		default:
+			assert(("不正なミサイル生成してますよ", false));
+			break;
+		}
+
+		if (pMissile->m_pBehavior != nullptr)
+		{
+			pMissile->m_pBehavior->Init(pMissile);
+		}
 	}
 
 	return pMissile;
@@ -77,6 +96,7 @@ CMissile *CMissile::Create(D3DXVECTOR3 pos)
 HRESULT CMissile::Init(void)
 {
 	m_fChaseSpeed = MAX_ACCL;
+	m_fSpeedMax = MAX_SPEED;
 
 	Load("data\\MOTION\\motionMissileSmall.txt");
 
@@ -120,6 +140,13 @@ void CMissile::Death(void)
 //=====================================================
 void CMissile::Uninit(void)
 {
+	if (m_pBehavior != nullptr)
+	{
+		m_pBehavior->Uninit(this);
+		delete m_pBehavior;
+		m_pBehavior = nullptr;
+	}
+
 	// 継承クラスの終了
 	CEnemy::Uninit();
 }
@@ -155,7 +182,7 @@ void CMissile::Update(void)
 	{
 		float fRadius = pCollision->GetRadius();
 
-		pCollision->SetRadius(fRadius * 1.4);
+		pCollision->SetRadius(fRadius * 1.4f);
 		
 		if (pCollision->OnEnter(CCollision::TAG_PLAYER))
 		{
@@ -186,59 +213,9 @@ void CMissile::Update(void)
 //=====================================================
 void CMissile::ChasePlayer(void)
 {
-	if (m_bEndChase)
-		return;
-
-	CPlayer *pPlayer = CPlayer::GetInstance();
-
-	if (pPlayer != nullptr)
+	if (m_pBehavior != nullptr)
 	{
-		// 目標向きの取得
-		D3DXVECTOR3 pos = GetMtxPos(0);
-		D3DXVECTOR3 move = GetMove();
-
-		D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
-		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
-
-		posPlayer = universal::LinePridiction(pos, MAX_SPEED, posPlayer, movePlayer * 0.1f);
-
-		float fSpeed = D3DXVec3Length(&move);
-
-		D3DXVECTOR3 vecDiff = posPlayer - pos;
-		float fLengthDiff = D3DXVec3Length(&vecDiff);
-
-		if (fLengthDiff < 1000.0f)
-		{
-			m_bEndChase = true;
-		}
-
-		float fDeltaTime = CManager::GetDeltaTime();
-
-		m_fTimerHit -= fDeltaTime;
-
-		if (m_fTimerHit > 0.0f)
-		{
-			D3DXVECTOR3 acceleration = 2.0f * (vecDiff - move);
-
-			if (D3DXVec3Length(&acceleration) > m_fChaseSpeed)
-			{
-				D3DXVec3Normalize(&acceleration, &acceleration);
-
-				acceleration *= m_fChaseSpeed;
-			}
-
-			// 移動量を正面に足す
-			move += acceleration;
-
-			if (D3DXVec3Length(&move) > MAX_SPEED)
-			{
-				D3DXVec3Normalize(&move, &move);
-
-				move *= MAX_SPEED;
-			}
-
-			SetMove(move);
-		}
+		m_pBehavior->Update(this);
 	}
 }
 

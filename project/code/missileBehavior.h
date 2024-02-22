@@ -26,8 +26,11 @@ public:
 	virtual void Init(CMissile *pMissile) = 0;
 	virtual void Uninit(CMissile *pMissile) = 0;
 	virtual void Update(CMissile *pMissile) = 0;
+	bool IsEndChase(void) { return m_bEndChase; }
+	void EnableChase(bool bEndChase) { m_bEndChase = bEndChase; }
 
 private:
+	bool m_bEndChase;
 };
 
 class CMissileLine : public CMissileBehavior
