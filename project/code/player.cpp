@@ -33,6 +33,7 @@
 #include "anim3D.h"
 #include "continue.h"
 #include "pause.h"
+#include "inpact.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -1529,6 +1530,15 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	universal::SetOffSet(&mtxParent, mtxPart, offset);
 
 	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
+
+	if (nMotion == MOTION_DODGE)
+	{// ‰ñ”ð
+		D3DXMATRIX *pMtxPart = GetParts(pEventInfo->nIdxParent)->pParts->GetMatrix();
+
+		universal::SetOffSet(pMtxPart, *pMtxPart,D3DXVECTOR3(0.0f,0.0f,0.0f), D3DXVECTOR3(-1.0f, 0.0f, 0.0f));
+
+		CInpact::Create(0.1f, pMtxPart);
+	}
 
 	if (nMotion == MOTION_SHOT)
 	{// ’e‚ð”­ŽË

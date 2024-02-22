@@ -145,12 +145,20 @@ void CSaveDataManager::Save(void)
 	CPlayer *pPlayer = CPlayer::GetInstance();
 	CGame *pGame = CGame::GetInstance();
 
-	if (pCheck == nullptr || pPlayer == nullptr || pGame == nullptr)
+	if (pCheck == nullptr || pGame == nullptr)
 		assert(("•Û‘¶Ž¸”sI",false));
 
+	float fIntialLife = 0;
+	float fLife = 0;
+
+	if (pPlayer != nullptr)
+	{
+		fIntialLife = pPlayer->GetParam().fInitialLife;
+		fLife = pPlayer->GetLife();
+	}
+
 	int nProgress = pCheck->GetProgress();
-	float fIntialLife = pPlayer->GetParam().fInitialLife;
-	float fLife = pPlayer->GetLife();
+
 	int nAddReward = pGame->GetAddReward();
 
 	FILE *pFile = nullptr;
