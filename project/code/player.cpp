@@ -1357,8 +1357,6 @@ void CPlayer::Boost(void)
 			posBoost = { mtx._41, mtx._42 ,mtx._43 };
 			vecBoost = { mtxVec._41 - posBoost.x,mtxVec._42 - posBoost.y,mtxVec._43 - posBoost.z };
 
-			CDebugProc::GetInstance()->Print("\nƒxƒNƒgƒ‹[%f,%f,%f]", vecBoost.x, vecBoost.y, vecBoost.z);
-
 			D3DXVECTOR3 rot = universal::VecToRot(vecBoost);
 			rot.x *= -1;
 			rot.x += D3DX_PI;

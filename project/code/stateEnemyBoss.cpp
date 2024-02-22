@@ -266,7 +266,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 	CheckPointer(pBoss);
 
 	if (pBoss->AttackTimer(TIME_MISSILE))
-	{// ミサイルの発射
+	{// ミサイルの発射		
 		CMissile *pMissile = CMissile::Create(pBoss->GetMtxPos(1));
 
 		if (pMissile != nullptr)

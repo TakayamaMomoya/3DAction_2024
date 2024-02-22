@@ -20,6 +20,7 @@
 #include "anim3D.h"
 #include "animEffect3D.h"
 #include "missileBehavior.h"
+#include "boostEffect.h"
 
 //*****************************************************
 // 定数定義
@@ -31,6 +32,7 @@ const float MAX_ACCL = 8.0f;	// 最大加速度
 const float CHASE_SPEED = 3.0f;	// 追跡速度
 const int INITIAL_LIFE = 1;	// 初期体力
 const int DEATH_TIME = 240;	// 自滅までの時間
+const float WIDTH_ORBIT = 30.0f;	// 軌跡の幅
 }
 
 //=====================================================
@@ -44,6 +46,8 @@ CMissile::CMissile()
 	m_fChaseSpeed = 0.0f;
 	m_fSpeedMax = 0.0f;
 	m_pBehavior = nullptr;
+	m_pOrbit = nullptr;
+	m_pFire = nullptr;
 }
 
 //=====================================================
@@ -113,6 +117,30 @@ HRESULT CMissile::Init(void)
 
 	m_fTimerHit = 5.0f;
 
+	MultiplyMtx();
+
+	if (m_pOrbit == nullptr)
+	{
+		D3DXMATRIX mtx = *GetMatrix();
+		D3DXVECTOR3 offset = { WIDTH_ORBIT,0.0f,0.0f };
+		D3DXCOLOR col = { 1.0f, 1.0f,1.0f,1.0f };
+
+		m_pOrbit = COrbit::Create(mtx, offset, -offset, col, 20);
+	}
+
+	if (m_pFire == nullptr)
+	{
+		m_pFire = CBoostEffect::Create();
+
+		if (m_pFire != nullptr)
+		{
+			D3DXCOLOR col = universal::ConvertRGB(255, 102, 0, 255);
+
+			m_pFire->SetColor(col);
+			m_pFire->EnableZtestBoost(true);
+		}
+	}
+
 	return S_OK;
 }
 
@@ -147,6 +175,18 @@ void CMissile::Uninit(void)
 		m_pBehavior = nullptr;
 	}
 
+	if (m_pOrbit != nullptr)
+	{
+		m_pOrbit->Uninit();
+		m_pOrbit = nullptr;
+	}
+
+	if (m_pFire != nullptr)
+	{
+		m_pFire->Uninit();
+		m_pFire = nullptr;
+	}
+
 	// 継承クラスの終了
 	CEnemy::Uninit();
 }
@@ -156,14 +196,37 @@ void CMissile::Uninit(void)
 //=====================================================
 void CMissile::Update(void)
 {
-	D3DXVECTOR3 vecMove;
-	D3DXMATRIX mtx;
-
 	// 位置保存
 	SetPositionOld(GetPosition());
 
 	// 追跡処理
 	ChasePlayer();
+
+	if (m_pOrbit != nullptr)
+	{
+		D3DXMATRIX mtx = *GetMatrix();
+
+		m_pOrbit->SetPositionOffset(mtx, 0);
+	}
+
+	if (m_pFire != nullptr)
+	{
+		D3DXVECTOR3 move = GetMove();
+		D3DXMATRIX mtxParent = *GetMatrix();
+		D3DXMATRIX mtx;
+		D3DXVECTOR3 offset = { 0.0f,-10.0f,0.0f };
+
+		universal::SetOffSet(&mtx, mtxParent, offset);
+
+		D3DXVECTOR3 posBoost = { mtx._41, mtx._42 ,mtx._43 };
+
+		D3DXVECTOR3 rot = universal::VecToRot(-move);
+		rot.x *= -1;
+		rot.x += D3DX_PI;
+
+		m_pFire->SetRotation(rot);
+		m_pFire->SetPosition(posBoost);
+	}
 
 	m_nDeathTimer++;
 
@@ -201,8 +264,6 @@ void CMissile::Update(void)
 
 		pCollision->SetRadius(fRadius);
 	}
-
-	CParticle::Create(GetPosition(), CParticle::TYPE::TYPE_MISSILE_SMOKE);
 
 	// 継承クラスの更新
 	CEnemy::Update();

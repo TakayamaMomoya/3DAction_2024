@@ -14,6 +14,8 @@
 // 前方宣言
 //*****************************************************
 class CMissileBehavior;
+class COrbit;
+class CBoostEffect;
 
 //*****************************************************
 // クラスの定義
@@ -56,6 +58,8 @@ private:
 	float m_fChaseSpeed;	// 追尾性能
 	float m_fSpeedMax;	// 最大速度
 	CMissileBehavior *m_pBehavior;	// 行動のポインタ
+	COrbit *m_pOrbit;	// 軌跡
+	CBoostEffect *m_pFire;	// 噴射炎
 };
 
 #endif
