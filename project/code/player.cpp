@@ -52,7 +52,7 @@ const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
 const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
 const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
-const float SPEED_DODGE = 50.0f;	// 回避推進力
+const float SPEED_DODGE = 100.0f;	// 回避推進力
 const float POW_GRAB = 50.0f;	// 掴みの推進力
 const float RADIUS_GRAB = 500.0f;	// 掴みの判定
 const float POW_THROW = 200.0f;	// 投げの力
@@ -409,6 +409,7 @@ void CPlayer::Update(void)
 		nMotion != MOTION_MELEE2 &&
 		nMotion != MOTION_GRAB &&
 		nMotion != MOTION_THROW &&
+		nMotion != MOTION_DODGE &&
 		m_fragMotion.bStamp == false)
 	{
 		if (pSlow != nullptr)
@@ -430,9 +431,18 @@ void CPlayer::Update(void)
 	}
 	else
 	{
-		move.x += (0 - move.x) * 0.05f;
-		move.y += (0 - move.y) * 0.5f;
-		move.z += (0 - move.z) * 0.05f;
+		if (nMotion == MOTION_DODGE)
+		{
+			move.x += (0 - move.x) * 0.02f;
+			move.y += (0 - move.y) * 0.5f;
+			move.z += (0 - move.z) * 0.02f;
+		}
+		else
+		{
+			move.x += (0 - move.x) * 0.05f;
+			move.y += (0 - move.y) * 0.5f;
+			move.z += (0 - move.z) * 0.05f;
+		}
 	}
 
 	SetMove(move);
@@ -572,16 +582,25 @@ void CPlayer::InputMove(void)
 
 	int nMotion = GetMotion();
 
-	if (fLengthAxis >= 0.3f && nMotion != MOTION_SHOT)
+	if ((fLengthAxis >= 0.3f && nMotion != MOTION_SHOT) || nMotion == MOTION_DODGE)
 	{// 通常移動時の目標向き設定
-		m_info.rotDest.y = atan2f(vecInput.x, vecInput.z);
+		if (nMotion == MOTION_DODGE)
+		{
+			D3DXVECTOR3 move = GetMove();
+
+			m_info.rotDest.y = atan2f(move.x, move.z);
+		}
+		else
+		{
+			m_info.rotDest.y = atan2f(vecInput.x, vecInput.z);
+		}
 
 		CDebugProc *pDebugProc = CDebugProc::GetInstance();
 
 		pDebugProc->Print("\n通常移動");
 	}
 
-	if (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW || m_info.bLockTarget)
+	if (nMotion != MOTION_DODGE && (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW || m_info.bLockTarget))
 	{// 敵の方向を向く処理
 		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
@@ -609,6 +628,7 @@ void CPlayer::InputMove(void)
 		nMotion != MOTION_MELEE2 &&
 		nMotion != MOTION_GRAB &&
 		nMotion != MOTION_THROW &&
+		nMotion != MOTION_DODGE &&
 		m_fragMotion.bStamp == false)
 	{
 		// 方向入力の取得
@@ -689,6 +709,8 @@ void CPlayer::InputMove(void)
 				};
 
 				AddBoost(-50.0f);
+
+				m_fragMotion.bDodge = true;
 			}
 		}
 
@@ -1126,6 +1148,20 @@ void CPlayer::ManageMotion(void)
 		if (bFinish)
 		{
 			Death();
+		}
+	}
+	else if (m_fragMotion.bDodge)
+	{
+		if (nMotion != MOTION_DODGE)
+		{
+			SetMotion(MOTION_DODGE);
+		}
+		else
+		{
+			if (bFinish)
+			{
+				m_fragMotion.bDodge = false;
+			}
 		}
 	}
 	else if (m_fragMotion.bStamp || nMotion == MOTION_STAMP)

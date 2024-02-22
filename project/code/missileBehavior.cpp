@@ -256,7 +256,7 @@ void CMissileRightAngle::Update(CMissile *pMissile)
 
 		// 微ホーミングさせる
 		universal::Horming(posMissile, posDest, 3.0f, &move);
-
+		
 		pMissile->SetMove(move);
 	}
 		break;

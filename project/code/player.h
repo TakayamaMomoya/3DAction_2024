@@ -46,6 +46,7 @@ public:
 		MOTION_DEATH,	// 死亡モーション
 		MOTION_NEUTRAL_TITLE,	// タイトル待機
 		MOTION_LAUNCH,	// 出撃
+		MOTION_DODGE,	// 回避
 		MOTION_MAX
 	};
 	enum STATE
@@ -100,6 +101,7 @@ private:
 	{
 		bool bMove;	// 移動
 		bool bJump;	// ジャンプ
+		bool bDodge;	// 回避
 		bool bStamp;	// 踏みつけ
 		bool bShot;	// 射撃
 		bool bMelee;	// 近接攻撃
