@@ -139,6 +139,21 @@ float LimitDistSphereInSide(float fLength, D3DXVECTOR3 *pPos, D3DXVECTOR3 posTar
 }
 
 //========================================
+// ホーミング
+//========================================
+void Horming(D3DXVECTOR3 pos, D3DXVECTOR3 posTarget, float fSpeedChase, D3DXVECTOR3 *pMove)
+{
+	if (pMove == nullptr)
+		return;
+
+	D3DXVECTOR3 vecDiff = posTarget - pos;
+
+	VecConvertLength(&vecDiff, fSpeedChase);
+
+	*pMove += vecDiff;
+}
+
+//========================================
 // ベクトルを長さで補正する処理
 //========================================
 void VecConvertLength(D3DXVECTOR3 *pVec, float fLength)

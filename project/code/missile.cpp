@@ -80,6 +80,10 @@ CMissile *CMissile::Create(D3DXVECTOR3 pos, TYPE type)
 			pMissile->m_pBehavior = new CMissileLine;
 
 			break;
+		case CMissile::TYPE_RIGHTANGLE:
+			pMissile->m_pBehavior = new CMissileRightAngle;
+
+			break;
 		default:
 			assert(("不正なミサイル生成してますよ", false));
 			break;
@@ -254,7 +258,7 @@ void CMissile::Update(void)
 			if (pObj != nullptr)
 			{
 				// 当たったオブジェクトのヒット処理
-				pObj->Hit(0.3f);
+				pObj->Hit(5.0f);
 
 				Death();
 

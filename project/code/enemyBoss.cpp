@@ -189,7 +189,7 @@ void CEnemyBoss::Update(void)
 	{
 		if (pKeyboard->GetTrigger(DIK_Q))
 		{
-			ChangeState(new CStateBossAttackMissile);
+			ChangeState(new CStateBossBeamSmall);
 		}
 	}
 #endif // DEBUG

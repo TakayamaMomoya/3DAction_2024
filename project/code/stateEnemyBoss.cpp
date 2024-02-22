@@ -45,6 +45,7 @@ const float MOVE_DRONE = 50.0f;	// ドローンの射出時の移動量
 const float TIME_MG = 0.15f;	// マシンガン発射の時間
 const int NUM_MG = 30;	// マシンガンの発射数
 const int NUM_BEAMSMALL = 4;	// 小ビームの発射数
+const int NUM_ANGLEMISSILE = 5;	// 直角ミサイルの発射数
 const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
 const int ACCURACY_MG = 10;	// マシンガンの精度
 const float GRAVITY = 0.4f;	// 重力
@@ -853,35 +854,37 @@ void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 			}
 		}
 
-		// ミサイルの攻撃
-		CMissile *pMissile = CMissile::Create(pBoss->GetMtxPos(1));
-
-		if (pMissile != nullptr)
+		for (int i = 0; i < NUM_ANGLEMISSILE; i++)
 		{
-			D3DXVECTOR3 rot = pBoss->GetRotation();
+			// ミサイルの攻撃
+			CMissile *pMissile = CMissile::Create(pBoss->GetMtxPos(1), CMissile::TYPE::TYPE_RIGHTANGLE);
 
-			if (m_nCnt % 2 == 0)
+			if (pMissile != nullptr)
 			{
-				rot.x = -D3DX_PI * 0.3f;
-				rot.y = D3DX_PI * 0.3f;
+				D3DXVECTOR3 rot = pBoss->GetRotation();
+
+				if (m_nCnt % 2 == 0)
+				{
+					rot.x = -D3DX_PI * 0.3f;
+					rot.y = D3DX_PI * 0.3f;
+				}
+				else
+				{
+					rot.x = -D3DX_PI * 0.3f;
+					rot.y = -D3DX_PI * 0.3f;
+				}
+
+				pMissile->SetRotation(rot);
+
+				D3DXVECTOR3 moveMissile =
+				{
+					sinf(rot.x) * sinf(rot.y + D3DX_PI) * 6000.0f,
+					cosf(rot.x) * 6000.0f,
+					sinf(rot.x) * cosf(rot.y + D3DX_PI) * 6000.0f
+				};
+
+				pMissile->SetChaseSpeed(10.0f);
 			}
-			else
-			{
-				rot.x = -D3DX_PI * 0.3f;
-				rot.y = -D3DX_PI * 0.3f;
-			}
-
-			pMissile->SetRotation(rot);
-
-			D3DXVECTOR3 moveMissile =
-			{
-				sinf(rot.x) * sinf(rot.y + D3DX_PI) * 6000.0f,
-				cosf(rot.x) * 6000.0f,
-				sinf(rot.x) * cosf(rot.y + D3DX_PI) * 6000.0f
-			};
-
-			pMissile->SetMove(moveMissile);
-			pMissile->SetChaseSpeed(10.0f);
 		}
 
 		m_nCnt++;
