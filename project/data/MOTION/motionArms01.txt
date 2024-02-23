@@ -1488,7 +1488,7 @@ MOTIONSET
 END_MOTIONSET
 
 #===============================
-# [6] 近接攻撃モーション
+# [6] 一撃目近接攻撃
 #===============================
 MOTIONSET
     LOOP = 0
@@ -1497,9 +1497,11 @@ MOTIONSET
 
     EVENTSET
         KEY = 1
-        FRAME = 2
-        PARENT = 0
-        POS = 0.00 100.00 -600.00
+        FRAME = 1
+        NUM_FRAME = 16.000000
+        RADIUS = 20.500000
+        PARENT = 16
+        POS = 0.000000 -0.500000 -139.300003
     END_EVENTSET
 
     KEYSET     #---<< 0 / 4 >>
@@ -1787,7 +1789,6 @@ MOTIONSET
         END_KEY
     END_KEYSET
 END_MOTIONSET
-
 #===============================
 # [7] 追撃モーション
 #===============================
@@ -1798,9 +1799,11 @@ MOTIONSET
 
     EVENTSET
         KEY = 1
-        FRAME = 2
+        FRAME = 1
+        NUM_FRAME = 18.000000
+        RADIUS = 42.200001
         PARENT = 16
-        POS = 0.00 -100.00 300.00
+        POS = 0.000000 0.000000 -139.199997
     END_EVENTSET
 
     KEYSET     #---<< 0 / 4 >>
