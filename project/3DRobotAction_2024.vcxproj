@@ -201,6 +201,7 @@
     <ClCompile Include="code\inputmouse.cpp" />
     <ClCompile Include="code\life.cpp" />
     <ClCompile Include="code\light.cpp" />
+    <ClCompile Include="code\limit.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
     <ClCompile Include="code\meshcylinder.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="code\inputmouse.h" />
     <ClInclude Include="code\life.h" />
     <ClInclude Include="code\light.h" />
+    <ClInclude Include="code\limit.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
     <ClInclude Include="code\meshcylinder.h" />

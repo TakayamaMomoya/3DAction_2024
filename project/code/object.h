@@ -70,6 +70,7 @@ public:
 	void EnableAdd(bool bAdd) { m_bAdd = bAdd; }
 	void EnableNotStop(bool bNotStop);
 	void EnableFog(bool bFog) { m_bFog = bFog; }
+	void EnableCull(bool bCull) { m_bCull = bCull; }
 	void SetAlphaTest(DWORD dValue) { m_dAlpha = dValue; }
 	DWORD GetAlpha(void) { return m_dAlpha; }
 
@@ -94,6 +95,7 @@ private:
 	bool m_bNotStop;	// 止まらないオブジェクトかどうか
 	bool m_bAdd;	// 加算合成するかどうか
 	bool m_bFog;	// フォグをかけるかどうか
+	bool m_bCull;	// カリングするかどうか
 	DWORD m_dAlpha;	// アルファテストの値
 	static CObject *m_apNotStop[NUM_OBJECT];	// 停止中にも動くオブジェクトの配列
 };

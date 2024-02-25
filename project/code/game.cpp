@@ -39,6 +39,7 @@
 #include "particle.h"
 #include "beamBlade.h"
 #include "boostEffect.h"
+#include "limit.h"
 
 //*****************************************************
 // マクロ定義
@@ -119,7 +120,7 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	//CEnemyBoss::Create();
+	CLimit::Create();
 
 	return S_OK;
 }
