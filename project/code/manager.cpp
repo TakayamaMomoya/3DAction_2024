@@ -29,6 +29,7 @@
 #include "block.h"
 #include "debrisSpawner.h"
 #include "saveDataManager.h"
+#include "checkPointManager.h"
 
 //*****************************************************
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
@@ -126,6 +127,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 //=====================================================
 void CManager::Uninit(void)
 {
+	CheckPoint::SetProgress(0);
+
 	if (m_pScene != nullptr)
 	{
 		m_pScene->Uninit();
