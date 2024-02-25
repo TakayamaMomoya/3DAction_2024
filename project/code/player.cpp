@@ -446,6 +446,11 @@ void CPlayer::Update(void)
 		}
 	}
 
+	if (move.y > 24.0f)
+	{// 上昇力制限
+		move.y = 24.0f;
+	}
+
 	SetMove(move);
 
 	// 当たり判定の管理
@@ -1073,6 +1078,10 @@ void CPlayer::ManageCollision(void)
 	// 当たり判定の追従
 	if (m_info.pCollisionSphere != nullptr)
 	{
+		bool bLandMesh = false;
+		bool bLandBlock = false;
+		int nMotion = GetMotion();
+
 		D3DXVECTOR3 pos = GetPosition();
 		D3DXVECTOR3 posWaist = GetMtxPos(0);
 		D3DXVECTOR3 move = GetMove();
@@ -1090,7 +1099,7 @@ void CPlayer::ManageCollision(void)
 			m_info.pCollisionCube->SetPosition(pos);
 
 			// ブロックとの押し出し判定
-			m_info.pCollisionCube->CubeCollision(CCollision::TAG_BLOCK, &move);
+			bLandBlock = m_info.pCollisionCube->CubeCollision(CCollision::TAG_BLOCK, &move);
 
 			// メッシュフィールドとの当たり判定
 			pos = GetPosition();
@@ -1109,21 +1118,9 @@ void CPlayer::ManageCollision(void)
 
 					SetPosition(pos);
 
-					int nMotion = GetMotion();
 					bool bFinish = IsFinish();
 
-					if (nMotion == MOTION_AIR)
-					{
-						m_info.bLand = true;
-						m_fragMotion.bAir = false;
-						m_fragMotion.bJump = false;
-					}
-				}
-				else
-				{
-					m_info.bLand = false;
-
-					m_fragMotion.bAir = true;
+					bLandMesh = true;
 				}
 			}
 
@@ -1132,7 +1129,24 @@ void CPlayer::ManageCollision(void)
 
 		m_info.pCollisionSphere->PushCollision(&pos, CCollision::TAG::TAG_ENEMY);
 
+		if (pos.y > 4000.0f)
+		{
+			pos.y = 4000.0f;
+		}
+
 		SetPosition(pos);
+
+		m_info.bLand = bLandMesh || bLandBlock;
+		m_fragMotion.bAir = !m_info.bLand;
+
+		if (m_info.bLand)
+		{
+			if (nMotion == MOTION_AIR)
+			{
+				m_fragMotion.bJump = false;
+				m_fragMotion.bAir = false;
+			}
+		}
 	}
 }
 
@@ -1981,4 +1995,6 @@ void CPlayer::Debug(void)
 
 	pDebugProc->Print("\nモーション[%d]", nMotion);
 	pDebugProc->Print("\nターゲットロック[%d]", m_info.bLockTarget);
+	pDebugProc->Print("\n着地[%d]", m_info.bLand);
+	pDebugProc->Print("\n空中[%d]", m_fragMotion.bAir);
 }

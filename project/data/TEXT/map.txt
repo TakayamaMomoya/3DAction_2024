@@ -9,7 +9,7 @@ SCRIPT
 #====================================================================
 # モデル数
 #====================================================================
-NUM_BLOCK = 15
+NUM_BLOCK = 16
 
 #0番目のブロック
 INFOBLOCK
@@ -114,6 +114,13 @@ INFOBLOCK
  TAG = warehouse
  MODEL = data\\MODEL\\BLOCK\\bill02.x
  SNAG = 1
+END_INFOBLOCK
+
+#15番目のブロック
+INFOBLOCK
+ TAG = field
+ MODEL = data\\MODEL\\BLOCK\\field.x
+ SNAG = 0
 END_INFOBLOCK
 
 #====================================================================
@@ -759,6 +766,30 @@ SETBLOCK
  IDX = 14
  POS = 12878.00 0.00 -1490.00
  ROT = 0.00 1.57 0.00
+END_SETBLOCK
+
+SETBLOCK
+ IDX = 15
+ POS = 44878.00 1000.00 0.00
+ ROT = 0.00 0.0 0.00
+END_SETBLOCK
+
+SETBLOCK
+ IDX = 15
+ POS = 44878.00 1000.00 30000.00
+ ROT = 0.00 1.57 0.00
+END_SETBLOCK
+
+SETBLOCK
+ IDX = 15
+ POS = 44878.00 1000.00 -38000.00
+ ROT = 0.00 -1.57 0.00
+END_SETBLOCK
+
+SETBLOCK
+ IDX = 15
+ POS = 10000.00 1000.00 -38000.00
+ ROT = 0.00 -1.57 0.00
 END_SETBLOCK
 
 END_SCRIPT

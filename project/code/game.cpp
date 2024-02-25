@@ -120,7 +120,31 @@ HRESULT CGame::Init(void)
 	// メッシュフィールド生成
 	CMeshField::Create();
 
-	CLimit::Create();
+	D3DXVECTOR3 aPos[4] =
+	{
+		{0.0f,0.0f,15000.0f},
+		{22000.0f,0.0f,0.0f},
+		{0.0f,0.0f,-15000.0f},
+		{-7000.0f,0.0f,0.0f},
+	};
+	D3DXVECTOR3 aRot[4] =
+	{
+		{0.0f,0.0f,0.0f},
+		{0.0f,D3DX_PI * 0.5f,0.0f},
+		{0.0f,D3DX_PI,0.0f},
+		{0.0f,-D3DX_PI * 0.5f,0.0f},
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		CLimit *pLimit = CLimit::Create();
+
+		if (pLimit != nullptr)
+		{
+			pLimit->SetPosition(aPos[i]);
+			pLimit->SetRotation(aRot[i]);
+		}
+	}
 
 	return S_OK;
 }
