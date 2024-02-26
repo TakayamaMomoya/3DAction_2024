@@ -25,6 +25,7 @@ namespace
 const float SIZE_CURSOR = 20.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\checkPoint00.png";	// カーソルのテクスチャ
 const float DIST_PROGRESS = 1000.0f;	// 進行する距離
+const float LIMIT_DIST = 200.0f;	// 画面中心から離れる制限距離
 }
 
 //=====================================================
@@ -92,17 +93,22 @@ void CCheckPointMove::Update(CCheckPointManager *pCheckPoint)
 
 		bool bInScreen = universal::IsInScreen(posNext, mtx, &posScreen);
 
-		if (bInScreen == false)
-		{
-			// 画面内に入らないように設定
-			if (posScreen.x > -SIZE_CURSOR && posScreen.x < SCREEN_WIDTH + SIZE_CURSOR)
-			{
-				posScreen.x = -SIZE_CURSOR;
-			}
+		D3DXVECTOR3 vecDiff = SCRN_MID - posScreen;
+		float fDiff = D3DXVec3Length(&vecDiff);
 
-			if (posScreen.y > -SIZE_CURSOR && posScreen.y < SCREEN_HEIGHT + SIZE_CURSOR)
+		if (!bInScreen || fDiff > LIMIT_DIST || posScreen.z >= 1)
+		{
+			D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+			vecDiff *= LIMIT_DIST;
+
+			if (posScreen.z >= 1)
 			{
-				posScreen.y = -SIZE_CURSOR;
+				posScreen = SCRN_MID + vecDiff;
+			}
+			else
+			{
+				posScreen = SCRN_MID - vecDiff;
 			}
 		}
 

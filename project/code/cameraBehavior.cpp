@@ -231,12 +231,12 @@ void CMoveCylinder::Update(CCamera *pCamera)
 
 	if (pEnemyLock == nullptr || bLock == false)
 	{// プレイヤー追従に移行
-		//pCamera->ChangeBehavior(new CFollowPlayer);
+		Camera::ChangeBehavior(new CLookEnemy);
 	}
 
 	if (fLegnthFlat > DIST_LOOK)
 	{// 普通の注視に移行
-		//Camera::ChangeBehavior(new CLookEnemy);
+		Camera::ChangeBehavior(new CLookEnemy);
 	}
 }
 

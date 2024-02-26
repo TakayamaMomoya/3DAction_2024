@@ -25,6 +25,7 @@
 #include "anim3D.h"
 #include "sound.h"
 #include "particle.h"
+#include "debrisSpawner.h"
 #include "texture.h"
 #include "UI.h"
 #include "slow.h"
@@ -710,6 +711,9 @@ void CEnemy::Death(void)
 	{
 		CAnim3D *pAnim = pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_EXPLOSION);
 	}
+
+	// îjï–ê∂ê¨
+	CDebrisSpawner::Create(pos, CDebrisSpawner::TYPE::TYPE_DEATH);
 
 	m_info.state = STATE_DEATH;
 
