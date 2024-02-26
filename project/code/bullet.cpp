@@ -267,6 +267,8 @@ bool CBullet::BulletHit(CCollision::TAG tag)
 
 				pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_HIT00);
 			}
+
+			Sound::Play(CSound::LABEL_SE_HIT00);
 		}
 	}
 

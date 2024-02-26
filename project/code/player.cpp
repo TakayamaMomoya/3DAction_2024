@@ -34,6 +34,7 @@
 #include "continue.h"
 #include "pause.h"
 #include "inpact.h"
+#include "sound.h"
 
 //*****************************************************
 // 定数定義
@@ -719,6 +720,8 @@ void CPlayer::InputMove(void)
 				AddBoost(-50.0f);
 
 				m_fragMotion.bDodge = true;
+
+				Sound::Play(CSound::LABEL_SE_DASH00);
 			}
 		}
 
@@ -1233,6 +1236,8 @@ void CPlayer::ManageMotion(void)
 		{
 			if (m_fragMotion.bAddAttack)
 			{
+				Sound::Play(CSound::LABEL_SE_DASH00);
+
 				SetMotion(MOTION_MELEE2);
 				m_fragMotion.bAddAttack = false;
 				m_fragMotion.bMelee = false;
@@ -1266,6 +1271,8 @@ void CPlayer::ManageMotion(void)
 	{// 近接攻撃モーション
 		if (nMotion != MOTION_ASSAULT)
 		{
+			Sound::Play(CSound::LABEL_SE_DASH00);
+
 			SetMotion(MOTION_ASSAULT);
 
 			D3DXVECTOR3 move = GetMove();
@@ -1704,6 +1711,8 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 //=====================================================
 void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 {
+	Sound::Play(CSound::LABEL_SE_SHOT00);
+
 	D3DXVECTOR3 rot = GetRotation();
 
 	D3DXVECTOR3 move =
@@ -1773,6 +1782,8 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 
 		if (pObj != nullptr)
 		{
+			Sound::Play(CSound::LABEL_SE_HIT01);
+
 			// ダメージエフェクトの生成
 			CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
 
@@ -1831,6 +1842,8 @@ void CPlayer::Hit(float fDamage)
 
 		if (m_info.fLife <= 0.0f)
 		{// 死亡判定
+			Sound::Play(CSound::LABEL_SE_WARNING00);
+
 			m_info.fLife = 0.0f;
 
 			m_info.state = STATE_DEATH;
@@ -1985,6 +1998,15 @@ void CPlayer::AddMoveStamp(void)
 //=====================================================
 void CPlayer::Death(void)
 {
+	CSound *pSound = CSound::GetInstance();
+
+	if (pSound != nullptr)
+	{
+		pSound->Stop(CSound::LABEL_SE_WARNING00);
+	}
+
+	Sound::Play(CSound::LABEL_SE_EXPLOSION01);
+
 	D3DXVECTOR3 pos = GetMtxPos(0);
 
 	// エフェクト発生

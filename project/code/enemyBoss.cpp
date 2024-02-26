@@ -29,6 +29,7 @@
 #include "fade.h"
 #include "camera.h"
 #include "inputkeyboard.h"
+#include "sound.h"
 
 //*****************************************************
 // 定数定義
@@ -95,9 +96,7 @@ HRESULT CEnemyBoss::Init(void)
 
 	if (pSound != nullptr)
 	{
-		pSound->Stop();
-
-		//pSound->Play(CSound::LABEL_BGM_BOSS);
+		pSound->SetFade(CSound::LABEL_BGM_GAME, CSound::LABEL_BGM_BOSS00, 0.1f);
 	}
 
 	// フレーム演出の生成
@@ -484,6 +483,8 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 
 	if (nMotion == MOTION_DEATH)
 	{// 大爆発の生成
+		Sound::Play(CSound::LABEL_SE_EXPLOSION00);
+
 		CAnimEffect3D *pAnimEffect = CAnimEffect3D::GetInstance();
 
 		if (pAnimEffect != nullptr)

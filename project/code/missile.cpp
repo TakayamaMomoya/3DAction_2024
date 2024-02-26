@@ -21,6 +21,7 @@
 #include "animEffect3D.h"
 #include "missileBehavior.h"
 #include "boostEffect.h"
+#include "sound.h"
 
 //*****************************************************
 // 定数定義
@@ -103,6 +104,8 @@ CMissile *CMissile::Create(D3DXVECTOR3 pos, TYPE type)
 //=====================================================
 HRESULT CMissile::Init(void)
 {
+	Sound::Play(CSound::LABEL_SE_SHOT02);
+
 	m_fChaseSpeed = MAX_ACCL;
 	m_fSpeedMax = MAX_SPEED;
 
@@ -153,6 +156,8 @@ HRESULT CMissile::Init(void)
 //=====================================================
 void CMissile::Death(void)
 {
+	Sound::Play(CSound::LABEL_SE_EXPLOSION00);
+
 	D3DXVECTOR3 pos = GetPosition();
 
 	// アニメエフェクト生成

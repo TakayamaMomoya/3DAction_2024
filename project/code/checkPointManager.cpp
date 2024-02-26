@@ -303,15 +303,6 @@ void CCheckPointManager::TransBossBattle(void)
 			pEnemyBoss->SetPosition(D3DXVECTOR3(22000.0f,0.0f,0.0f));
 		}
 	}
-
-	// プレイヤーの位置設定
-	CPlayer *pPlayer = CPlayer::GetInstance();
-
-	if (pPlayer != nullptr)
-	{
-		//pPlayer->SetPosition(BOSSBATTLE_POS_PLAYER);
-		//pPlayer->SetPositionOld(BOSSBATTLE_POS_PLAYER);
-	}
 }
 
 //=====================================================

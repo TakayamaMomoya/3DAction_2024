@@ -19,16 +19,22 @@ public:
 	{
 		LABEL_BGM_TITLE = 0,				// タイトルBGM
 		LABEL_BGM_GAME,					// ゲームBGM
+		LABEL_BGM_BOSS00,					// ボスBGM０
 		LABEL_SE_START_GAME,			// ゲームスタート
 
-		LABEL_SE_HIT,					// ヒット
+		LABEL_SE_HIT00,					// ヒット０
+		LABEL_SE_HIT01,					// ヒット１
+		LABEL_SE_SHOT00,					// 射撃０
+		LABEL_SE_SHOT01,					// 射撃１
+		LABEL_SE_SHOT02,					// 射撃２
+		LABEL_SE_EXPLOSION00,					// 爆発０
+		LABEL_SE_EXPLOSION01,					// 爆発１
+		LABEL_SE_DASH00,					// ダッシュ０
+		LABEL_SE_WARNING00,					// 警告０
 
 		LABEL_SE_PAUSE_MENU,			// ポーズ
 		LABEL_SE_PAUSE_ARROW,			// ポーズ移動
 		LABEL_SE_PAUSE_ENTER,			// ポーズ選択
-
-		LABEL_SE_EXPLOSION,				// 爆発
-
 		LABEL_MAX
 	} LABEL;
 
@@ -82,19 +88,31 @@ private:
 	SOUNDINFO m_aSoundInfo[LABEL_MAX] =
 	{
 		{ "data/SOUND/BGM/title.wav", -1 },				// タイトルBGM
-		{ "data/SOUND/BGM/title.wav", -1 },				// ゲームBGM
+		{ "data/SOUND/BGM/game.wav", -1 },				// ゲームBGM
+		{ "data/SOUND/BGM/boss00.wav", -1 },				// ボスBGM０
 		{ "data/SOUND/SE/enter.wav",0 },			// ゲームスタート
 
-		{ "data/SOUND/SE/hit.wav",0 },					// ヒット
+		{ "data/SOUND/SE/hit00.wav",0 },					// ヒット０
+		{ "data/SOUND/SE/hit01.wav",0 },					// ヒット１
+		{ "data/SOUND/SE/shot00.wav",0 },					// 射撃０
+		{ "data/SOUND/SE/shot01.wav",0 },					// 射撃１
+		{ "data/SOUND/SE/shot02.wav",0 },					// 射撃２
+		{ "data/SOUND/SE/explosion00.wav",0 },					// 爆発０
+		{ "data/SOUND/SE/explosion01.wav",0 },					// 爆発１
+		{ "data/SOUND/SE/dash00.wav",0 },					// ダッシュ０
+		{ "data/SOUND/SE/warning00.wav",-1 },					// 警告０
 
 		{ "data/SOUND/SE/pause.wav",0 },				// ポーズ
 		{ "data/SOUND/SE/pause_arrow.wav",0 },			// 選択
 		{ "data/SOUND/SE/pause_enter.wav",0 },			// 決定
-
-		{ "data/SOUND/SE/explosion.wav",0 },			// 爆発
 	};
 
 	static CSound *m_pSound;	// 自身のポインタ
 };
+
+namespace Sound
+{
+void Play(CSound::LABEL label);
+}
 
 #endif

@@ -475,3 +475,16 @@ void CSound::SetFade(LABEL LabelNow, LABEL LabelNext, float fSpeed)
 	m_SoundLabelNow = LabelNow;
 	m_fSpeedFadeSound = fSpeed;
 }
+
+namespace Sound
+{
+void Play(CSound::LABEL label)
+{
+	CSound *pSound = CSound::GetInstance();
+
+	if (pSound != nullptr)
+	{
+		pSound->Play(label);
+	}
+}
+}

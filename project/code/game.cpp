@@ -89,13 +89,7 @@ HRESULT CGame::Init(void)
 	// ３Dアニメーション管理の生成
 	CAnimEffect3D::Create();
 
-	// サウンドインスタンスの取得
-	CSound* pSound = CSound::GetInstance();
-
-	if (pSound != nullptr)
-	{
-		//pSound->Play(pSound->LABEL_BGM_GAME);
-	}
+	Sound::Play(CSound::LABEL_BGM_GAME);
 
 	// フォグをかける
 	CRenderer *pRenderer = CRenderer::GetInstance();

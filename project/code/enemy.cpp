@@ -702,6 +702,8 @@ void CEnemy::Hit(float fDamage)
 //=====================================================
 void CEnemy::Death(void)
 {
+	Sound::Play(CSound::LABEL_SE_EXPLOSION00);
+
 	D3DXVECTOR3 pos = GetMtxPos(0);
 
 	// アニメーションエフェクト生成

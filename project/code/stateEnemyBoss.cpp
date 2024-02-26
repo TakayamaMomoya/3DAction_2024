@@ -30,6 +30,7 @@
 #include "game.h"
 #include "explosionAttack.h"
 #include "debrisSpawner.h"
+#include "sound.h"
 
 //*****************************************************
 // 定数定義
@@ -383,6 +384,8 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 
 	if (pBoss->AttackTimer(TIME_MG))
 	{// 射出する
+		Sound::Play(CSound::LABEL_SE_SHOT01);
+
 		D3DXVECTOR3 posMazzle = pBoss->GetMtxPos(5);
 		D3DXVECTOR3 moveBullet;
 		D3DXVECTOR3 movePlayer = pPlayer->GetMove();
@@ -1324,6 +1327,8 @@ void CStateBossDeath::Move(CEnemyBoss *pBoss)
 
 		if (bFinish)
 		{// 大爆発して死ぬ
+			Sound::Play(CSound::LABEL_SE_EXPLOSION01);
+
 			// エフェクト発生
 			CAnimEffect3D *pAnimManager = CAnimEffect3D::GetInstance();
 
