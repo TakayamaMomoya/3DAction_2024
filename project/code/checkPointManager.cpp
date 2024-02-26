@@ -236,6 +236,7 @@ void CCheckPointManager::Uninit(void)
 
 	if (m_pBehavior != nullptr)
 	{
+		m_pBehavior->Uninit(this);
 		delete m_pBehavior;
 		m_pBehavior = nullptr;
 	}
@@ -259,6 +260,13 @@ void CCheckPointManager::Update(void)
 			if (state == CFade::FADE::FADE_OUT)
 			{// ƒ{ƒX“G‚ÖˆÚs
 				TransBossBattle();
+
+				if (m_pBehavior != nullptr)
+				{
+					m_pBehavior->Uninit(this);
+					delete m_pBehavior;
+					m_pBehavior = nullptr;
+				}
 			}
 		}
 

@@ -509,7 +509,7 @@ void CEnemy::CollisionThrown(void)
 //=====================================================
 void CEnemy::Wait(void)
 {
-	//MoveToDest(m_info.posDest, 1.0f);
+	MoveToDest(m_info.posDest, 1.0f);
 
 	CPlayer *pPlayer = CPlayer::GetInstance();
 

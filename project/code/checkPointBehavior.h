@@ -54,7 +54,7 @@ private:
 };
 
 class CCheckPointBattle : public CCheckPointBehavior
-{// í“¬ó‘Ô
+{// í“¬ƒp[ƒg
 public:
 	CCheckPointBattle();
 	~CCheckPointBattle() override;

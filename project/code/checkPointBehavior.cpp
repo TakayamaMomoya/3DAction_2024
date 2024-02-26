@@ -15,6 +15,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "enemyManager.h"
+#include "limit.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -140,7 +141,31 @@ CCheckPointBattle::~CCheckPointBattle()
 
 void CCheckPointBattle::Init(CCheckPointManager *pCheckPoint)
 {// ‰Šú‰»
+	int nProgress = pCheckPoint->GetProgress();
 
+	D3DXVECTOR3 pos = pCheckPoint->GetCheckPosition(nProgress + 1);
+
+	D3DXVECTOR3 aPos[CheckPointBehavior::NUM_LIMIT] =
+	{
+		{6000.0f,0.0f,0.0f},
+		{-6000.0f,0.0f,0.0f},
+	};
+	D3DXVECTOR3 aRot[CheckPointBehavior::NUM_LIMIT] =
+	{
+		{0.0f,D3DX_PI * 0.5f,0.0f},
+		{0.0f,-D3DX_PI * 0.5f,0.0f},
+	};
+
+	for (int i = 0; i < CheckPointBehavior::NUM_LIMIT; i++)
+	{
+		m_apLimit[i] = CLimit::Create();
+
+		if (m_apLimit[i] != nullptr)
+		{
+			m_apLimit[i]->SetPosition(pos + aPos[i]);
+			m_apLimit[i]->SetRotation(aRot[i]);
+		}
+	}
 }
 
 void CCheckPointBattle::Uninit(CCheckPointManager *pCheckPoint)
@@ -150,11 +175,21 @@ void CCheckPointBattle::Uninit(CCheckPointManager *pCheckPoint)
 
 void CCheckPointBattle::Update(CCheckPointManager *pCheckPoint)
 {// XV
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 	int nNumEnemy = CEnemy::GetNumAll();
+	int nProgress = pCheckPoint->GetProgress();
 
-	if (nNumEnemy == 0)
+	if (pEnemyManager != nullptr)
 	{
-		pCheckPoint->AddProgress();
-		pCheckPoint->ChangeBehavior(new CCheckPointMove);
+		bool bEndSpawn = pEnemyManager->IsEndSpawn();
+
+		pEnemyManager->SpawnGroup(nProgress + 1);
+
+		if (nNumEnemy == 0 && bEndSpawn)
+		{
+			pEnemyManager->EnableEndSpawn(false);
+			pCheckPoint->AddProgress();
+			pCheckPoint->ChangeBehavior(new CCheckPointMove);
+		}
 	}
 }

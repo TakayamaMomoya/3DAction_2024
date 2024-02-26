@@ -16,6 +16,7 @@
 #include "enemyDrone.h"
 #include "enemyBoss.h"
 #include "checkPointManager.h"
+#include "checkPointBehavior.h"
 #include "inputkeyboard.h"
 #include "effect3D.h"
 #include "player.h"
@@ -56,11 +57,13 @@ CEnemyManager::CEnemyManager()
 	m_pEnemyLockon = nullptr;
 	m_bLockTarget = false;
 	m_pCursor = nullptr;
-	m_fTimer = 0.0f;
 	m_pHead = nullptr;
 	m_pTail = nullptr;
 	m_pObjectFrame = nullptr;
 	m_pObjectGauge = nullptr;
+	m_bEndSpawn = false;
+	m_fTimerSpawn = 0.0f;
+	m_nCntSpawn = 0;
 }
 
 //=====================================================
@@ -178,6 +181,8 @@ HRESULT CEnemyManager::Init(void)
 		}
 	}
 
+	m_bEndSpawn = true;
+
 	return S_OK;
 }
 
@@ -258,6 +263,13 @@ void CEnemyManager::Load(void)
 								(void)fscanf(pFile, "%s", &cTemp[0]);
 
 								(void)fscanf(pFile, "%d", &Info->nType);
+							}
+
+							if (strcmp(cTemp, "DELAY") == 0)
+							{// ディレイ
+								(void)fscanf(pFile, "%s", &cTemp[0]);
+
+								(void)fscanf(pFile, "%f", &Info->fDelaySpawn);
 							}
 
 							if (strcmp(cTemp, "END_ENEMYSET") == 0)
@@ -678,24 +690,51 @@ void CEnemyManager::EnableLockTarget(bool bLock)
 //=====================================================
 void CEnemyManager::SpawnGroup(int nIdx)
 {
+	float fDeltaTime = CManager::GetDeltaTime();
+	float fTimeOld = m_fTimerSpawn;
+
+	m_fTimerSpawn += fDeltaTime;
+
 	if (m_pInfoGroup != nullptr)
 	{
-		if (m_pInfoGroup[nIdx].pInfoEnemy == nullptr)
+		if (m_pInfoGroup[nIdx].pInfoEnemy == nullptr || m_bEndSpawn)
+		{
+			m_nCntSpawn = 0;
+			m_fTimerSpawn = 0;
+			m_bEndSpawn = true;
+
 			return;
+		}
 
 		for (int i = 0; i < m_pInfoGroup[nIdx].nNumEnemy; i++)
 		{
-			D3DXVECTOR3 pos = m_pInfoGroup[nIdx].pInfoEnemy[i].pos;
-			int nType = m_pInfoGroup[nIdx].pInfoEnemy[i].nType;
+			float fDelay = m_pInfoGroup[nIdx].pInfoEnemy[i].fDelaySpawn;
 
-			CEnemy *pEnemy = CreateEnemy(pos, (CEnemy::TYPE)nType);
+			if (fTimeOld <= fDelay && m_fTimerSpawn > fDelay)
+			{// 敵のスポーン
+				D3DXVECTOR3 pos = m_pInfoGroup[nIdx].pInfoEnemy[i].pos;
+				int nType = m_pInfoGroup[nIdx].pInfoEnemy[i].nType;
 
-			if (pEnemy != nullptr)
-			{
-				pEnemy->SetPosDest(m_pInfoGroup[nIdx].pInfoEnemy[i].posDestInitial);
+				CEnemy *pEnemy = CreateEnemy(pos, (CEnemy::TYPE)nType);
+
+				if (pEnemy != nullptr)
+				{
+					pEnemy->SetPosDest(m_pInfoGroup[nIdx].pInfoEnemy[i].posDestInitial);
+				}
+
+				CCaution::Create(m_pInfoGroup[nIdx].pInfoEnemy[i].pos);
+
+				m_nCntSpawn++;
+
+				if (m_nCntSpawn >= m_pInfoGroup[nIdx].nNumEnemy)
+				{// 戦闘パートの終了
+					m_nCntSpawn = 0;
+					m_fTimerSpawn = 0;
+					m_bEndSpawn = true;
+
+					return;
+				}
 			}
-
-			CCaution::Create(m_pInfoGroup[nIdx].pInfoEnemy[i].pos);
 		}
 	}
 }
