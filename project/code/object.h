@@ -100,4 +100,10 @@ private:
 	static CObject *m_apNotStop[NUM_OBJECT];	// 停止中にも動くオブジェクトの配列
 };
 
+namespace Object
+{
+void DeleteObject(CObject **ppObject, int nSize = 1);
+}
+
+
 #endif

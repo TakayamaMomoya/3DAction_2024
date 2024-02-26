@@ -17,6 +17,7 @@
 // 前方宣言
 //*****************************************************
 class CUI;
+class CLimit;
 
 //*****************************************************
 // クラスの定義
@@ -36,9 +37,10 @@ public:
 	int GetNumCheckPoint(void) { return m_nNumCheckPoint; }
 	int GetProgress(void) { return m_nProgress; }
 	void SetProgress(int nProgress) { m_nProgress = nProgress; }
+	D3DXVECTOR3 GetCheckPosition(int nProgress = -1);
+	void AddProgress(void);
 
 private:
-
 	void Load(void);
 	void LoadInfoCheckPoint(void);
 	void TransBossBattle(void);

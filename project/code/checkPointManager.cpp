@@ -246,11 +246,7 @@ void CCheckPointManager::Uninit(void)
 		m_pPosCheckPoint = nullptr;
 	}
 
-	if (m_pCursor != nullptr)
-	{
-		m_pCursor->Uninit();
-		m_pCursor = nullptr;
-	}
+	Object::DeleteObject((CObject**)&m_pCursor);
 
 	Release();
 }
@@ -315,34 +311,8 @@ void CCheckPointManager::Update(void)
 		float fDist = D3DXVec3Length(&vecDiff);
 
 		if (fDist < DIST_PROGRESS)
-		{
-			m_nProgress++;
-
-			CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
-
-			if (pEnemyManager != nullptr)
-			{
-				if (m_nProgress > 0)
-				{
-					pEnemyManager->SpawnGroup(m_nProgress);
-				}
-			}
-
-			if (m_nProgress >= m_nNumCheckPoint - 1)
-			{// 最後のチェックポイントに到着
-				CFade *pFade = CFade::GetInstance();
-
-				if (pFade != nullptr)
-				{
-					pFade->SetFade(CScene::MODE_RESULT,false);
-
-					if (m_pCursor != nullptr)
-					{
-						m_pCursor->Uninit();
-						m_pCursor = nullptr;
-					}
-				}
-			}
+		{// 進行状況の加算、戦闘へ移行
+			AddProgress();
 		}
 	}
 }
@@ -392,6 +362,62 @@ void CCheckPointManager::Draw(void)
 	CDebugProc::GetInstance()->Print("\n進行状況[%d]", m_nProgress);
 
 #endif
+}
+
+//=====================================================
+// チェックポイント位置取得
+//=====================================================
+D3DXVECTOR3 CCheckPointManager::GetCheckPosition(int nProgress)
+{
+	D3DXVECTOR3 pos = { 0.0f,0.0f,0.0f };
+
+	if (m_pPosCheckPoint == nullptr)
+		return pos;
+
+	if (nProgress == -1)
+	{
+		pos = m_pPosCheckPoint[m_nProgress];
+	}
+	else
+	{
+		pos = m_pPosCheckPoint[nProgress];
+	}
+
+	return pos;
+}
+
+//=====================================================
+// 進行度加算
+//=====================================================
+void CCheckPointManager::AddProgress(void)
+{
+	m_nProgress++;
+
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager != nullptr)
+	{
+		if (m_nProgress > 0)
+		{
+			pEnemyManager->SpawnGroup(m_nProgress);
+		}
+	}
+
+	if (m_nProgress >= m_nNumCheckPoint - 1)
+	{// 最後のチェックポイントに到着
+		CFade *pFade = CFade::GetInstance();
+
+		if (pFade != nullptr)
+		{
+			pFade->SetFade(CScene::MODE_RESULT, false);
+
+			if (m_pCursor != nullptr)
+			{
+				m_pCursor->Uninit();
+				m_pCursor = nullptr;
+			}
+		}
+	}
 }
 
 namespace CheckPoint

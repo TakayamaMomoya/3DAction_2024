@@ -171,6 +171,7 @@
     <ClCompile Include="code\cameraBehavior.cpp" />
     <ClCompile Include="code\caution.cpp" />
     <ClCompile Include="code\character.cpp" />
+    <ClCompile Include="code\checkPointBehavior.cpp" />
     <ClCompile Include="code\checkPointManager.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\continue.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="code\cameraBehavior.h" />
     <ClInclude Include="code\caution.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\checkPointBehavior.h" />
     <ClInclude Include="code\checkPointManager.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\continue.h" />

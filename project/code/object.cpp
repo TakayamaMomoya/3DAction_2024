@@ -465,3 +465,18 @@ void CObject::SetType(TYPE type)
 {
 	m_type = type;
 }
+
+namespace Object
+{
+void DeleteObject(CObject **ppObject,int nSize)
+{// オブジェクトの削除
+	for (int i = 0; i < nSize; i++)
+	{
+		if (ppObject[i] != nullptr)
+		{
+			ppObject[i]->Uninit();
+			ppObject[i] = nullptr;
+		}
+	}
+}
+}
