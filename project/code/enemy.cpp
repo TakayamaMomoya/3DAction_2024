@@ -22,6 +22,7 @@
 #include "motion.h"
 #include "universal.h"
 #include "animEffect3D.h"
+#include "anim3D.h"
 #include "sound.h"
 #include "particle.h"
 #include "texture.h"
@@ -700,7 +701,19 @@ void CEnemy::Hit(float fDamage)
 //=====================================================
 void CEnemy::Death(void)
 {
+	D3DXVECTOR3 pos = GetMtxPos(0);
+
+	// アニメーションエフェクト生成
+	CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
+
+	if (pAnim3D != nullptr)
+	{
+		CAnim3D *pAnim = pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_EXPLOSION);
+	}
+
 	m_info.state = STATE_DEATH;
+
+	Uninit();
 }
 
 //=====================================================

@@ -51,15 +51,15 @@ const float POW_STAMP = 30.0f;	// 踏みつけの推進力
 const float SPEED_STAMP = 70.0f;	// 踏みつけ水平推進力
 const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
-const float SPEED_ASSAULT = 4.0f;	// 突進の移動速度
-const float POW_ADDMELEE = 50.0f;	// 追撃の推進力
+const float SPEED_ASSAULT = 7.0f;	// 突進の移動速度
+const float POW_ADDMELEE = 70.0f;	// 追撃の推進力
 const float SPEED_DODGE = 100.0f;	// 回避推進力
 const float POW_GRAB = 50.0f;	// 掴みの推進力
 const float RADIUS_GRAB = 500.0f;	// 掴みの判定
 const float POW_THROW = 200.0f;	// 投げの力
 const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
 const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
-const float MELEE_DIST = 800.0f;	// 格闘に移る距離
+const float MELEE_DIST = 500.0f;	// 格闘に移る距離
 const float MIN_ANGLE_CAMERA = D3DX_PI * 0.1f;	// カメラの下を見る制限
 const float MAX_ANGLE_CAMERA = D3DX_PI * 0.9f;	// カメラの上を見る制限
 const float DAMAGE_BULLET = 1.0f;	// 弾の威力
@@ -424,10 +424,12 @@ void CPlayer::Update(void)
 		}
 		else
 		{
+			float fScale = pSlow->GetScale();
+
 			move.x *= FACT_MOVE;
 			move.z *= FACT_MOVE;
 
-			move.y -= GRAVITY;
+			move.y -= GRAVITY * fScale;
 		}
 	}
 	else
@@ -441,7 +443,7 @@ void CPlayer::Update(void)
 		else
 		{
 			move.x += (0 - move.x) * 0.05f;
-			move.y += (0 - move.y) * 0.5f;
+			move.y += (0 - move.y) * 0.1f;
 			move.z += (0 - move.z) * 0.05f;
 		}
 	}
@@ -1265,6 +1267,12 @@ void CPlayer::ManageMotion(void)
 		if (nMotion != MOTION_ASSAULT)
 		{
 			SetMotion(MOTION_ASSAULT);
+
+			D3DXVECTOR3 move = GetMove();
+
+			move *= 0.01f;
+
+			SetMove(move);
 		}
 		else
 		{

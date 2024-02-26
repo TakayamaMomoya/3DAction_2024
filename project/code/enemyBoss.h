@@ -17,7 +17,7 @@ class CObject3D;
 namespace Boss
 {
 const float RADIUS_COLLISION = 300.0f;	// “–‚½‚è”»’è‚Ì”¼Œa
-const float INITIAL_LIFE = 1.0f;	// ‰Šú‘Ì—Í
+const float INITIAL_LIFE = 75.0f;	// ‰Šú‘Ì—Í
 }
 
 //*****************************************************

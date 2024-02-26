@@ -23,10 +23,10 @@ namespace
 {
 const float DIST_FIRE = 500.0f;	// 発射するまでの視線とプレイヤーの差分距離
 const float SPEED_BULLET = 150.0f;	// 弾の速度
-const float TIME_FIRE = 0.1f;	// 発射間隔
+const float TIME_FIRE = 0.5f;	// 発射間隔
 const float DIST_KEEP = 3000.0f;	// 戦闘時に保つ距離
 const float SPEED_MOVE = 0.4f;	// 移動速度
-const int ACCURACY = 100;	// 精度
+const int ACCURACY = 500;	// 精度
 }
 
 //=====================================================
