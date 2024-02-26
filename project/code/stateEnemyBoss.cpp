@@ -43,7 +43,7 @@ const int NUM_DRONE = 3;	// ドローンの発射数
 const int RANGE_HEIGHT_DRONE = 500;	// ドローンの高さの幅
 const float MOVE_DRONE = 50.0f;	// ドローンの射出時の移動量
 const float TIME_MG = 0.15f;	// マシンガン発射の時間
-const int NUM_MG = 30;	// マシンガンの発射数
+const int NUM_MG = 10;	// マシンガンの発射数
 const int NUM_BEAMSMALL = 2;	// 小ビームの発射数
 const int NUM_ANGLEMISSILE = 5;	// 直角ミサイルの発射数
 const float SPEED_BULLET = 200.0f;	// マシンガン弾の速度
@@ -306,7 +306,7 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 	}
 
 	// 後退処理
-	pBoss->AimPlayer();
+	pBoss->AimPlayer(0.0f, false);
 }
 
 //=====================================================
@@ -420,7 +420,7 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 	}
 
 	// 後退処理
-	pBoss->AimPlayer();
+	pBoss->AimPlayer(0.0f,false);
 }
 
 //=====================================================

@@ -1713,6 +1713,27 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_BULLET
 	};
 
+	CEnemyManager *pEnemymanager = CEnemyManager::GetInstance();
+
+	if (pEnemymanager != nullptr)
+	{
+		CEnemy *pEnemyLock = pEnemymanager->GetLockon();
+
+		if (pEnemyLock != nullptr)
+		{
+			D3DXVECTOR3 posEnemy = pEnemyLock->GetMtxPos(0);
+			D3DXVECTOR3 moveEnemy = pEnemyLock->GetMove() * 0.8f;
+
+			D3DXVECTOR3 posPridiction = universal::LinePridiction(posMazzle, SPEED_BULLET, posEnemy, moveEnemy);
+
+			D3DXVECTOR3 vecDiff = posPridiction - posMazzle;
+
+			universal::VecConvertLength(&vecDiff, SPEED_BULLET);
+
+			move = vecDiff;
+		}
+	}
+
 	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, DAMAGE_BULLET,
 		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
 
@@ -1752,6 +1773,20 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 
 		if (pObj != nullptr)
 		{
+			// ダメージエフェクトの生成
+			CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();
+
+			if (pAnim3D != nullptr)
+			{
+				CAnim3D *pEffect = pAnim3D->CreateEffect(pos, CAnimEffect3D::TYPE::TYPE_HIT00);
+
+				if (pEffect != nullptr)
+				{
+					pEffect->EnableAdd(true);
+					pEffect->SetSize(100.0f, 100.0f);
+				}
+			}
+
 			// ヒットストップ
 			CSlow *pSlow = CSlow::GetInstance();
 

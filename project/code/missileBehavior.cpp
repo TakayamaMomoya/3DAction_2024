@@ -234,11 +234,8 @@ void CMissileRightAngle::Update(CMissile *pMissile)
 		if (m_fTimerStartChase >= TIME_START_CHASE)
 		{
 			D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(0);
-			D3DXVECTOR3 movePlayer = pPlayer->GetMove();
 
-			posDest = universal::LinePridiction(posMissile, SPEED_CHASE, posPlayer, movePlayer);
-
-			vecDiff = posDest - posMissile;
+			vecDiff = posPlayer - posMissile;
 
 			m_state = STATE_CHASE;
 
