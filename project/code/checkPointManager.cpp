@@ -9,6 +9,7 @@
 // インクルード
 //*****************************************************
 #include "checkPointManager.h"
+#include "checkPointBehavior.h"
 #include "saveDataManager.h"
 #include "UI.h"
 #include "texture.h"
@@ -28,7 +29,6 @@ namespace
 const char* FILE_PATH = "data\\TEXT\\checkPoint.txt";	// ファイルのパス
 const float SIZE_CURSOR = 20.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\checkPoint00.png";	// カーソルのテクスチャ
-const float DIST_PROGRESS = 1000.0f;	// 進行する距離
 const D3DXVECTOR3 BOSSBATTLE_POS_PLAYER = { 0.0f,0.0f,-2000.0f };	// ボス戦移行時のプレイヤー位置
 }
 
@@ -45,7 +45,7 @@ CCheckPointManager::CCheckPointManager()
 	m_nProgress = 0;
 	m_nNumCheckPoint = 0;
 	m_pPosCheckPoint = nullptr;
-	m_pCursor = nullptr;
+	m_pBehavior = nullptr;
 }
 
 //=====================================================
@@ -111,21 +111,9 @@ HRESULT CCheckPointManager::Init(void)
 			pPlayer->SetPosition(pos);
 		}
 	}
+
+	ChangeBehavior(new CCheckPointMove);
 	
-	if (m_pCursor == nullptr)
-	{// カーソル生成
-		m_pCursor = CUI::Create();
-
-		if (m_pCursor != nullptr)
-		{
-			m_pCursor->SetSize(SIZE_CURSOR, SIZE_CURSOR);
-			m_pCursor->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-			int nIdx = CTexture::GetInstance()->Regist(CURSOR_PATH);
-			m_pCursor->SetIdxTexture(nIdx);
-			m_pCursor->SetVtx();
-		}
-	}
-
 	return S_OK;
 }
 
@@ -246,7 +234,11 @@ void CCheckPointManager::Uninit(void)
 		m_pPosCheckPoint = nullptr;
 	}
 
-	Object::DeleteObject((CObject**)&m_pCursor);
+	if (m_pBehavior != nullptr)
+	{
+		delete m_pBehavior;
+		m_pBehavior = nullptr;
+	}
 
 	Release();
 }
@@ -273,47 +265,9 @@ void CCheckPointManager::Update(void)
 		return;
 	}
 
-	D3DXVECTOR3 posNext = m_pPosCheckPoint[m_nProgress + 1];
-
-	// カーソルの表示
-	if (m_pCursor != nullptr)
+	if (m_pBehavior != nullptr)
 	{
-		D3DXMATRIX mtx;
-		D3DXVECTOR3 posScreen;
-
-		bool bInScreen = universal::IsInScreen(posNext, mtx, &posScreen);
-		
-		if (bInScreen == false)
-		{
-			// 画面内に入らないように設定
-			if (posScreen.x > -SIZE_CURSOR && posScreen.x < SCREEN_WIDTH + SIZE_CURSOR)
-			{
-				posScreen.x = -SIZE_CURSOR;
-			}
-
-			if (posScreen.y > -SIZE_CURSOR && posScreen.y < SCREEN_HEIGHT + SIZE_CURSOR)
-			{
-				posScreen.y = -SIZE_CURSOR;
-			}
-		}
-
-		m_pCursor->SetPosition(posScreen);
-		m_pCursor->SetVtx();
-	}
-
-	CPlayer *pPlayer = CPlayer::GetInstance();
-
-	if (pPlayer != nullptr)
-	{// 距離の計算
-		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-		D3DXVECTOR3 vecDiff = posNext - posPlayer;
-
-		float fDist = D3DXVec3Length(&vecDiff);
-
-		if (fDist < DIST_PROGRESS)
-		{// 進行状況の加算、戦闘へ移行
-			AddProgress();
-		}
+		m_pBehavior->Update(this);
 	}
 }
 
@@ -410,13 +364,26 @@ void CCheckPointManager::AddProgress(void)
 		if (pFade != nullptr)
 		{
 			pFade->SetFade(CScene::MODE_RESULT, false);
-
-			if (m_pCursor != nullptr)
-			{
-				m_pCursor->Uninit();
-				m_pCursor = nullptr;
-			}
 		}
+	}
+}
+
+//=====================================================
+// ビヘイビア変更
+//=====================================================
+void CCheckPointManager::ChangeBehavior(CCheckPointBehavior *pBehavior)
+{
+	if (m_pBehavior != nullptr)
+	{
+		m_pBehavior->Uninit(this);
+		delete m_pBehavior;
+	}
+
+	m_pBehavior = pBehavior;
+
+	if (m_pBehavior != nullptr)
+	{
+		m_pBehavior->Init(this);
 	}
 }
 

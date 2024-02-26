@@ -13,6 +13,7 @@
 //*****************************************************
 class CCheckPointManager;
 class CLimit;
+class CUI;
 
 //*****************************************************
 // 定数定義
@@ -48,6 +49,8 @@ private:
 	void Init(CCheckPointManager *pCheckPoint) override;
 	void Update(CCheckPointManager *pCheckPoint) override;
 	void Uninit(CCheckPointManager *pCheckPoint) override;
+
+	CUI *m_pCursor;	// カーソルのポインタ
 };
 
 class CCheckPointBattle : public CCheckPointBehavior

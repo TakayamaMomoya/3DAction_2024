@@ -18,6 +18,7 @@
 //*****************************************************
 class CUI;
 class CLimit;
+class CCheckPointBehavior;
 
 //*****************************************************
 // クラスの定義
@@ -39,6 +40,7 @@ public:
 	void SetProgress(int nProgress) { m_nProgress = nProgress; }
 	D3DXVECTOR3 GetCheckPosition(int nProgress = -1);
 	void AddProgress(void);
+	void ChangeBehavior(CCheckPointBehavior *pBehavior);
 
 private:
 	void Load(void);
@@ -48,7 +50,7 @@ private:
 	int m_nProgress;	// 現在の進行状況
 	int m_nNumCheckPoint;	// チェックポイントの数
 	D3DXVECTOR3 *m_pPosCheckPoint;	// チェックポイントの座標情報
-	CUI *m_pCursor;	// カーソルのポインタ
+	CCheckPointBehavior *m_pBehavior;	// ビヘイビア
 	static CCheckPointManager *m_pCheckPointManager;	// 自身のポインタ
 };
 
