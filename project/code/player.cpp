@@ -548,13 +548,16 @@ void CPlayer::Input(void)
 	// UŒ‚‘€ì
 	InputAttack();
 
-	CInputManager *pInputManager = CInputManager::GetInstance();
-
-	if (pInputManager != nullptr)
+	if (CManager::GetMode() == CScene::MODE_GAME)
 	{
-		if (pInputManager->GetTrigger(CInputManager::BUTTON_PAUSE))
+		CInputManager *pInputManager = CInputManager::GetInstance();
+
+		if (pInputManager != nullptr)
 		{
-			CPause::Create();
+			if (pInputManager->GetTrigger(CInputManager::BUTTON_PAUSE))
+			{
+				CPause::Create();
+			}
 		}
 	}
 }
