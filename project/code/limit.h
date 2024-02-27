@@ -47,6 +47,7 @@ private:
 
 	void CreateGuide(void);
 	void DeleteGuide(void);
+	D3DXVECTOR3 CheckLimit(CObject *pObj,float *pDiff = nullptr);
 	void SetColGuide(float fDiff);
 
 	SInfo m_info;

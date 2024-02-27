@@ -77,7 +77,7 @@ HRESULT CCaution::Init(void)
 	if (m_info.pIcon != nullptr)
 	{
 		m_info.pIcon->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		m_info.pIcon->SetSize(SIZE_ICON, SIZE_ICON);
+		m_info.pIcon->SetSize(SIZE_ICON * 3, SIZE_ICON * 3);
 		
 		int nIdx = Texture::GetIdx("data\\TEXTURE\\UI\\caution00.png");
 		m_info.pIcon->SetIdxTexture(nIdx);
@@ -112,38 +112,8 @@ void CCaution::Uninit(void)
 //=====================================================
 void CCaution::Update(void)
 {
-	if (m_info.pIcon != nullptr)
-	{
-		D3DXMATRIX mtx;
-		D3DXVECTOR3 posScreen;
-
-		// 画面内座標取得
-		bool bInScreen = universal::IsInScreen(m_info.pos, mtx, &posScreen);
-
-		CDebugProc::GetInstance()->Print("\n画面座標[%f,%f,%f]", posScreen.x, posScreen.y, posScreen.z);
-
-		D3DXVECTOR3 vecDiff = SCRN_MID - posScreen;
-		float fDiff = D3DXVec3Length(&vecDiff);
-
-		if (!bInScreen || fDiff > LIMIT_DIST || posScreen.z >= 1)
-		{
-			D3DXVec3Normalize(&vecDiff, &vecDiff);
-
-			vecDiff *= LIMIT_DIST;
-
-			if (posScreen.z >= 1)
-			{
-				posScreen = SCRN_MID + vecDiff;
-			}
-			else
-			{
-				posScreen = SCRN_MID - vecDiff;
-			}
-		}
-
-		m_info.pIcon->SetPosition(posScreen);
-		m_info.pIcon->SetVtx();
-	}
+	// アイコンの更新
+	UpdateIcon();
 
 	float fDeltaTime = CManager::GetDeltaTime();
 
@@ -155,6 +125,55 @@ void CCaution::Update(void)
 
 		return;
 	}
+}
+
+//=====================================================
+// アイコンの更新
+//=====================================================
+void CCaution::UpdateIcon(void)
+{
+	if (m_info.pIcon == nullptr)
+		return;
+
+	// 大きさの変更
+	float fHeight = m_info.pIcon->GetHeight();
+	float fWidth = m_info.pIcon->GetWidth();
+
+	fWidth += (SIZE_ICON - fWidth) * 0.1f;
+	fHeight += (SIZE_ICON - fHeight) * 0.1f;
+
+	m_info.pIcon->SetSize(fWidth, fHeight);
+
+	D3DXMATRIX mtx;
+	D3DXVECTOR3 posScreen;
+
+	// 画面内座標取得
+	bool bInScreen = universal::IsInScreen(m_info.pos, mtx, &posScreen);
+
+	CDebugProc::GetInstance()->Print("\n画面座標[%f,%f,%f]", posScreen.x, posScreen.y, posScreen.z);
+
+	D3DXVECTOR3 vecDiff = SCRN_MID - posScreen;
+	float fDiff = D3DXVec3Length(&vecDiff);
+
+	if (!bInScreen || fDiff > LIMIT_DIST || posScreen.z >= 1)
+	{
+		D3DXVec3Normalize(&vecDiff, &vecDiff);
+
+		vecDiff *= LIMIT_DIST;
+
+		if (posScreen.z >= 1)
+		{
+			posScreen = SCRN_MID + vecDiff;
+		}
+		else
+		{
+			posScreen = SCRN_MID - vecDiff;
+		}
+	}
+
+	// 位置の設定
+	m_info.pIcon->SetPosition(posScreen);
+	m_info.pIcon->SetVtx();
 }
 
 //=====================================================

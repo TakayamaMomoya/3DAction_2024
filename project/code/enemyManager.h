@@ -13,6 +13,8 @@
 //*****************************************************
 #include "object.h"
 #include "enemy.h"
+#include <iostream>
+#include <list>
 
 //*****************************************************
 // 前方宣言
@@ -61,10 +63,9 @@ public:
 	void SpawnGroup(int nIdx);
 	bool IsEndSpawn(void) { return m_bEndSpawn; }
 	void EnableEndSpawn(bool bEnd) { m_bEndSpawn = bEnd; }
-	CEnemy *GetHead(void) { return m_pHead; }
-	CEnemy *GetTail(void) { return m_pTail; }
-	void SetHead(CEnemy *pEnemy) { m_pHead = pEnemy; }
-	void SetTail(CEnemy *pEnemy) { m_pTail = pEnemy; }
+	std::list<CEnemy*> GetListRanking(void) { return m_list; }
+	void AddToList(CEnemy *pEnemy);
+	void RemoveFromList(CEnemy *pEnemy);
 	static CEnemyManager *GetInstance(void) { return m_pEnemyManager; }
 
 private:
@@ -86,12 +87,11 @@ private:
 	void DeleteGauge(void);
 	void ControlGauge(void);
 
+	std::list<CEnemy*> m_list;	// 一覧リスト
 	SInfoEnemyGroup *m_pInfoGroup;	// 敵集団の情報
 	CEnemy *m_pEnemyLockon;	// ロックオンしてる敵
 	bool m_bLockTarget;	// ターゲットをロックしているかどうか
 	CUI *m_pCursor;	// ロックオンカーソル
-	CEnemy *m_pHead;	// 先頭のアドレス
-	CEnemy *m_pTail;	// 最後尾のアドレス
 	CFan2D *m_pObjectGauge;	// ゲージのポインタ
 	CFan2D *m_pObjectFrame;	// フレームのポインタ
 	bool m_bEndSpawn;	// スポーン終了フラグ

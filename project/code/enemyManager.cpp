@@ -57,8 +57,6 @@ CEnemyManager::CEnemyManager()
 	m_pEnemyLockon = nullptr;
 	m_bLockTarget = false;
 	m_pCursor = nullptr;
-	m_pHead = nullptr;
-	m_pTail = nullptr;
 	m_pObjectFrame = nullptr;
 	m_pObjectGauge = nullptr;
 	m_bEndSpawn = false;
@@ -378,16 +376,15 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 	bool bLock = IsLockTarget();
 
 	bool bInAny = false;
-	CEnemy *pEnemy = GetHead();
 	float fDistMax = FLT_MAX;
 	D3DXVECTOR3 posCenter = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
 	D3DXVECTOR3 posScreen = posCenter;
 
-	while (pEnemy != nullptr)
+	std::list<CEnemy*> listEnemy = GetListRanking();
+
+	for (auto pEnemy : listEnemy)
 	{
 		CEnemy::STATE state = pEnemy->GetState();
-
-		CEnemy *pEnemyNext = pEnemy->GetNext();
 
 		pEnemy->EnableLock(false);
 
@@ -440,8 +437,6 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 				}
 			}
 		}
-
-		pEnemy = pEnemyNext;
 	}
 
 	D3DXVECTOR3 posDestCursor = posCenter;
@@ -584,7 +579,6 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 		return nullptr;
 	}
 
-	CEnemy *pEnemy = GetHead();
 	CEnemy *pEnemyLock = nullptr;
 	float fLengthDiff = FLT_MAX;
 
@@ -594,11 +588,11 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 	D3DXVECTOR3 posLockEnemy = m_pEnemyLockon->GetMtxPos(0);
 	universal::IsInScreen(posLockEnemy, mtx, &posScreenLockEnemy);
 
-	while (pEnemy != nullptr)
+	std::list<CEnemy*> listEnemy = GetListRanking();
+
+	for (auto pEnemy : listEnemy)
 	{
 		CEnemy::STATE state = pEnemy->GetState();
-
-		CEnemy *pEnemyNext = pEnemy->GetNext();
 
 		if (state != CEnemy::STATE::STATE_DEATH && m_pEnemyLockon != pEnemy && pEnemyExclusive != pEnemy)
 		{
@@ -665,8 +659,6 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 				}
 			}
 		}
-
-		pEnemy = pEnemyNext;
 	}
 
 	if (pEnemyLock != nullptr)
@@ -761,15 +753,11 @@ void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 //=====================================================
 void CEnemyManager::DeleteAll(void)
 {
-	CEnemy *pEnemy = GetHead();
+	std::list<CEnemy*> listEnemy = GetListRanking();
 
-	while (pEnemy != nullptr)
+	for (auto pEnemy : listEnemy)
 	{
-		CEnemy *pEnemyNext = pEnemy->GetNext();
-
 		pEnemy->Uninit();
-
-		pEnemy = pEnemyNext;
 	}
 
 	m_pEnemyLockon = nullptr;
@@ -787,4 +775,20 @@ void CEnemyManager::Draw(void)
 		CDebugProc::GetInstance()->Print("\nロックオンしてる敵いるよ");
 	}
 #endif
+}
+
+//=====================================================
+// リストに追加する処理
+//=====================================================
+void CEnemyManager::AddToList(CEnemy *pEnemy)
+{
+	m_list.push_back(pEnemy);
+}
+
+//=====================================================
+// リストから削除する処理
+//=====================================================
+void CEnemyManager::RemoveFromList(CEnemy *pEnemy)
+{
+	m_list.remove(pEnemy);
 }

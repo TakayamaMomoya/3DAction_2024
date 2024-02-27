@@ -12,6 +12,8 @@
 #include "object3D.h"
 #include "player.h"
 #include "texture.h"
+#include "enemyManager.h"
+#include "enemy.h"
 
 //*****************************************************
 // 定数定義
@@ -119,14 +121,39 @@ void CLimit::DeleteGuide(void)
 //=====================================================
 void CLimit::Update(void)
 {
-	// プレイヤーの位置制限
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
-	if (pPlayer == nullptr)
-		return;
+	if (pPlayer != nullptr)
+	{// プレイヤーの位置制限
+		float fDiff;
 
-	D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-	D3DXVECTOR3 posGuide = pPlayer->GetMtxPos(0);
+		D3DXVECTOR3 posGuide = CheckLimit((CObject*)pPlayer, &fDiff);
+
+		if (fDiff * fDiff < DIST_DISP * DIST_DISP)
+		{
+			CreateGuide();
+		}
+		else
+		{
+			DeleteGuide();
+		}
+
+		if (m_info.pGuide != nullptr)
+		{
+			SetColGuide(fDiff);
+
+			m_info.pGuide->SetPosition(posGuide);
+		}
+	}
+}
+
+//=====================================================
+// 位置制限の確認
+//=====================================================
+D3DXVECTOR3 CLimit::CheckLimit(CObject *pObj, float *pDiff)
+{
+	D3DXVECTOR3 posObject = pObj->GetPosition();
+	D3DXVECTOR3 posGuide = pObj->GetPosition();
 	D3DXVECTOR3 pos = m_info.pos;
 	D3DXVECTOR3 rot = m_info.rot;
 	float fDiff = 0.0f;
@@ -134,41 +161,41 @@ void CLimit::Update(void)
 	if (rot.y < D3DX_PI * 0.6f && rot.y > D3DX_PI * 0.4f)
 	{// 右向き
 		posGuide.x = pos.x;
-		fDiff = posPlayer.x - pos.x;
+		fDiff = posObject.x - pos.x;
 
-		if (posPlayer.x > pos.x)
+		if (posObject.x > pos.x)
 		{
-			posPlayer.x = pos.x;
+			posObject.x = pos.x;
 		}
 	}
 	else if (rot.y > D3DX_PI * -0.6f && rot.y < D3DX_PI * -0.4f)
 	{// 左向き
 		posGuide.x = pos.x;
-		fDiff = posPlayer.x - pos.x;
+		fDiff = posObject.x - pos.x;
 
-		if (posPlayer.x < pos.x)
+		if (posObject.x < pos.x)
 		{
-			posPlayer.x = pos.x;
+			posObject.x = pos.x;
 		}
 	}
 	else if (rot.y > D3DX_PI * -0.1f && rot.y < D3DX_PI * 0.1f)
 	{// 前
 		posGuide.z = pos.z;
-		fDiff = posPlayer.z - pos.z;
+		fDiff = posObject.z - pos.z;
 
-		if (posPlayer.z > pos.z)
+		if (posObject.z > pos.z)
 		{
-			posPlayer.z = pos.z;
+			posObject.z = pos.z;
 		}
 	}
 	else
 	{// 後ろ
 		posGuide.z = pos.z;
-		fDiff = posPlayer.z - pos.z;
+		fDiff = posObject.z - pos.z;
 
-		if (posPlayer.z < pos.z)
+		if (posObject.z < pos.z)
 		{
-			posPlayer.z = pos.z;
+			posObject.z = pos.z;
 		}
 	}
 
@@ -188,7 +215,12 @@ void CLimit::Update(void)
 		m_info.pGuide->SetPosition(posGuide);
 	}
 
-	pPlayer->SetPosition(posPlayer);
+	pObj->SetPosition(posObject);
+
+	if (pDiff != nullptr)
+		*pDiff = fDiff;
+
+	return posGuide;
 }
 
 //=====================================================

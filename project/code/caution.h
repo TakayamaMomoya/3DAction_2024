@@ -49,6 +49,7 @@ private:
 		CUI *pArrow;	// –îˆó
 		float fLife;	// Žõ–½
 	};
+	void UpdateIcon(void);
 
 	SInfo m_info;
 };

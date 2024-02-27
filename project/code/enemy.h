@@ -68,7 +68,6 @@ public:
 	STATE GetState(void) { return m_info.state; }
 	void SetState(STATE state) { m_info.state = state; }
 	CCollisionSphere *GetClsnSphere(void) { return m_info.pCollisionSphere; }
-	CEnemy *GetNext(void) { return m_pNext; }
 	int GetCntState(void) { return m_info.nTimerState; }
 	void SetCntState(int nCnt) { m_info.nTimerState = nCnt; }
 	float GetSpeed(void) { return m_info.fMoveSpeed; }
@@ -126,9 +125,6 @@ private:
 
 	static int m_nNumAll;	// 総数
 	SInfo m_info;	// 情報
-
-	CEnemy *m_pPrev;	// 前のアドレス
-	CEnemy *m_pNext;	// 次のアドレス
 };
 
 #endif

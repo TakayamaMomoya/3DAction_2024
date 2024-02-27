@@ -65,7 +65,8 @@ void CCheckPointMove::Init(CCheckPointManager *pCheckPoint)
 
 		if (m_pCursor != nullptr)
 		{
-			m_pCursor->SetSize(SIZE_CURSOR, SIZE_CURSOR);
+			m_pCursor->SetSize(SIZE_CURSOR * 3, SIZE_CURSOR * 3);
+
 			m_pCursor->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 			int nIdx = CTexture::GetInstance()->Regist(CURSOR_PATH);
 			m_pCursor->SetIdxTexture(nIdx);
@@ -88,6 +89,15 @@ void CCheckPointMove::Update(CCheckPointManager *pCheckPoint)
 	// カーソルの表示
 	if (m_pCursor != nullptr)
 	{
+		// 大きさの変更
+		float fHeight = m_pCursor->GetHeight();
+		float fWidth = m_pCursor->GetWidth();
+
+		fWidth += (SIZE_CURSOR - fWidth) * 0.1f;
+		fHeight += (SIZE_CURSOR - fHeight) * 0.1f;
+
+		m_pCursor->SetSize(fWidth, fHeight);
+
 		D3DXMATRIX mtx;
 		D3DXVECTOR3 posScreen;
 
@@ -161,7 +171,7 @@ void CCheckPointBattle::Init(CCheckPointManager *pCheckPoint)
 
 	for (int i = 0; i < CheckPointBehavior::NUM_LIMIT; i++)
 	{
-		//m_apLimit[i] = CLimit::Create();
+		m_apLimit[i] = CLimit::Create();
 
 		if (m_apLimit[i] != nullptr)
 		{

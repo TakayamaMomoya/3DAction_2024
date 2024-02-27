@@ -797,12 +797,10 @@ void CPlayer::Stamp(void)
 				return;
 			}
 
-			CEnemy *pEnemy = pEnemyManager->GetHead();
+			std::list<CEnemy*> listEnemy = pEnemyManager->GetListRanking();
 
-			while (pEnemy != nullptr)
+			for (auto pEnemy : listEnemy)
 			{
-				CEnemy *pEnemyNext = pEnemy->GetNext();
-
 				if ((CObject*)pEnemy == pObj)
 				{
 					bool bStamp = pEnemy->IsStamp();
@@ -821,8 +819,6 @@ void CPlayer::Stamp(void)
 						pObj->Hit(5.0f);
 					}
 				}
-
-				pEnemy = pEnemyNext;
 			}
 		}
 	}
@@ -1637,6 +1633,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 		m_info.pClsnAttack->SetPosition(pos);
 		m_info.pClsnAttack->SetRadius(RADIUS_GRAB);
 
+
 		if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
 		{// ‘ÎÛ‚Æ‚Ì“–‚½‚è”»’è
 			CObject *pObj = m_info.pClsnAttack->GetOther();
@@ -1646,13 +1643,12 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 			if (pEnemyManager != nullptr)
 			{// “Gƒ`ƒFƒbƒN
 				// ’Í‚Þ
-				CEnemy *pEnemy = pEnemyManager->GetHead();
 				CEnemy *pEnemyGrab = nullptr;
 
-				while (pEnemy != nullptr)
-				{
-					CEnemy *pEnemyNext = pEnemy->GetNext();
+				std::list<CEnemy*> listEnemy = pEnemyManager->GetListRanking();
 
+				for (auto pEnemy : listEnemy)
+				{
 					if ((CObject*)pEnemy == pObj)
 					{
 						pEnemyGrab = pEnemy;
@@ -1671,8 +1667,6 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 						m_fragMotion.bGrab = false;
 					}
-
-					pEnemy = pEnemyNext;
 				}
 
 				// ’Í‚Þ“G‚ÌŒˆ’è

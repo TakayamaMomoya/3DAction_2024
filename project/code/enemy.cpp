@@ -69,41 +69,14 @@ CEnemy::CEnemy()
 	// 総数カウントアップ
 	m_nNumAll++;
 
-	// 先頭、最後尾アドレス取得
-	CEnemyManager *pManager = CEnemyManager::GetInstance();
-	CEnemy *pHead = nullptr;
-	CEnemy *pTail = nullptr;
-
-	if (pManager != nullptr)
-	{
-		pHead = pManager->GetHead();
-		pTail = pManager->GetTail();
-	}
-
 	ZeroMemory(&m_info, sizeof(SInfo));
 
-	// 値のクリア
-	m_pPrev = nullptr;
-	m_pNext = nullptr;
+	// リストに追加
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
-	if (pHead == nullptr)
-	{// 先頭と最後尾アドレスの代入
-		pManager->SetHead(this);
-		pManager->SetTail(this);
-
-		return;
-	}
-
-	// 前のアドレスに最後尾のアドレスを代入する
-	m_pPrev = pTail;
-
-	// 最後尾のアドレスを自分にする
-	pManager->SetTail(this);
-
-	if (m_pPrev != nullptr)
+	if (pEnemyManager != nullptr)
 	{
-		// 前のオブジェクトの次のアドレスを自分にする
-		m_pPrev->m_pNext = this;
+		pEnemyManager->AddToList(this);
 	}
 }
 
@@ -112,55 +85,14 @@ CEnemy::CEnemy()
 //=====================================================
 CEnemy::~CEnemy()
 {
-	// 先頭、最後尾アドレス取得
-	CEnemyManager *pManager = CEnemyManager::GetInstance();
-	CEnemy *pHead = nullptr;
-	CEnemy *pTail = nullptr;
-
-	if (pManager != nullptr)
-	{
-		pHead = pManager->GetHead();
-		pTail = pManager->GetTail();
-	}
-
 	m_nNumAll--;
 
-	if (pTail != this && pHead != this)
-	{// 真ん中のアドレスの破棄
-		if (m_pPrev != nullptr)
-		{
-			// 前のアドレスから次のアドレスをつなぐ
-			m_pPrev->m_pNext = m_pNext;
-		}
+	// リストから削除
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
-		if (m_pNext != nullptr)
-		{
-			// 次のアドレスから前のアドレスをつなぐ
-			m_pNext->m_pPrev = m_pPrev;
-		}
-	}
-
-	if (pHead == this)
-	{// 先頭アドレスの破棄
-		//if (m_pNext != nullptr)
-		{// 先頭アドレスを次のアドレスに引き継ぐ
-			pManager->SetHead(m_pNext);
-
-			if (m_pNext != nullptr)
-			{
-				m_pNext->m_pPrev = nullptr;
-			}
-		}
-	}
-	
-	if (pTail == this)
-	{// 最後尾アドレスの破棄
-		if (m_pPrev != nullptr)
-		{// 最後尾アドレスを前のアドレスに引き継ぐ
-			pManager->SetTail(m_pPrev);
-
-			m_pPrev->m_pNext = nullptr;
-		}
+	if (pEnemyManager != nullptr)
+	{
+		pEnemyManager->RemoveFromList(this);
 	}
 }
 
