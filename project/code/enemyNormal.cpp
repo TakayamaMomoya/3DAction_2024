@@ -15,6 +15,7 @@
 #include "bullet.h"
 #include "manager.h"
 #include "slow.h"
+#include "sound.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -162,6 +163,8 @@ void CEnemyNormal::Attack(void)
 
 			if (m_fTimeFire > TIME_FIRE)
 			{// ’e‚Ì”­ŽË
+				Sound::Play(CSound::LABEL_SE_SHOT01);
+
 				D3DXVECTOR3 posMazzle = GetMtxPos(0);
 				D3DXVECTOR3 moveBullet;
 				D3DXVECTOR3 movePlayer = pPlayer->GetMove();

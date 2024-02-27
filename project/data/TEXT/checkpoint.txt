@@ -4,7 +4,7 @@
 # Author : 髙山桃也
 #
 #==============================================================================
-NUM_CHECKPOINT = 3
+NUM_CHECKPOINT = 4
 
 CHECKPOINTSET	# 最初期スポーン地点
 	POS = -3000.0 -16.9 0.0
@@ -67,6 +67,10 @@ CHECKPOINTSET	# 1番目のチェックポイント
 END_CHECKPOINTSET
 
 CHECKPOINTSET	# 2番目のチェックポイント
+	POS = 9029.92 39.06 0.0
+END_CHECKPOINTSET
+
+CHECKPOINTSET	# 3番目のチェックポイント
 	POS = 21029.92 39.06 0.0
 END_CHECKPOINTSET
 

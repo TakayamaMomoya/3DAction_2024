@@ -29,6 +29,27 @@ const float ROLL_SPEED = 0.02f;						//回転スピード
 }
 
 //=====================================================
+// 出現時のカメラの動き
+//=====================================================
+void CApperPlayer::Update(CCamera *pCamera)
+{
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer == nullptr)
+		return;
+
+	D3DXVECTOR3 posPlayer = pPlayer->GetMtxPos(1);
+
+	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
+
+	pInfoCamera->posRDest = posPlayer;
+
+	pInfoCamera->posV = posPlayer;
+	pInfoCamera->posV.y = 10.0f;
+	pInfoCamera->posV.x += 100.0f;
+}
+
+//=====================================================
 // プレイヤーの追従
 //=====================================================
 void CFollowPlayer::Update(CCamera *pCamera)

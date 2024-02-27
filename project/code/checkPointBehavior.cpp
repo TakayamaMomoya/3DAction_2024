@@ -119,13 +119,10 @@ void CCheckPointMove::Update(CCheckPointManager *pCheckPoint)
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
 	if (pPlayer != nullptr)
-	{// 距離の計算
+	{// 到着判定
 		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-		D3DXVECTOR3 vecDiff = posNext - posPlayer;
 
-		float fDist = D3DXVec3Length(&vecDiff);
-
-		if (fDist < DIST_PROGRESS)
+		if (posPlayer.x > posNext.x)
 		{// 進行状況の加算、戦闘へ移行
 			pCheckPoint->ChangeBehavior(new CCheckPointBattle);
 		}

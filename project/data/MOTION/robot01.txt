@@ -170,7 +170,7 @@ MOTIONSET
     END_EVENTSET
 
     KEYSET     #---<< 0 / 8 >>
-        FRAME = 34
+        FRAME = 0
         KEY # -----[0]----
             POS = 0.00 4640.00 0.00
             ROT = -0.23 -0.33 0.00

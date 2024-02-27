@@ -20,6 +20,9 @@
 #include "enemyBoss.h"
 #include "debugproc.h"
 #include <stdio.h>
+#include "cameraBehavior.h"
+#include "camera.h"
+#include "UIManager.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -109,6 +112,20 @@ HRESULT CCheckPointManager::Init(void)
 			D3DXVECTOR3 pos = m_pPosCheckPoint[m_nProgress + 1];
 
 			pPlayer->SetPosition(pos);
+			
+			if (m_nProgress == -1)
+			{
+				pPlayer->SetMotion(CPlayer::MOTION_APPER);
+
+				Camera::ChangeBehavior(new CApperPlayer);
+
+				CUIManager *pUIManager = CUIManager::GetInstance();
+
+				if (pUIManager != nullptr)
+				{
+					pUIManager->EnableDisp(false);
+				}
+			}
 		}
 	}
 

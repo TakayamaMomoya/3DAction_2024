@@ -47,6 +47,7 @@ public:
 		MOTION_NEUTRAL_TITLE,	// タイトル待機
 		MOTION_LAUNCH,	// 出撃
 		MOTION_DODGE,	// 回避
+		MOTION_APPER,	// 出現
 		MOTION_MAX
 	};
 	enum STATE

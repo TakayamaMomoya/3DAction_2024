@@ -35,6 +35,7 @@
 #include "pause.h"
 #include "inpact.h"
 #include "sound.h"
+#include "UIManager.h"
 
 //*****************************************************
 // 定数定義
@@ -132,6 +133,9 @@ HRESULT CPlayer::Init(void)
 
 	// 継承クラスの初期化
 	CMotion::Init();
+
+	m_info.rotDest = D3DXVECTOR3(0.0f, 1.57f, 0.0f);
+	SetRotation(D3DXVECTOR3(0.0f, -1.57f, 0.0f));
 
 	// 当たり判定の生成
 	if (m_info.pCollisionSphere == nullptr)
@@ -373,7 +377,7 @@ void CPlayer::Update(void)
 	// ロックオン
 	Lockon();
 
-	if (m_info.state != CPlayer::STATE::STATE_DEATH)
+	if (m_info.state != CPlayer::STATE::STATE_DEATH && GetMotion() != MOTION_APPER)
 	{
 		// 入力
 		Input();
@@ -1163,7 +1167,23 @@ void CPlayer::ManageMotion(void)
 	int nMotion = GetMotion();
 	bool bFinish = IsFinish();
 
-	if (nMotion == MOTION_DEATH)
+	if (nMotion == MOTION_APPER)
+	{
+		if (bFinish)
+		{
+			SetMotion(MOTION_NEUTRAL);
+
+			Camera::ChangeBehavior(new CFollowPlayer);
+
+			CUIManager *pUIManager = CUIManager::GetInstance();
+
+			if (pUIManager != nullptr)
+			{
+				pUIManager->EnableDisp(true);
+			}
+		}
+	}
+	else if (nMotion == MOTION_DEATH)
 	{
 		if (bFinish)
 		{
@@ -1383,9 +1403,11 @@ void CPlayer::ManageParam(void)
 //=====================================================
 void CPlayer::Boost(void)
 {
+	int nMotion = GetMotion();
+
 	MultiplyMtx();
 
-	if (m_info.pThruster == nullptr)
+	if (m_info.pThruster == nullptr || nMotion == MOTION_APPER)
 		return;
 
 	CInputManager *pInputManager = CInputManager::GetInstance();
@@ -1559,6 +1581,13 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	universal::SetOffSet(&mtxParent, mtxPart, offset);
 
 	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
+
+	if (nMotion == MOTION_APPER)
+	{// 出現時の煙
+		D3DXVECTOR3 posParticle = GetPosition();
+
+		CParticle::Create(posParticle, CParticle::TYPE::TYPE_APPER_SMOKE);
+	}
 
 	if (nMotion == MOTION_DODGE)
 	{// 回避

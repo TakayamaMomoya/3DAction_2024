@@ -31,6 +31,7 @@
 #include "explosionAttack.h"
 #include "debrisSpawner.h"
 #include "sound.h"
+#include "checkPointManager.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -129,7 +130,14 @@ void CStateBossSelect::Init(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossSelect1st::Close(int nRand, CEnemyBoss *pBoss)
 {// ‹ß‹——£
-	pBoss->ChangeState(new CStateBossStep1st);
+	if (nRand < 50)
+	{
+		pBoss->ChangeState(new CStateBossAttackMachinegun);
+	}
+	else
+	{
+		pBoss->ChangeState(new CStateBossStep1st);
+	}
 }
 
 void CStateBossSelect1st::Middle(int nRand, CEnemyBoss *pBoss)
@@ -1373,6 +1381,13 @@ void CStateBossDeath::Move(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossAfterDeath::Init(CEnemyBoss *pBoss)
 {
+	CCheckPointManager *pCheck = CCheckPointManager::GetInstance();
+
+	if (pCheck != nullptr)
+	{
+		pCheck->SetProgress(0);
+	}
+
 	CGame::SetState(CGame::STATE::STATE_END);
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_AFTER_DEATH);
