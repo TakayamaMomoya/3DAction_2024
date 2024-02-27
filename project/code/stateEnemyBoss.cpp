@@ -743,7 +743,7 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 
 	if (nMotion == CEnemyBoss::MOTION::MOTION_PRE_SLASH)
 	{
-		pBoss->AimPlayer(0.0f, false);
+		pBoss->AimPlayer(0.0f, false, 0.1f);
 
 		if (bFinish)
 		{
@@ -819,7 +819,7 @@ void CStateBossBeamSmall::Init(CEnemyBoss *pBoss)
 
 void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 {
-	pBoss->AimPlayer(0.0f, false);
+	pBoss->AimPlayer(0.0f, false, 0.07f);
 
 	bool bShot = pBoss->AttackTimer(1.0f);
 
@@ -968,7 +968,7 @@ void CStateBossStep::Move(CEnemyBoss *pBoss)
 
 	pBoss->SetPosition(pos);
 
-	pBoss->AimPlayer(0.0f, false);
+	pBoss->AimPlayerFlat(0.0f, false, 0.05f);
 }
 
 //=====================================================

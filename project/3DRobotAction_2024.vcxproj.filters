@@ -147,9 +147,6 @@
     <ClCompile Include="code\title.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
-    <ClCompile Include="code\tutorial.cpp">
-      <Filter>ソース ファイル\scene</Filter>
-    </ClCompile>
     <ClCompile Include="code\scene.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
@@ -288,6 +285,9 @@
     <ClCompile Include="code\checkPointBehavior.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\tutorial.cpp">
+      <Filter>ソース ファイル\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -396,9 +396,6 @@
       <Filter>ソース ファイル\scene</Filter>
     </ClInclude>
     <ClInclude Include="code\title.h">
-      <Filter>ソース ファイル\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="code\tutorial.h">
       <Filter>ソース ファイル\scene</Filter>
     </ClInclude>
     <ClInclude Include="code\scene.h">
@@ -538,6 +535,9 @@
     </ClInclude>
     <ClInclude Include="code\checkPointBehavior.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\tutorial.h">
+      <Filter>ソース ファイル\scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

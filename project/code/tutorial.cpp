@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// 熱量表示の処理[heat.h]
+// チュートリアル処理[tutorial.cpp]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -8,90 +8,120 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-#include "heat.h"
-#include "texture.h"
+#include "tutorial.h"
+#include "object.h"
 #include "player.h"
-#include "UI.h"
+#include "slow.h"
+#include "manager.h"
+#include "camera.h"
+#include "cameraBehavior.h"
+#include "UIManager.h"
+#include "enemyManager.h"
+#include "meshfield.h"
+#include "limit.h"
+#include "object3D.h"
+#include "renderer.h"
+#include "texture.h"
+#include "animEffect3D.h"
 
 //*****************************************************
 // 定数定義
 //*****************************************************
 namespace
 {
-const D3DXVECTOR2 SIZE_FRAME = { 70.0f,35.0f };	// フレームのサイズ
+
 }
 
 //=====================================================
 // コンストラクタ
 //=====================================================
-CHeat::CHeat(int nPriority) : CObject(nPriority)
+CTutorial::CTutorial()
 {
-	m_fParam = 0.0f;
-	m_pos = {};
-	m_pFrame = nullptr;
-	m_pGauge = nullptr;
+
 }
 
 //=====================================================
 // デストラクタ
 //=====================================================
-CHeat::~CHeat()
+CTutorial::~CTutorial()
 {
 
-}
-
-//=====================================================
-// 生成処理
-//=====================================================
-CHeat *CHeat::Create(void)
-{
-	CHeat *pHeat = nullptr;
-
-	if (pHeat == nullptr)
-	{
-		pHeat = new CHeat;
-
-		if (pHeat != nullptr)
-		{
-			pHeat->Init();
-		}
-	}
-
-	return pHeat;
 }
 
 //=====================================================
 // 初期化処理
 //=====================================================
-HRESULT CHeat::Init(void)
+HRESULT CTutorial::Init(void)
 {
-	if (m_pFrame == nullptr)
-	{// フレームの生成
-		m_pFrame = CUI::Create();
+	CAnimEffect3D::Create();
 
-		if (m_pFrame != nullptr)
+	CSlow::Create();
+
+	CPlayer::Create();
+
+	CUIManager::Create();
+
+	CEnemyManager::Create();
+
+	Camera::ChangeBehavior(new CFollowPlayer);
+
+	CMeshField *pMesh = CMeshField::Create();
+
+	if (pMesh != nullptr)
+	{
+		pMesh->Reset();
+	}
+
+	D3DXVECTOR3 aPos[4] =
+	{
+		{0.0f,0.0f,15000.0f},
+		{22000.0f,0.0f,0.0f},
+		{0.0f,0.0f,-15000.0f},
+		{-7000.0f,0.0f,0.0f},
+	};
+	D3DXVECTOR3 aRot[4] =
+	{
+		{0.0f,0.0f,0.0f},
+		{0.0f,D3DX_PI * 0.5f,0.0f},
+		{0.0f,D3DX_PI,0.0f},
+		{0.0f,-D3DX_PI * 0.5f,0.0f},
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		CLimit *pLimit = CLimit::Create();
+
+		if (pLimit != nullptr)
 		{
-			m_pFrame->SetSize(SIZE_FRAME.x, SIZE_FRAME.y);
-			m_pFrame->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-			int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\UI\\frame00.png");
-			m_pFrame->SetIdxTexture(nIdx);
-			m_pFrame->SetVtx();
+			pLimit->SetPosition(aPos[i]);
+			pLimit->SetRotation(aRot[i]);
+
+			CObject3D *pWall = CObject3D::Create(aPos[i]);
+
+			if (pWall != nullptr)
+			{
+				aRot[i].x = -D3DX_PI * 0.5f;
+				pWall->SetPosition(aPos[i] * 1.001f);
+				pWall->SetRotation(aRot[i]);
+				pWall->SetSize(30000.0f, 30000.0f);
+				pWall->SetVtx();
+
+				D3DXVECTOR2 lu = { 0.0f,0.0f };
+				D3DXVECTOR2 rd = { 20.0f,20.0f };
+				pWall->SetTex(rd, lu);
+
+				int nIdx = Texture::GetIdx("data\\TEXTURE\\MATERIAL\\metal000.jpg");
+				pWall->SetIdxTexture(nIdx);
+			}
 		}
 	}
 
-	if (m_pGauge == nullptr)
-	{// ゲージの生成
-		m_pGauge = CUI::Create();
+	// フォグをかける
+	CRenderer *pRenderer = CRenderer::GetInstance();
 
-		if (m_pGauge != nullptr)
-		{
-			//m_pGauge->EnableAdd(true);
-			m_pGauge->SetCol(D3DXCOLOR(1.0f, 0.2f, 0.2f, 0.5f));
-			m_pGauge->SetSize(SIZE_FRAME.x, SIZE_FRAME.y * m_fParam);
-			int nIdx = CTexture::GetInstance()->Regist("data\\TEXTURE\\UI\\gauge00.png");
-			m_pGauge->SetIdxTexture(nIdx);
-			m_pGauge->SetVtx();
-		}
+	if (pRenderer != nullptr)
+	{
+		pRenderer->EnableFog(false);
 	}
 
 	return S_OK;
@@ -100,72 +130,79 @@ HRESULT CHeat::Init(void)
 //=====================================================
 // 終了処理
 //=====================================================
-void CHeat::Uninit(void)
+void CTutorial::Uninit(void)
 {
-	if (m_pGauge != nullptr)
-	{// ゲージの破棄
-		m_pGauge->Uninit();
-		m_pGauge = nullptr;
-	}
-
-	// 自身の破棄
-	Release();
+	// オブジェクト全棄
+	CObject::ReleaseAll();
 }
 
 //=====================================================
 // 更新処理
 //=====================================================
-void CHeat::Update(void)
+void CTutorial::Update(void)
 {
-	if (m_pGauge != nullptr)
+	// シーンの更新
+	CScene::Update();
+
+	CCamera *pCamera = CManager::GetCamera();
+
+	if (pCamera == nullptr)
 	{
-		D3DXVECTOR3 pos = GetPosition();
+		return;
+	}
 
-		pos.y -= SIZE_FRAME.y * m_fParam - SIZE_FRAME.y;
+	pCamera->Update();
+	pCamera->Quake();
 
-		m_pGauge->SetPosition(pos);
-		m_pGauge->SetTex(D3DXVECTOR2(0.0f,1.0f - m_fParam), D3DXVECTOR2(1.0f, 1.0f));
-		m_pGauge->SetSize(SIZE_FRAME.x, SIZE_FRAME.y * m_fParam);
-		m_pGauge->SetVtx();
+	pCamera->MoveDist(0.3f);
+
+	int nNumEnemy = CEnemy::GetNumAll();
+
+	if (nNumEnemy == 0)
+	{
+		SpawnEnemy();
+	}
+}
+
+//=====================================================
+// 敵のスポーン
+//=====================================================
+void CTutorial::SpawnEnemy(void)
+{
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager == nullptr)
+		return;
+
+	D3DXVECTOR3 aPosEnemy[] =
+	{
+		{0.0f,1000.0f,0.0f},
+		{1000.0f,1000.0f,0.0f},
+		{-1000.0f,1000.0f,0.0f},
+	};
+
+	for (int i = 0; i < sizeof(aPosEnemy) / sizeof(D3DXVECTOR3); i++)
+	{
+		CEnemy::TYPE type = CEnemy::TYPE::TYPE_NORMAL;
+
+		if (i % 3 == 0)
+		{
+			type = CEnemy::TYPE::TYPE_BOMB;
+		}
+
+		CEnemy *pEnemy = pEnemyManager->CreateEnemy(aPosEnemy[i], type);
+
+		if (pEnemy != nullptr)
+		{
+			pEnemy->SetPosDest(aPosEnemy[i]);
+		}
 	}
 }
 
 //=====================================================
 // 描画処理
 //=====================================================
-void CHeat::Draw(void)
+void CTutorial::Draw(void)
 {
-	
-}
 
-//=====================================================
-// 位置設定
-//=====================================================
-void CHeat::SetPosition(D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-
-	if (m_pFrame != nullptr)
-	{
-		m_pFrame->SetPosition(pos);
-		m_pFrame->SetVtx();
-	}
-
-	if (m_pGauge != nullptr)
-	{
-		m_pGauge->SetPosition(pos);
-		m_pGauge->SetVtx();
-	}
-}
-
-//=====================================================
-// フレームのテクスチャ割り当て
-//=====================================================
-void CHeat::BindTextureFrame(const char* pPath)
-{
-	if (m_pFrame != nullptr)
-	{
-		int nIdx = CTexture::GetInstance()->Regist(pPath);
-		m_pFrame->SetIdxTexture(nIdx);
-	}
 }

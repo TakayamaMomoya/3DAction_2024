@@ -1,44 +1,34 @@
 //*****************************************************
 //
-// 熱量表示の処理[heat.h]
+// チュートリアル処理[tutorial.h]
 // Author:髙山桃也
 //
 //*****************************************************
-
-#ifndef _HEAT_H_
-#define _HEAT_H_
-
-#include "Object.h"
+#ifndef _TUTORIAL_H_
+#define _TUTORIAL_H_
 
 //*****************************************************
-// 前方宣言
+// インクルード
 //*****************************************************
-class CUI;
+#include "main.h"
+#include "scene.h"
 
 //*****************************************************
 // クラスの定義
 //*****************************************************
-class CHeat : public CObject
+class CTutorial : public CScene
 {
 public:
-	CHeat(int nPriority = 6);	// コンストラクタ
-	~CHeat();	// デストラクタ
+	CTutorial();	// コンストラクタ
+	~CTutorial();	// デストラクタ
 
-	static CHeat *Create(void);
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
-	void SetPosition(D3DXVECTOR3 pos);
-	D3DXVECTOR3 GetPosition(void) { return m_pos; }
-	void SetParam(float fParam) { m_fParam = fParam; }
-	void BindTextureFrame(const char* pPath);
+	virtual HRESULT Init(void);
+	virtual void Uninit(void);
+	virtual void Update();
+	virtual void Draw();
 
 private:
-	float m_fParam;	// パラメータ値
-	D3DXVECTOR3 m_pos;	// 位置
-	CUI *m_pFrame;	// フレーム
-	CUI *m_pGauge;	// ゲージ
+	void SpawnEnemy(void);
 };
 
 #endif

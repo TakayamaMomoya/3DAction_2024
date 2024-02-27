@@ -597,4 +597,18 @@ D3DXCOLOR ConvertRGB(BYTE r, BYTE g, BYTE b, BYTE a)
 
 	return col;
 }
+
+//========================================
+// 3Dç¿ïWÇÃê¸å`ï‚äÆ
+//========================================
+D3DXVECTOR3 Lerp(D3DXVECTOR3 start, D3DXVECTOR3 end, float fTime)
+{
+	D3DXVECTOR3 pos = start;
+
+	D3DXVECTOR3 vecDiff = end - start;
+
+	pos += vecDiff * fTime;
+
+	return pos;
+}
 }	// namespace universal

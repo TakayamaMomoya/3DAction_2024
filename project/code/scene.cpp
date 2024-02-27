@@ -9,9 +9,9 @@
 // インクルード
 //*****************************************************
 #include "scene.h"
-#include "tutorial.h"
 #include "game.h"
 #include "title.h"
+#include "tutorial.h"
 #include "result.h"
 #include "manager.h"
 #include "renderer.h"

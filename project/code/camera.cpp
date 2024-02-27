@@ -111,13 +111,6 @@ void CCamera::MoveDist(float fFact)
 		{
 			// ˆÊ’u•â³
 			m_camera.posVDest.y = fHeight;
-
-			// Šp“x‚ğ‚»‚Ìê‚ÅÄİ’è
-			D3DXVECTOR3 vecDiff = m_camera.posRDest - m_camera.posVDest;
-
-			D3DXVECTOR3 rot = universal::VecToRot(-vecDiff);
-
-			m_camera.rot.x = rot.x;
 		}
 	}
 

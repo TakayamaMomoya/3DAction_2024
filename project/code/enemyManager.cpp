@@ -158,15 +158,10 @@ HRESULT CEnemyManager::Init(void)
 				ZeroMemory(m_pInfoGroup, sizeof(SInfoEnemyGroup) * nNumCheckPoint);
 			}
 		}
+
+		// 読込処理
+		Load();
 	}
-
-	// 読込処理
-	Load();
-
-	int nProgress = pCheckPointManager->GetProgress();
-
-	// 初期敵のスポーン
-	//SpawnGroup(nProgress);
 
 	if (m_pCursor == nullptr)
 	{// カーソル生成

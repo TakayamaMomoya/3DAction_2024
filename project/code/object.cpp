@@ -357,7 +357,7 @@ void CObject::DrawAll(void)
 			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 			pDevice->SetRenderState(D3DRS_ALPHAREF, pObject->m_dAlpha);
 
-			pDevice->SetRenderState(D3DRS_FOGENABLE, pObject->m_bFog);
+			pDevice->SetRenderState(D3DRS_FOGENABLE, pObject->m_bFog && CRenderer::GetInstance()->IsFog());
 
 			// •`‰æˆ—
 			pObject->Draw();

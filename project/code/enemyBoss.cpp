@@ -517,12 +517,6 @@ void CEnemyBoss::FollowCollision(void)
 	{
 		D3DXVECTOR3 pos = GetMtxPos(IDX_WAIST);
 
-		pos.y -= 25.0f;
-
-#ifdef _DEBUG
-		//CEffect3D::Create(pos, pCollision->GetRadius(), 10, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-#endif
-
 		pCollision->SetPositionOld(pCollision->GetPosition());
 		pCollision->SetPosition(pos);
 		pCollision->SetRadius(Boss::RADIUS_COLLISION);

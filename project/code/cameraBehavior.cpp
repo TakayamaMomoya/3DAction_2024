@@ -160,7 +160,7 @@ void CLookEnemy::Update(CCamera *pCamera)
 			posPlayer.z - sinf(pRot->x) * cosf(pRot->y) * fLengthView
 		};
 
-		universal::LimitDistSphereInSide(1000.0f, &pInfoCamera->posVDest, posPlayer);
+		//universal::LimitDistSphereInSide(1000.0f, &pInfoCamera->posVDest, posPlayer);
 
 		float fDiff = universal::LimitDistCylinder(1000.0f, &pInfoCamera->posV, posEnemy);
 

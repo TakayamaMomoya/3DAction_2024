@@ -28,7 +28,7 @@ public:
 		MODE_MAX
 	};
 
-	CObject3D(int nPriority = 6);	// コンストラクタ
+	CObject3D(int nPriority = 5);	// コンストラクタ
 	~CObject3D();	// デストラクタ
 
 	HRESULT Init(void);
