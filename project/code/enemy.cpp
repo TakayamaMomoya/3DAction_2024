@@ -528,6 +528,14 @@ void CEnemy::Wait(void)
 
 	fDist = D3DXVec3Length(&vecDiff);
 
+	float fRot = atan2f(vecDiff.x, vecDiff.z);
+
+	D3DXVECTOR3 rot = GetRotation();
+
+	universal::FactingRot(&rot.y, fRot, 0.1f);
+
+	SetRotation(rot);
+
 	if (m_info.aDistMoveState[MOVESTATE_CHASE] > fDist)
 	{// �ǐՂɈڍs
 		m_info.moveState = MOVESTATE_CHASE;
