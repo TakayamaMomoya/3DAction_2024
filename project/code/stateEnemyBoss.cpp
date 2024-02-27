@@ -1065,6 +1065,7 @@ void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
 
 				m_pAnim->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 				m_pAnim->EnableZtest(false);
+				m_pAnim->SetAlphaTest(70);
 				m_pAnim->SetMode(CObject3D::MODE::MODE_STRETCHBILLBOARD);
 				m_pAnim->SetSize(0.0f, 0.0f);
 				m_pAnim->SetPosition(pos);

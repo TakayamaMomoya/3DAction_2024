@@ -161,7 +161,7 @@ void CCheckPointBattle::Init(CCheckPointManager *pCheckPoint)
 
 	for (int i = 0; i < CheckPointBehavior::NUM_LIMIT; i++)
 	{
-		m_apLimit[i] = CLimit::Create();
+		//m_apLimit[i] = CLimit::Create();
 
 		if (m_apLimit[i] != nullptr)
 		{

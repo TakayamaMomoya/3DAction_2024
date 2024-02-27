@@ -91,6 +91,8 @@ HRESULT CExplAttack::Init(void)
 		{
 			m_pAnim->SetSize(m_fRadius, m_fRadius);
 			m_pAnim->RandStart();
+			m_pAnim->SetAlphaTest(70);
+			m_pAnim->EnableZtest(false);
 		}
 
 		// ÕŒ‚”g
@@ -99,6 +101,8 @@ HRESULT CExplAttack::Init(void)
 		if (pInpact != nullptr)
 		{
 			pInpact->SetSize(m_fRadius * 3.0f, m_fRadius * 3.0f);
+			pInpact->SetAlphaTest(70);
+			pInpact->EnableZtest(false);
 		}
 	}
 

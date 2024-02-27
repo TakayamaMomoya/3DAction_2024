@@ -140,6 +140,8 @@ HRESULT CGame::Init(void)
 		}
 	}
 
+	CEnemyBoss::Create();
+
 	return S_OK;
 }
 
