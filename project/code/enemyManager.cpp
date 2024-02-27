@@ -36,6 +36,8 @@ const char* FILE_PATH = "data\\TEXT\\checkPoint.txt";	// ファイルのパス
 const float TIME_SPAWN = 5.0f;	// 敵のスポーン
 const float SIZE_CURSOR = 60.0f;	// カーソルサイズ
 const char* CURSOR_PATH = "data\\TEXTURE\\UI\\lockon01.png";	// カーソルのテクスチャ
+const char* MANUAL_PATH = "data\\TEXTURE\\UI\\isLock00.png";	// マニュアルエイムのパス
+const char* LOCK_PATH = "data\\TEXTURE\\UI\\isLock01.png";	// アシストエイムのパス
 const D3DXVECTOR3 GAUGE_POS = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };	// ゲージの位置
 const char* TEXTURE_PATH = "data\\TEXTURE\\UI\\boost00.png";	// ゲージのパス
 const float RADIUS_GAUGE = 330.0f;	// ゲージの半径
@@ -57,6 +59,7 @@ CEnemyManager::CEnemyManager()
 	m_pEnemyLockon = nullptr;
 	m_bLockTarget = false;
 	m_pCursor = nullptr;
+	m_pIsLock = nullptr;
 	m_pObjectFrame = nullptr;
 	m_pObjectGauge = nullptr;
 	m_bEndSpawn = false;
@@ -176,6 +179,20 @@ HRESULT CEnemyManager::Init(void)
 			int nIdx = CTexture::GetInstance()->Regist(CURSOR_PATH);
 			m_pCursor->SetIdxTexture(nIdx);
 			m_pCursor->SetVtx();
+		}
+	}
+
+	if (m_pIsLock == nullptr)
+	{// ロックしてるかの表示生成
+		m_pIsLock = CUI::Create();
+
+		if (m_pIsLock != nullptr)
+		{
+			m_pIsLock->SetSize(70.0f, 35.0f);
+			m_pIsLock->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.05f, 0.0f));
+			int nIdx = CTexture::GetInstance()->Regist(MANUAL_PATH);
+			m_pIsLock->SetIdxTexture(nIdx);
+			m_pIsLock->SetVtx();
 		}
 	}
 
@@ -310,6 +327,12 @@ void CEnemyManager::Uninit(void)
 	{
 		m_pCursor->Uninit();
 		m_pCursor = nullptr;
+	}
+
+	if (m_pIsLock != nullptr)
+	{
+		m_pIsLock->Uninit();
+		m_pIsLock = nullptr;
 	}
 
 	if (m_pInfoGroup != nullptr)
@@ -675,6 +698,20 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 void CEnemyManager::EnableLockTarget(bool bLock)
 {
 	m_bLockTarget = bLock;
+
+	if (m_pIsLock != nullptr)
+	{
+		if (m_bLockTarget)
+		{
+			int nIdx = CTexture::GetInstance()->Regist(LOCK_PATH);
+			m_pIsLock->SetIdxTexture(nIdx);
+		}
+		else
+		{
+			int nIdx = CTexture::GetInstance()->Regist(MANUAL_PATH);
+			m_pIsLock->SetIdxTexture(nIdx);
+		}
+	}
 }
 
 //=====================================================

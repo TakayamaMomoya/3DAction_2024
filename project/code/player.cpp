@@ -78,6 +78,7 @@ const char* PATH_PARAM[CPlayer::PARAM_MAX] =
 	"data\\TEXTURE\\UI\\frame01.png",
 	"data\\TEXTURE\\UI\\frame02.png",
 };
+const int RAND_SHOT = 60;	// 射撃精度のランダム幅
 }
 
 //*****************************************************
@@ -1754,9 +1755,16 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 		if (pEnemyLock != nullptr)
 		{
 			D3DXVECTOR3 posEnemy = pEnemyLock->GetMtxPos(0);
-			D3DXVECTOR3 moveEnemy = pEnemyLock->GetMove() * 0.8f;
+			D3DXVECTOR3 moveEnemy = pEnemyLock->GetMove();
 
 			D3DXVECTOR3 posPridiction = universal::LinePridiction(posMazzle, SPEED_BULLET, posEnemy, moveEnemy);
+
+			posPridiction +=
+			{
+				(float)universal::RandRange(RAND_SHOT, -RAND_SHOT),
+				(float)universal::RandRange(RAND_SHOT, -RAND_SHOT),
+				(float)universal::RandRange(RAND_SHOT, -RAND_SHOT),
+			};
 
 			D3DXVECTOR3 vecDiff = posPridiction - posMazzle;
 
@@ -1770,7 +1778,7 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
 
 	// 熱量を加算
-	m_info.aParam[PARAM_GUN] += 0.3f;
+	m_info.aParam[PARAM_GUN] += 0.1f;
 
 	// エフェクト発生
 	CAnimEffect3D *pAnimManager = CAnimEffect3D::GetInstance();

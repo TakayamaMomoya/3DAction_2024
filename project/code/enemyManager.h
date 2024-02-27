@@ -92,6 +92,7 @@ private:
 	CEnemy *m_pEnemyLockon;	// ロックオンしてる敵
 	bool m_bLockTarget;	// ターゲットをロックしているかどうか
 	CUI *m_pCursor;	// ロックオンカーソル
+	CUI *m_pIsLock;	// ロックしてるかの表示
 	CFan2D *m_pObjectGauge;	// ゲージのポインタ
 	CFan2D *m_pObjectFrame;	// フレームのポインタ
 	bool m_bEndSpawn;	// スポーン終了フラグ

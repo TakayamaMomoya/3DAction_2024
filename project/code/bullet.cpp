@@ -105,7 +105,7 @@ HRESULT CBullet::Init(void)
 			m_pObject3D->SetIdxTexture(nIdx);
 			m_pObject3D->SetColor(m_col);
 			m_pObject3D->EnableAdd(true);
-			m_pObject3D->SetFactSB(40.0f);
+			m_pObject3D->SetFactSB(100.0f);
 			m_pObject3D->SetAlphaTest(60);
 		}
 	}
