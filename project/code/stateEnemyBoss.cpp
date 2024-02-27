@@ -32,6 +32,7 @@
 #include "debrisSpawner.h"
 #include "sound.h"
 #include "checkPointManager.h"
+#include "UIManager.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -1311,6 +1312,14 @@ void CStateBossDeath::Init(CEnemyBoss *pBoss)
 			pAnim->SetSize(2000.0f, 1400.0f);
 		}
 	}
+
+	// UI‚ð”ñ•\Ž¦‚É‚·‚é
+	CUIManager *pUIManager = CUIManager::GetInstance();
+
+	if (pUIManager != nullptr)
+	{
+		pUIManager->EnableDisp(false);
+	}
 }
 
 void CStateBossDeath::Move(CEnemyBoss *pBoss)
@@ -1392,6 +1401,14 @@ void CStateBossAfterDeath::Init(CEnemyBoss *pBoss)
 	CGame::SetState(CGame::STATE::STATE_END);
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_AFTER_DEATH);
+
+	// UI‚ð”ñ•\Ž¦‚É‚·‚é
+	CUIManager *pUIManager = CUIManager::GetInstance();
+
+	if (pUIManager != nullptr)
+	{
+		pUIManager->EnableDisp(true);
+	}
 }
 
 void CStateBossAfterDeath::Move(CEnemyBoss *pBoss)

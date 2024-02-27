@@ -13,7 +13,6 @@
 #include "player.h"
 #include "texture.h"
 #include "enemyManager.h"
-#include "enemy.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -145,6 +144,18 @@ void CLimit::Update(void)
 			m_info.pGuide->SetPosition(posGuide);
 		}
 	}
+
+	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
+
+	if (pEnemyManager != nullptr)
+	{
+		std::list<CEnemy*> listEnemy = pEnemyManager->GetListRanking();
+
+		for (auto pEnemy : listEnemy)
+		{
+			CheckLimit((CObject*)pEnemy);
+		}
+	}
 }
 
 //=====================================================
@@ -197,22 +208,6 @@ D3DXVECTOR3 CLimit::CheckLimit(CObject *pObj, float *pDiff)
 		{
 			posObject.z = pos.z;
 		}
-	}
-
-	if (fDiff * fDiff < DIST_DISP * DIST_DISP)
-	{
-		CreateGuide();
-	}
-	else
-	{
-		DeleteGuide();
-	}
-
-	if (m_info.pGuide != nullptr)
-	{
-		SetColGuide(fDiff);
-
-		m_info.pGuide->SetPosition(posGuide);
 	}
 
 	pObj->SetPosition(posObject);
