@@ -23,6 +23,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "animEffect3D.h"
+#include "guideInput.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -60,6 +61,8 @@ HRESULT CTutorial::Init(void)
 	CPlayer::Create();
 
 	CUIManager::Create();
+
+	CGuideInput::Create();
 
 	CEnemyManager::Create();
 
@@ -162,6 +165,8 @@ void CTutorial::Update(void)
 	{
 		SpawnEnemy();
 	}
+
+	SetCursorPos((int)SCRN_MID.x, (int)SCRN_MID.y);
 }
 
 //=====================================================

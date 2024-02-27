@@ -288,6 +288,9 @@
     <ClCompile Include="code\tutorial.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
+    <ClCompile Include="code\guideInput.cpp">
+      <Filter>ソース ファイル\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -538,6 +541,9 @@
     </ClInclude>
     <ClInclude Include="code\tutorial.h">
       <Filter>ソース ファイル\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="code\guideInput.h">
+      <Filter>ソース ファイル\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
