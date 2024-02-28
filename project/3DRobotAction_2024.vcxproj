@@ -231,6 +231,7 @@
     <ClCompile Include="code\scene.cpp" />
     <ClCompile Include="code\skybox.cpp" />
     <ClCompile Include="code\slow.cpp" />
+    <ClCompile Include="code\smoke.cpp" />
     <ClCompile Include="code\sound.cpp" />
     <ClCompile Include="code\stateEnemyBoss.cpp" />
     <ClCompile Include="code\string2D.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="code\scene.h" />
     <ClInclude Include="code\skybox.h" />
     <ClInclude Include="code\slow.h" />
+    <ClInclude Include="code\smoke.h" />
     <ClInclude Include="code\sound.h" />
     <ClInclude Include="code\stateEnemyBoss.h" />
     <ClInclude Include="code\string2D.h" />

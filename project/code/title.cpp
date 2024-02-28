@@ -22,6 +22,7 @@
 #include "objectX.h"
 #include "skybox.h"
 #include "player.h"
+#include "smoke.h"
 
 //*****************************************************
 // マクロ定義
@@ -46,6 +47,7 @@ namespace
 	D3DXVECTOR2 SIZE_MENU = { 200.0f,60.0f };	//　メニューのサイズ
 	const D3DXCOLOR COL_INITIAL_MENU = { 0.4f,0.4f,0.4f,1.0f };	// メニュー項目の初期色
 	const D3DXCOLOR COL_CURRENT_MENU = { 1.0f,1.0f,1.0f,1.0f };	// メニュー項目の選択色
+	const D3DXVECTOR3 POS_PLAYER = { -154.31f, 82.62f, 600.51f };	// プレイヤーモデルの位置
 }
 
 //=====================================================
@@ -57,6 +59,7 @@ CTitle::CTitle()
 	m_pLogo = nullptr;
 	m_pMotion = nullptr;
 	m_pBehavior = nullptr;
+	m_fTImerSmoke = 0.0f;
 }
 
 //=====================================================
@@ -132,7 +135,7 @@ HRESULT CTitle::Init(void)
 
 	if (m_pMotion != nullptr)
 	{
-		m_pMotion->SetPosition(D3DXVECTOR3(-154.31f, 82.62f, 600.51f));
+		m_pMotion->SetPosition(POS_PLAYER);
 		m_pMotion->SetMotion(CPlayer::MOTION::MOTION_NEUTRAL_TITLE);
 		m_pMotion->InitPose(CPlayer::MOTION::MOTION_NEUTRAL_TITLE);
 	}
@@ -168,6 +171,24 @@ void CTitle::Update(void)
 	if (m_pBehavior != nullptr)
 	{
 		m_pBehavior->Update(this);
+	}
+
+	m_fTImerSmoke += CManager::GetDeltaTime();
+
+	if (m_fTImerSmoke >= 0.3f)
+	{
+		D3DXVECTOR3 pos = POS_PLAYER;
+
+		pos +=
+		{
+			(float)universal::RandRange(500, -500),
+			0.0f,
+			(float)universal::RandRange(500, -500),
+		};
+
+		CSmoke::Create(pos);
+
+		m_fTImerSmoke = 0.0f;
 	}
 }
 

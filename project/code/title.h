@@ -52,6 +52,7 @@ private:
 	CObject2D* m_pLogo;		// タイトルロゴのポインタ
 	CMotion *m_pMotion;	// プレイヤーモデル
 	CTitleBehavior *m_pBehavior;	// ビヘイビア
+	float m_fTImerSmoke;	// 煙のスポーンタイマー
 };
 
 class CTitleBehavior
