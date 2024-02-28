@@ -1938,7 +1938,7 @@ void CPlayer::EndMelee(void)
 
 	if (pEnemyManager != nullptr)
 	{
-
+		pEnemyManager->EnableLockTarget(false);
 	}
 }
 
