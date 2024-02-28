@@ -33,8 +33,9 @@ namespace
 {
 const float TIME_SPAWN = 3.0f;	// スポーンまでの間隔
 const D3DXVECTOR3 POS_SKIP = { SCREEN_WIDTH * 0.9f,SCREEN_HEIGHT * 0.85f, 0.0f };	// スキップ表示の位置
+const D3DXVECTOR3 POS_GAUGE = { POS_SKIP.x + 2.0f,POS_SKIP.y + 28.0f, 0.0f };	// スキップ表示の位置
 const D3DXVECTOR2 SIZE_SKIP = { 80.0f,60.0f };	// スキップ表示のサイズ
-const D3DXVECTOR2 SIZE_GAUGE = { 40.0f,20.0f };	// スキップゲージのサイズ
+const D3DXVECTOR2 SIZE_GAUGE = { 70.0f,26.0f };	// スキップゲージのサイズ
 const char* PATH_SKIP = "data\\TEXTURE\\UI\\tutorial06.png";	// スキップ表示のパス
 }
 
@@ -138,6 +139,21 @@ HRESULT CTutorial::Init(void)
 	// 初期敵スポーン
 	SpawnEnemy();
 
+	// スキップのゲージ
+	if (m_pSkipGauge == nullptr)
+	{
+		m_pSkipGauge = CUI::Create();
+
+		if (m_pSkipGauge != nullptr)
+		{
+			D3DXVECTOR3 pos = POS_GAUGE;
+
+			m_pSkipGauge->SetSize(SIZE_GAUGE.x, SIZE_GAUGE.y);
+			m_pSkipGauge->SetPosition(pos);
+			m_pSkipGauge->SetVtx();
+		}
+	}
+
 	// スキップのキャプション
 	CUI *pCaption = CUI::Create();
 
@@ -151,24 +167,6 @@ HRESULT CTutorial::Init(void)
 
 		int nIdx = Texture::GetIdx(PATH_SKIP);
 		pCaption->SetIdxTexture(nIdx);
-	}
-
-	// スキップのゲージ
-	if (m_pSkipGauge == nullptr)
-	{
-		m_pSkipGauge = CUI::Create();
-
-		if (m_pSkipGauge != nullptr)
-		{
-			D3DXVECTOR3 pos = POS_SKIP;
-
-			m_pSkipGauge->SetSize(SIZE_SKIP.x, SIZE_SKIP.y);
-			m_pSkipGauge->SetPosition(pos);
-			m_pSkipGauge->SetVtx();
-
-			int nIdx = Texture::GetIdx(PATH_SKIP);
-			m_pSkipGauge->SetIdxTexture(nIdx);
-		}
 	}
 
 	return S_OK;
