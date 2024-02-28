@@ -30,6 +30,7 @@ public:
 		TYPE_NORMAL,	// 通常敵
 		TYPE_BOMB,	// 爆弾敵
 		TYPE_DRONE,	// ドローン敵
+		TYPE_TUTORIAL,	// チュートリアル敵
 		TYPE_BOSS,		// ボス敵
 		TYPE_MAX
 	};

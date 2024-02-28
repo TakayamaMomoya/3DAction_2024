@@ -33,6 +33,7 @@ const char* PATH_BODY_ENEMY[CEnemy::TYPE::TYPE_MAX] =
 		"data\\MOTION\\motionHeli.txt",
 		"data\\MOTION\\motionBomb.txt",
 		"data\\MOTION\\motionDrone01.txt",
+		"data\\MOTION\\motionHeli.txt",
 		"data\\MOTION\\motionArms00.txt",
 };
 }

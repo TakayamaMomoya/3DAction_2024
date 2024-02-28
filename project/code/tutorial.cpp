@@ -73,6 +73,8 @@ HRESULT CTutorial::Init(void)
 	if (pMesh != nullptr)
 	{
 		pMesh->Reset();
+		int nIdx = Texture::GetIdx("data\\TEXTURE\\MATERIAL\\concrete.jpg");
+		pMesh->SetIdxTexture(nIdx);
 	}
 
 	D3DXVECTOR3 aPos[4] =
@@ -188,7 +190,7 @@ void CTutorial::SpawnEnemy(void)
 
 	for (int i = 0; i < sizeof(aPosEnemy) / sizeof(D3DXVECTOR3); i++)
 	{
-		CEnemy::TYPE type = CEnemy::TYPE::TYPE_NORMAL;
+		CEnemy::TYPE type = CEnemy::TYPE::TYPE_TUTORIAL;
 
 		if (i % 3 == 0)
 		{

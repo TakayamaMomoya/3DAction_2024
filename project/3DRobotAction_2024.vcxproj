@@ -186,6 +186,7 @@
     <ClCompile Include="code\enemyDrone.cpp" />
     <ClCompile Include="code\enemyManager.cpp" />
     <ClCompile Include="code\enemyNormal.cpp" />
+    <ClCompile Include="code\enemyTutorial.cpp" />
     <ClCompile Include="code\explosionAttack.cpp" />
     <ClCompile Include="code\explosionspawner.cpp" />
     <ClCompile Include="code\fade.cpp" />
@@ -272,6 +273,7 @@
     <ClInclude Include="code\enemyDrone.h" />
     <ClInclude Include="code\enemyManager.h" />
     <ClInclude Include="code\enemyNormal.h" />
+    <ClInclude Include="code\enemyTutorial.h" />
     <ClInclude Include="code\explosionAttack.h" />
     <ClInclude Include="code\explosionspawner.h" />
     <ClInclude Include="code\fade.h" />

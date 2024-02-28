@@ -12,6 +12,7 @@
 #include "texture.h"
 #include "inputManager.h"
 #include "UI.h"
+#include "manager.h"
 
 //*****************************************************
 // 定数定義
@@ -19,12 +20,20 @@
 namespace
 {
 const D3DXVECTOR2 SIZE_GUIDE = { 90.0f,25.0f };	// ガイド表示のサイズ
-const D3DXVECTOR3 POS_GUIDE = { SCREEN_WIDTH - SIZE_GUIDE.x - 10.0f,30.0f,0.0f };	// ガイド表示の始めの位置
+const D3DXVECTOR3 POS_GUIDE = { SCREEN_WIDTH - SIZE_GUIDE.x,30.0f,0.0f };	// ガイド表示の始めの位置
 const char* PATH_GUIDE[CGuideInput::INPUT_MAX] =
 {// ガイド表示のテクスチャパス
-
+	"data\\TEXTURE\\UI\\tutorial00.png",
+	"data\\TEXTURE\\UI\\tutorial01.png",
+	"data\\TEXTURE\\UI\\tutorial02.png",
+	"data\\TEXTURE\\UI\\tutorial03.png",
+	"data\\TEXTURE\\UI\\tutorial04.png",
+	"data\\TEXTURE\\UI\\tutorial05.png",
 };
-const char* PATH_FRAME = "data\\TEXTURE\\UI\\isLock00.png";	// フレームのパス
+const char* PATH_FRAME = "data\\TEXTURE\\UI\\guideFrame00.png";	// フレームのパス
+const D3DXCOLOR COL_INITIAL = { 0.2f,0.2f,0.2f,1.0f };	// 初期色
+const D3DXCOLOR COL_CURRENT = { 1.0f,1.0f,1.0f,1.0f };	// 選択色
+const float TIME_GROW = 0.5f;	// 光る時間
 }
 
 //=====================================================
@@ -70,22 +79,34 @@ HRESULT CGuideInput::Init(void)
 {
 	int nNum = 0;
 
-	for (SInfoGuide guide : m_aGuide)
+	for (int i = 0; i < INPUT_MAX;i++)
 	{
-		guide.pFrame = CUI::Create();
+		m_aGuide[i].pFrame = CUI::Create();
+		CUI *pCaption = CUI::Create();
 
-		if (guide.pFrame != nullptr)
+		if (m_aGuide[i].pFrame != nullptr && pCaption != nullptr)
 		{
 			D3DXVECTOR3 pos = POS_GUIDE;
 
 			pos.y += SIZE_GUIDE.y * nNum * 2;
 
-			guide.pFrame->SetSize(SIZE_GUIDE.x, SIZE_GUIDE.y);
-			guide.pFrame->SetPosition(pos);
-			guide.pFrame->SetVtx();
+			// フレーム
+			m_aGuide[i].pFrame->SetSize(SIZE_GUIDE.x, SIZE_GUIDE.y);
+			m_aGuide[i].pFrame->SetPosition(pos);
+			m_aGuide[i].pFrame->SetCol(COL_CURRENT);
+			m_aGuide[i].pFrame->SetVtx();
 
 			int nIdx = Texture::GetIdx(PATH_FRAME);
-			guide.pFrame->SetIdxTexture(nIdx);
+			m_aGuide[i].pFrame->SetIdxTexture(nIdx);
+
+			// キャプション
+			pCaption->SetSize(SIZE_GUIDE.x, SIZE_GUIDE.y);
+			pCaption->SetPosition(pos);
+			pCaption->SetCol(COL_CURRENT);
+			pCaption->SetVtx();
+
+			nIdx = Texture::GetIdx(PATH_GUIDE[i]);
+			pCaption->SetIdxTexture(nIdx);
 		}
 
 		nNum++;
@@ -99,9 +120,9 @@ HRESULT CGuideInput::Init(void)
 //=====================================================
 void CGuideInput::Uninit(void)
 {
-	for (SInfoGuide guide : m_aGuide)
+	for (int i = 0; i < INPUT_MAX; i++)
 	{
-		Object::DeleteObject((CObject**)&guide.pFrame);
+		Object::DeleteObject((CObject**)&m_aGuide[i].pFrame);
 	}
 
 	// 自身の破棄
@@ -113,7 +134,72 @@ void CGuideInput::Uninit(void)
 //=====================================================
 void CGuideInput::Update(void)
 {
+	// 入力の検出
+	CheckInput();
 
+	for (int i = 0; i < INPUT_MAX; i++)
+	{// フレームの色管理
+		if (m_aGuide[i].pFrame != nullptr)
+		{
+			D3DXCOLOR col = m_aGuide[i].pFrame->GetCol();
+
+			if (m_aGuide[i].fTime <= 0.0f)
+			{
+				col += (COL_INITIAL - col) * 0.05f;
+			}
+			else
+			{
+				col += (COL_CURRENT - col) * 0.4f;
+			}
+
+			m_aGuide[i].pFrame->SetCol(col);
+
+			float fDeltaTime = CManager::GetDeltaTime();
+
+			m_aGuide[i].fTime -= fDeltaTime;
+		}
+	}
+}
+
+//=====================================================
+// 入力の検出
+//=====================================================
+void CGuideInput::CheckInput(void)
+{
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager == nullptr)
+		return;
+
+	if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
+	{
+		m_aGuide[INPUT_JUMP].fTime = TIME_GROW;
+	}
+
+	if (pInputManager->GetPress(CInputManager::BUTTON_SHOT))
+	{
+		m_aGuide[INPUT_SHOT].fTime = TIME_GROW;
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE))
+	{
+		m_aGuide[INPUT_MELEE].fTime = TIME_GROW;
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_DODGE))
+	{
+		m_aGuide[INPUT_DODGE].fTime = TIME_GROW;
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_GRAB))
+	{
+		m_aGuide[INPUT_GRAB].fTime = TIME_GROW;
+	}
+
+	if (pInputManager->GetTrigger(CInputManager::BUTTON_LOCK))
+	{
+		m_aGuide[INPUT_LOCK].fTime = TIME_GROW;
+	}
 }
 
 //=====================================================

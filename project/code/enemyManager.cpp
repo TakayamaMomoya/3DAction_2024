@@ -14,6 +14,7 @@
 #include "enemyNormal.h"
 #include "enemyBomb.h"
 #include "enemyDrone.h"
+#include "enemyTutorial.h"
 #include "enemyBoss.h"
 #include "checkPointManager.h"
 #include "checkPointBehavior.h"
@@ -115,6 +116,11 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 		case CEnemy::TYPE_DRONE:
 
 			pEnemy = new CEnemyDrone;
+
+			break;
+		case CEnemy::TYPE_TUTORIAL:
+
+			pEnemy = new CEnemyTutorial;
 
 			break;
 		default:

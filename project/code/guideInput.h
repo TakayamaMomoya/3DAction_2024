@@ -45,7 +45,10 @@ private:
 	struct SInfoGuide
 	{
 		CUI *pFrame;	// フレーム
+		float fTime;	// 光る時間
 	};
+
+	void CheckInput(void);
 
 	SInfoGuide m_aGuide[INPUT_MAX];	// ガイド表示の情報
 };
