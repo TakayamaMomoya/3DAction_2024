@@ -361,6 +361,13 @@ void CPause::Input(void)
 	if (pInputManager->GetTrigger(CInputManager::BUTTON_AXIS_UP))
 	{
 		m_menu = (MENU)((m_menu + MENU_MAX - 1) % MENU_MAX);
+		
+		if (pSound != nullptr && m_bSound == false)
+		{
+			pSound->Play(pSound->LABEL_SE_PAUSE_ARROW);
+
+			m_bSound = true;
+		}
 	}
 
 	if (m_apMenu[m_menu] != nullptr)
