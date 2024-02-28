@@ -34,8 +34,10 @@ public:
 
 private:
 	void SpawnEnemy(void);
+	void InputSkip(void);
 
 	float m_fSpawnCnt;
+	float m_fCntSkip;	// スキップカウンター
 	CUI *m_pSkipGauge;	// スキップゲージ
 };
 

@@ -25,6 +25,8 @@
 #include "texture.h"
 #include "animEffect3D.h"
 #include "guideInput.h"
+#include "inputManager.h"
+#include "fade.h"
 
 //*****************************************************
 // 定数定義
@@ -37,6 +39,7 @@ const D3DXVECTOR3 POS_GAUGE = { POS_SKIP.x + 2.0f,POS_SKIP.y + 28.0f, 0.0f };	//
 const D3DXVECTOR2 SIZE_SKIP = { 80.0f,60.0f };	// スキップ表示のサイズ
 const D3DXVECTOR2 SIZE_GAUGE = { 70.0f,26.0f };	// スキップゲージのサイズ
 const char* PATH_SKIP = "data\\TEXTURE\\UI\\tutorial06.png";	// スキップ表示のパス
+const float TIME_SKIP = 2.0f;	// スキップにかかる時間
 }
 
 //=====================================================
@@ -45,6 +48,7 @@ const char* PATH_SKIP = "data\\TEXTURE\\UI\\tutorial06.png";	// スキップ表示のパ
 CTutorial::CTutorial()
 {
 	m_fSpawnCnt = 0.0f;
+	m_fCntSkip = 0.0f;
 	m_pSkipGauge = nullptr;
 }
 
@@ -195,22 +199,22 @@ void CTutorial::Update(void)
 	// シーンの更新
 	CScene::Update();
 
+	// カメラ更新
 	CCamera *pCamera = CManager::GetCamera();
 
-	if (pCamera == nullptr)
+	if (pCamera != nullptr)
 	{
-		return;
+		pCamera->Update();
+		pCamera->Quake();
+
+		pCamera->MoveDist(0.3f);
 	}
 
-	pCamera->Update();
-	pCamera->Quake();
-
-	pCamera->MoveDist(0.3f);
-
+	// 敵のスポーン
 	int nNumEnemy = CEnemy::GetNumAll();
 
 	if (nNumEnemy == 0)
-	{
+	{// 全滅から一定時間でスポーン
 		float fDeltaTime = CManager::GetDeltaTime();
 
 		m_fSpawnCnt += fDeltaTime;
@@ -223,7 +227,11 @@ void CTutorial::Update(void)
 		}
 	}
 
+	// カーソルの固定
 	SetCursorPos((int)SCRN_MID.x, (int)SCRN_MID.y);
+
+	// スキップの入力
+	InputSkip();
 }
 
 //=====================================================
@@ -273,6 +281,61 @@ void CTutorial::SpawnEnemy(void)
 		{
 			pEnemy->SetPosDest(aPosEnemy[i]);
 		}
+	}
+}
+
+//=====================================================
+// スキップの入力
+//=====================================================
+void CTutorial::InputSkip(void)
+{
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager == nullptr)
+		return;
+
+	if (pInputManager->GetPress(CInputManager::BUTTON_SKIP))
+	{
+		float fDeltaTime = CManager::GetDeltaTime();
+
+		m_fCntSkip += fDeltaTime;
+
+		if (m_fCntSkip >= TIME_SKIP)
+		{// 一定時間長押しでタイトルに遷移
+			CFade *pFade = CFade::GetInstance();
+
+			if (pFade != nullptr)
+			{
+				pFade->SetFade(CScene::MODE_TITLE);
+			}
+		}
+	}
+	else
+	{
+		if (m_fCntSkip < TIME_SKIP)
+		{
+			m_fCntSkip = 0;
+		}
+	}
+
+	if (m_pSkipGauge != nullptr)
+	{
+		float fRate = m_fCntSkip / TIME_SKIP;
+
+		universal::LimitValue(&fRate, 1.0f, 0.0f);
+
+		float fWidthDest = SIZE_GAUGE.x * fRate;
+		float fWidth = m_pSkipGauge->GetWidth();
+
+		D3DXVECTOR3 pos = POS_GAUGE;
+
+		fWidth += (fWidthDest - fWidth) * 0.2f;
+
+		pos.x += fWidth - SIZE_GAUGE.x;
+
+		m_pSkipGauge->SetPosition(pos);
+		m_pSkipGauge->SetSize(fWidth, SIZE_GAUGE.y);
+		m_pSkipGauge->SetVtx();
 	}
 }
 

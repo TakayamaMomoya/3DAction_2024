@@ -142,6 +142,13 @@ void CInputManager::Update(void)
 		pMouse->GetTrigger(CInputMouse::BUTTON_RMB)
 	);
 
+	// スキップボタン
+	m_info.abPress[BUTTON_SKIP] =
+	(
+		pJoypad->GetPress(CInputJoypad::PADBUTTONS_START,0) ||
+		pKeyboard->GetPress(DIK_TAB)
+	);
+
 	// ジャンプ
 	m_info.abTrigger[BUTTON_JUMP] =
 	(
