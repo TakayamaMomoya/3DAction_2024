@@ -29,6 +29,8 @@ public:
 
 private:
 	void SpawnEnemy(void);
+
+	float m_fSpawnCnt;
 };
 
 #endif

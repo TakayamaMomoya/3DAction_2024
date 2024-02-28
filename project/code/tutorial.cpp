@@ -30,7 +30,7 @@
 //*****************************************************
 namespace
 {
-
+const float TIME_SPAWN = 3.0f;	// ƒXƒ|[ƒ“‚Ü‚Å‚ÌŠÔŠu
 }
 
 //=====================================================
@@ -38,7 +38,7 @@ namespace
 //=====================================================
 CTutorial::CTutorial()
 {
-
+	m_fSpawnCnt = 0.0f;
 }
 
 //=====================================================
@@ -129,6 +129,8 @@ HRESULT CTutorial::Init(void)
 		pRenderer->EnableFog(false);
 	}
 
+	SpawnEnemy();
+
 	return S_OK;
 }
 
@@ -165,7 +167,16 @@ void CTutorial::Update(void)
 
 	if (nNumEnemy == 0)
 	{
-		SpawnEnemy();
+		float fDeltaTime = CManager::GetDeltaTime();
+
+		m_fSpawnCnt += fDeltaTime;
+
+		if (m_fSpawnCnt >= TIME_SPAWN)
+		{
+			SpawnEnemy();
+
+			m_fSpawnCnt = 0.0f;
+		}
 	}
 
 	SetCursorPos((int)SCRN_MID.x, (int)SCRN_MID.y);
@@ -186,13 +197,15 @@ void CTutorial::SpawnEnemy(void)
 		{0.0f,1000.0f,0.0f},
 		{1000.0f,1000.0f,0.0f},
 		{-1000.0f,1000.0f,0.0f},
+		{-3000.0f,1500.0f,0.0f},
+		{-3300.0f,1200.0f,300.0f},
 	};
 
 	for (int i = 0; i < sizeof(aPosEnemy) / sizeof(D3DXVECTOR3); i++)
 	{
 		CEnemy::TYPE type = CEnemy::TYPE::TYPE_TUTORIAL;
 
-		if (i % 3 == 0)
+		if (i % 10 == 0)
 		{
 			type = CEnemy::TYPE::TYPE_BOMB;
 		}
