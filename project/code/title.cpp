@@ -388,6 +388,7 @@ void CTitleMenu::Input(void)
 	if (pInput == nullptr)
 		return;
 
+	// 項目選択
 	if (pInput->GetTrigger(CInputManager::BUTTON_AXIS_UP))
 	{
 		m_menu = (MENU)((m_menu + MENU_MAX - 1) % MENU_MAX);
@@ -395,6 +396,38 @@ void CTitleMenu::Input(void)
 	else if (pInput->GetTrigger(CInputManager::BUTTON_AXIS_DOWN))
 	{
 		m_menu = (MENU)((m_menu + 1) % MENU_MAX);
+	}
+
+	if (pInput->GetTrigger(CInputManager::BUTTON_ENTER))
+	{// フェード処理
+		Fade();
+	}
+}
+
+void CTitleMenu::Fade(void)
+{// 各種フェード
+	CFade *pFade = CFade::GetInstance();
+
+	if (pFade == nullptr)
+		return;
+
+	if (pFade->GetState() != CFade::FADE_NONE)
+		return;
+
+	switch (m_menu)
+	{
+	case CTitleMenu::MENU_GAME:
+
+		pFade->SetFade(CScene::MODE_GAME);
+
+		break;
+	case CTitleMenu::MENU_TRANING:
+
+		pFade->SetFade(CScene::MODE_TUTORIAL);
+
+		break;
+	default:
+		break;
 	}
 }
 

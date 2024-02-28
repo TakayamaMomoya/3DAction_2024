@@ -94,6 +94,7 @@ public:
 private:
 	void Input(void);
 	void ManageCursor(void);
+	void Fade(void);
 
 	CObject2D *m_apMenu[MENU_MAX];	// メニュー項目
 	CObject2D *m_pCursor;	// カーソル
