@@ -178,27 +178,22 @@ void CResultPlayerScore::Uninit(CResult *pResult)
 
 void CResultPlayerScore::Update(CResult *pResult)
 {// 更新
+	// フェードする操作
 	CInputManager *pInputManager = CInputManager::GetInstance();
 
 	if (pInputManager != nullptr)
 	{
 		if (pInputManager->GetTrigger(CInputManager::BUTTON_ENTER))
-		{// ランキング表示に移行
-			/*CFade *pFade = CFade::GetInstance();
+		{
+			CFade *pFade = CFade::GetInstance();
 
 			if (pFade != nullptr)
 			{
 				pFade->SetFade(CScene::MODE_TITLE);
-
-				return;
-			}*/
-
-			pResult->ChangeBehavior(new CResultRanking);
-
-			return;
+			}
 		}
 
-		
+		return;
 	}
 }
 

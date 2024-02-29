@@ -22,6 +22,7 @@ class CObject3D;
 class CEnemy;
 class CHeat;
 class CBoostEffect;
+class COrbit;
 
 //*****************************************************
 // クラスの定義
@@ -138,6 +139,7 @@ private:
 		bool bLand;	// 着地しているかどうか
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
+		COrbit *pOrbitWeapon;	// 武器の軌跡
 	};
 
 	void Load(void);

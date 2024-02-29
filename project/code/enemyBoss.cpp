@@ -500,6 +500,8 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 
 	if (nMotion == MOTION_APPER)
 	{// èoåªéûÇÃâå
+		Sound::Play(CSound::LABEL_SE_LAND00);
+
 		D3DXVECTOR3 posParticle = GetPosition();
 
 		CParticle::Create(posParticle, CParticle::TYPE::TYPE_APPER_SMOKE);

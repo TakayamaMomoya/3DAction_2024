@@ -30,14 +30,17 @@ public:
 		LABEL_SE_EXPLOSION00,					// 爆発０
 		LABEL_SE_EXPLOSION01,					// 爆発１
 		LABEL_SE_DASH00,					// ダッシュ０
+		LABEL_SE_DASH01,					// ダッシュ１
 		LABEL_SE_WARNING00,					// 警告０
+		LABEL_SE_LAND00,					// 着地０
+		LABEL_SE_IMPACT00,					// 衝撃０
+		LABEL_SE_IMPACT01,					// 衝撃１
 
 		LABEL_SE_PAUSE_MENU,			// ポーズ
 		LABEL_SE_PAUSE_ARROW,			// ポーズ移動
 		LABEL_SE_PAUSE_ENTER,			// ポーズ選択
 		LABEL_MAX
 	} LABEL;
-
 	typedef enum
 	{
 		FADESTATE_NONE = 0,	//何もしていない状態
@@ -100,7 +103,11 @@ private:
 		{ "data/SOUND/SE/explosion00.wav",0 },					// 爆発０
 		{ "data/SOUND/SE/explosion01.wav",0 },					// 爆発１
 		{ "data/SOUND/SE/dash00.wav",0 },					// ダッシュ０
+		{ "data/SOUND/SE/dash01.wav",0 },					// ダッシュ１
 		{ "data/SOUND/SE/warning00.wav",-1 },					// 警告０
+		{ "data/SOUND/SE/land00.wav",0 },					// 着地０
+		{ "data/SOUND/SE/impact00.wav",0 },					// 衝撃０
+		{ "data/SOUND/SE/impact01.wav",0 },					// 衝撃１
 
 		{ "data/SOUND/SE/pause.wav",0 },				// ポーズ
 		{ "data/SOUND/SE/pause_arrow.wav",0 },			// 選択

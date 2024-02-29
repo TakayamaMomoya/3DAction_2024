@@ -412,10 +412,14 @@ void CTitleMenu::Input(void)
 	// €–Ú‘I‘ð
 	if (pInput->GetTrigger(CInputManager::BUTTON_AXIS_UP))
 	{
+		Sound::Play(CSound::LABEL_SE_PAUSE_ARROW);
+
 		m_menu = (MENU)((m_menu + MENU_MAX - 1) % MENU_MAX);
 	}
 	else if (pInput->GetTrigger(CInputManager::BUTTON_AXIS_DOWN))
 	{
+		Sound::Play(CSound::LABEL_SE_PAUSE_ARROW);
+
 		m_menu = (MENU)((m_menu + 1) % MENU_MAX);
 	}
 
@@ -434,6 +438,8 @@ void CTitleMenu::Fade(void)
 
 	if (pFade->GetState() != CFade::FADE_NONE)
 		return;
+
+	Sound::Play(CSound::LABEL_SE_START_GAME);
 
 	switch (m_menu)
 	{

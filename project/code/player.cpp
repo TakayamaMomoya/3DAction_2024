@@ -36,6 +36,7 @@
 #include "inpact.h"
 #include "sound.h"
 #include "UIManager.h"
+#include "orbit.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -325,42 +326,17 @@ void CPlayer::Uninit(void)
 {
 	m_pPlayer = nullptr;
 
-	if (m_info.pCollisionSphere != nullptr)
-	{
-		m_info.pCollisionSphere->Uninit();
-		m_info.pCollisionSphere = nullptr;
-	}
-
-	if (m_info.pCollisionCube != nullptr)
-	{
-		m_info.pCollisionCube->Uninit();
-		m_info.pCollisionCube = nullptr;
-	}
-
-	if (m_info.pClsnAttack != nullptr)
-	{
-		m_info.pClsnAttack->Uninit();
-		m_info.pClsnAttack = nullptr;
-	}
-
-	for (int i = 0; i < PARAM_MAX; i++)
-	{
-		if (m_info.apHeatUI[i] != nullptr)
-		{
-			m_info.apHeatUI[i]->Uninit();
-			m_info.apHeatUI[i] = nullptr;
-		}
-	}
+	Object::DeleteObject((CObject**)&m_info.pCollisionSphere);
+	Object::DeleteObject((CObject**)&m_info.pCollisionCube);
+	Object::DeleteObject((CObject**)&m_info.pClsnAttack);
+	Object::DeleteObject((CObject**)&m_info.apHeatUI[0],PARAM_MAX);
+	Object::DeleteObject((CObject**)&m_info.pOrbitWeapon);
 
 	if (m_info.pThruster != nullptr)
 	{
 		for (int i = 0; i < m_info.nNumThruster; i++)
 		{
-			if (m_info.pThruster[i].pFire != nullptr)
-			{
-				m_info.pThruster[i].pFire->Uninit();
-				m_info.pThruster[i].pFire = nullptr;
-			}
+			Object::DeleteObject((CObject**)&m_info.pThruster[i].pFire);
 		}
 	}
 
@@ -1478,7 +1454,25 @@ void CPlayer::Boost(void)
 			m_info.pThruster[i].pFire->SetRotation(rot);
 			m_info.pThruster[i].pFire->SetPosition(posBoost);
 		}
+	}
 
+	// •Ší‚Ì‹OÕ
+	if (nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2)
+	{
+		if (m_info.pOrbitWeapon == nullptr)
+		{
+			D3DXMATRIX mtx = *GetParts(16)->pParts->GetMatrix();
+			D3DXVECTOR3 offset = { 0.0f,0.0f,-200.0f };
+
+			m_info.pOrbitWeapon = COrbit::Create(mtx, D3DXVECTOR3(0.0f, 0.0f, 0.0f), offset, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
+		}
+
+		if (m_info.pOrbitWeapon != nullptr)
+		{
+			D3DXMATRIX mtx = *GetParts(16)->pParts->GetMatrix();
+
+			m_info.pOrbitWeapon->SetPositionOffset(mtx, 0);
+		}
 	}
 }
 
@@ -1584,6 +1578,8 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 	if (nMotion == MOTION_APPER)
 	{// oŒ»Žž‚Ì‰Œ
+		Sound::Play(CSound::LABEL_SE_LAND00);
+
 		D3DXVECTOR3 posParticle = GetPosition();
 
 		CParticle::Create(posParticle, CParticle::TYPE::TYPE_APPER_SMOKE);
@@ -1693,6 +1689,9 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	{// ’Í‚ñ‚¾“G‚ð“Š‚°”ò‚Î‚·
 		if (m_info.pEnemyGrab != nullptr)
 		{
+			Sound::Play(CSound::LABEL_SE_IMPACT00);
+			Sound::Play(CSound::LABEL_SE_IMPACT01);
+
 			m_info.pEnemyGrab->EnableIndependent(false);
 
 			D3DXVECTOR3 offset = { 0.0f,-100.0f,0.0f };
@@ -1932,13 +1931,22 @@ CEnemy *CPlayer::GetLockOn(void)
 //=====================================================
 void CPlayer::EndMelee(void)
 {
+	if (m_info.pOrbitWeapon != nullptr)
+	{
+		D3DXMATRIX mtx = *GetParts(16)->pParts->GetMatrix();
+
+		m_info.pOrbitWeapon->SetEnd(true);
+
+		m_info.pOrbitWeapon = nullptr;
+	}
+
 	Camera::ChangeBehavior(new CLookEnemy);
 
 	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 
 	if (pEnemyManager != nullptr)
 	{
-		pEnemyManager->EnableLockTarget(false);
+		//pEnemyManager->EnableLockTarget(false);
 	}
 }
 

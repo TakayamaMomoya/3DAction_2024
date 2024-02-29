@@ -913,6 +913,8 @@ void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossStep::Init(CEnemyBoss *pBoss)
 {
+	Sound::Play(CSound::LABEL_SE_DASH01);
+
 	// ñ⁄ìIínÇê›íË
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -962,6 +964,8 @@ void CStateBossStep::Move(CEnemyBoss *pBoss)
 
 		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
 		{
+			Sound::Play(CSound::LABEL_SE_DASH01);
+
 			m_bMid = true;
 		}
 	}
