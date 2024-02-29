@@ -437,6 +437,8 @@ void CEnemyBoss::Event(EVENT_INFO *pEventInfo)
 
 	if (nMotion == MOTION_SHOT)
 	{
+		Sound::Play(CSound::LABEL_SE_SHOT04);
+
 		// ÉrÅ[ÉÄÇÃê∂ê¨
 		CBeam *pBeam = CBeam::Create();
 

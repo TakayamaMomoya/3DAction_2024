@@ -440,6 +440,8 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossStep1st::Init(CEnemyBoss *pBoss)
 {
+	Sound::Play(CSound::LABEL_SE_DASH01);
+
 	// 目的地を設定
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -491,6 +493,8 @@ void CStateBossStep1st::Move(CEnemyBoss *pBoss)
 
 		if (universal::DistCmpFlat(pos, posDest, RANGE_SLASH, nullptr))
 		{
+			Sound::Play(CSound::LABEL_SE_DASH01);
+
 			m_bMid = true;
 		}
 	}
@@ -763,6 +767,8 @@ void CStateBossSlash::Move(CEnemyBoss *pBoss)
 
 			if (universal::DistCmp(pos, posPlayer, RANGE_SLASH, nullptr))
 			{
+				Sound::Play(CSound::LABEL_SE_SHOT03);
+
 				pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_SLASH);
 
 				if (m_pOrbit == nullptr)
@@ -825,6 +831,8 @@ void CStateBossBeamSmall::Attack(CEnemyBoss *pBoss)
 
 	if (bShot)
 	{
+		Sound::Play(CSound::LABEL_SE_SHOT03);
+
 		// ビームの生成
 		CBeam *pBeam = CBeam::Create();
 
@@ -980,6 +988,8 @@ void CStateBossStep::Move(CEnemyBoss *pBoss)
 //=====================================================
 void CStateBossJump::Init(CEnemyBoss *pBoss)
 {
+	Sound::Play(CSound::LABEL_SE_DASH01);
+
 	// 目的地を設定
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -1052,6 +1062,8 @@ void CStateBossBeamAir::Init(CEnemyBoss *pBoss)
 	m_fTimer = 0.0f;
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_PRE_AIRBEAM);
+
+	Sound::Play(CSound::LABEL_SE_SHOT04);
 
 	if (m_pAnim == nullptr)
 	{// アニメーションエフェクトの生成

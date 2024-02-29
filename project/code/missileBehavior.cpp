@@ -12,6 +12,7 @@
 #include "missile.h"
 #include "player.h"
 #include "manager.h"
+#include "sound.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -244,6 +245,8 @@ void CMissileRightAngle::Update(CMissile *pMissile)
 			move += vecDiff;
 
 			pMissile->SetMove(move);
+
+			Sound::Play(CSound::LABEL_SE_SHOT03);
 		}
 	}
 	break;

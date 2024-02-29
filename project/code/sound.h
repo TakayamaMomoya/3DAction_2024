@@ -27,6 +27,8 @@ public:
 		LABEL_SE_SHOT00,					// 射撃０
 		LABEL_SE_SHOT01,					// 射撃１
 		LABEL_SE_SHOT02,					// 射撃２
+		LABEL_SE_SHOT03,					// 射撃３
+		LABEL_SE_SHOT04,					// 射撃４
 		LABEL_SE_EXPLOSION00,					// 爆発０
 		LABEL_SE_EXPLOSION01,					// 爆発１
 		LABEL_SE_DASH00,					// ダッシュ０
@@ -35,6 +37,7 @@ public:
 		LABEL_SE_LAND00,					// 着地０
 		LABEL_SE_IMPACT00,					// 衝撃０
 		LABEL_SE_IMPACT01,					// 衝撃１
+		LABEL_SE_SLASH00,					// 斬撃０
 
 		LABEL_SE_PAUSE_MENU,			// ポーズ
 		LABEL_SE_PAUSE_ARROW,			// ポーズ移動
@@ -100,6 +103,8 @@ private:
 		{ "data/SOUND/SE/shot00.wav",0 },					// 射撃０
 		{ "data/SOUND/SE/shot01.wav",0 },					// 射撃１
 		{ "data/SOUND/SE/shot02.wav",0 },					// 射撃２
+		{ "data/SOUND/SE/shot03.wav",0 },					// 射撃３
+		{ "data/SOUND/SE/shot04.wav",0 },					// 射撃４
 		{ "data/SOUND/SE/explosion00.wav",0 },					// 爆発０
 		{ "data/SOUND/SE/explosion01.wav",0 },					// 爆発１
 		{ "data/SOUND/SE/dash00.wav",0 },					// ダッシュ０
@@ -108,6 +113,7 @@ private:
 		{ "data/SOUND/SE/land00.wav",0 },					// 着地０
 		{ "data/SOUND/SE/impact00.wav",0 },					// 衝撃０
 		{ "data/SOUND/SE/impact01.wav",0 },					// 衝撃１
+		{ "data/SOUND/SE/slash00.wav",0 },					// 斬撃０
 
 		{ "data/SOUND/SE/pause.wav",0 },				// ポーズ
 		{ "data/SOUND/SE/pause_arrow.wav",0 },			// 選択
