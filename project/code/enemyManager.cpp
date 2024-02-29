@@ -137,6 +137,8 @@ CEnemy *CEnemyManager::CreateEnemy(D3DXVECTOR3 pos, CEnemy::TYPE type)
 
 			// ‰Šú‰»ˆ—
 			pEnemy->Init();
+
+			pEnemy->SetType(type);
 		}
 	}
 

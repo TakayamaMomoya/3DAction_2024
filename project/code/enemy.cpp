@@ -137,7 +137,7 @@ HRESULT CEnemy::Init(void)
 	CMotion::Init();
 
 	// ƒ^ƒCƒv‚Ìİ’è
-	SetType(TYPE_ENEMY);
+	CObject::SetType(TYPE_ENEMY);
 
 	// “–‚½‚è”»’è¶¬
 	CreateCollision();

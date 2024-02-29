@@ -140,7 +140,7 @@ HRESULT CGame::Init(void)
 		}
 	}
 
-	CEnemyBoss::Create();
+	//CEnemyBoss::Create();
 
 	return S_OK;
 }
@@ -234,7 +234,7 @@ void CGame::ManageState(void)
 
 		if (m_nCntState >= TRANS_TIME && pFade != nullptr)
 		{
-			pFade->SetFade(CScene::MODE_RESULT);
+			pFade->SetFade(CScene::MODE_TITLE);
 		}
 
 		break;

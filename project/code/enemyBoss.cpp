@@ -92,6 +92,8 @@ CEnemyBoss *CEnemyBoss::Create(void)
 //=====================================================
 HRESULT CEnemyBoss::Init(void)
 {
+	SetType(TYPE_BOSS);
+
 	CSound *pSound = CSound::GetInstance();
 
 	if (pSound != nullptr)
@@ -109,7 +111,7 @@ HRESULT CEnemyBoss::Init(void)
 	SetLife(Boss::INITIAL_LIFE,true);
 
 	// èÛë‘ê›íË
-	ChangeState(new CStateBossTrans);
+	ChangeState(new CStateBossApper);
 
 	SetMoveState(CEnemy::MOVESTATE::MOVESTATE_ATTACK);
 

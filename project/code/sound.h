@@ -33,6 +33,7 @@ public:
 		LABEL_SE_EXPLOSION01,					// 爆発１
 		LABEL_SE_DASH00,					// ダッシュ０
 		LABEL_SE_DASH01,					// ダッシュ１
+		LABEL_SE_BOOST00,					// ブースト０
 		LABEL_SE_WARNING00,					// 警告０
 		LABEL_SE_LAND00,					// 着地０
 		LABEL_SE_IMPACT00,					// 衝撃０
@@ -109,6 +110,7 @@ private:
 		{ "data/SOUND/SE/explosion01.wav",0 },					// 爆発１
 		{ "data/SOUND/SE/dash00.wav",0 },					// ダッシュ０
 		{ "data/SOUND/SE/dash01.wav",0 },					// ダッシュ１
+		{ "data/SOUND/SE/boost00.wav",0 },					// ブースト０
 		{ "data/SOUND/SE/warning00.wav",-1 },					// 警告０
 		{ "data/SOUND/SE/land00.wav",0 },					// 着地０
 		{ "data/SOUND/SE/impact00.wav",0 },					// 衝撃０

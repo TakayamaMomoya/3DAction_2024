@@ -15,6 +15,7 @@
 #include "boost.h"
 #include "life.h"
 #include "texture.h"
+#include "player.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -22,6 +23,8 @@
 namespace
 {
 const D3DXVECTOR3 POS_FRAME = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
+const D3DXCOLOR COL_NORMAL = { 1.0f,1.0f,1.0f,1.0f };
+const D3DXCOLOR COL_DAMAGE = { 1.0f,0.0f,0.0f,1.0f };
 }
 
 //*****************************************************
@@ -112,6 +115,24 @@ void CUIManager::Update(void)
 		{
 			m_bDisp = m_bDisp ? false : true;
 		}
+	}
+
+	CPlayer *pPlayer = CPlayer::GetInstance();
+
+	if (pPlayer != nullptr && m_pFrame != nullptr)
+	{
+		float fLifeInitial = pPlayer->GetParam().fInitialLife;
+		float fLife = pPlayer->GetLife();
+
+		float fRate = fLife / fLifeInitial;
+
+		D3DXCOLOR colDIff = COL_DAMAGE - COL_NORMAL;
+
+		D3DXCOLOR col = COL_NORMAL + colDIff * (1.0f - fRate);
+
+		col.a = 0.4f;
+
+		m_pFrame->SetCol(col);
 	}
 }
 

@@ -87,6 +87,8 @@ public:
 	bool IsStamp(void) { return m_info.bStamp; }
 	void EnableStamp(bool bStamp) { m_info.bStamp = bStamp; }
 	void SetMovefact(float fFact) { m_info.fFactMove = fFact; }
+	void SetType(TYPE type) { m_info.type = type; }
+	TYPE GetType(void) { return m_info.type; }
 
 protected:
 	void ManageScore(void);
@@ -117,6 +119,7 @@ private:
 		float aDistMoveState[MOVESTATE_MAX];	// ˆÚ“®ó‘Ô‚ª‚©‚í‚é‹——£
 		bool bStamp;	// “¥‚ß‚é‚©‚Ç‚¤‚©
 		float fFactMove;	// ˆÚ“®Œ¸ŠŒW”
+		TYPE type;	// í—Ş
 	};
 	void ManageState(void);
 	void ManageMoveState(void);

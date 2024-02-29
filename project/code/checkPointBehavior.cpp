@@ -132,7 +132,7 @@ void CCheckPointMove::Update(CCheckPointManager *pCheckPoint)
 	{// 到着判定
 		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 
-		if (posPlayer.x > posNext.x)
+		if (posPlayer.x >= posNext.x)
 		{// 進行状況の加算、戦闘へ移行
 			pCheckPoint->ChangeBehavior(new CCheckPointBattle);
 		}
@@ -171,7 +171,7 @@ void CCheckPointBattle::Init(CCheckPointManager *pCheckPoint)
 
 	for (int i = 0; i < CheckPointBehavior::NUM_LIMIT; i++)
 	{
-		//m_apLimit[i] = CLimit::Create();
+		m_apLimit[i] = CLimit::Create();
 
 		if (m_apLimit[i] != nullptr)
 		{

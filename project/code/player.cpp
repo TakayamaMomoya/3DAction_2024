@@ -48,7 +48,7 @@ const float INITIAL_BOOST = 200.0f;	// ブースト残量の初期値
 const float REGEN_BOOST = 2.5f;	// ブースト回復量
 const float GRAVITY = 0.50f;	// 重力
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
-const float SPEED_BULLET = 150.0f;	// 弾速
+const float SPEED_BULLET = 200.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
 const float POW_STAMP = 30.0f;	// 踏みつけの推進力
 const float SPEED_STAMP = 70.0f;	// 踏みつけ水平推進力
@@ -671,12 +671,19 @@ void CPlayer::InputMove(void)
 			{// ジャンプ操作
 				m_fragMotion.bJump = true;
 				m_fragMotion.bMove = false;
+
+				Sound::Play(CSound::LABEL_SE_BOOST00);
 			};
 		}
 		else
 		{
 			if (m_info.stateBoost != STATEBOOST_OVERHEAT)
 			{
+				if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
+				{
+					Sound::Play(CSound::LABEL_SE_BOOST00);
+				}
+
 				if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
 				{// ブースト上昇
 					vecMove.y += 1.0f;
@@ -1474,6 +1481,13 @@ void CPlayer::Boost(void)
 			m_info.pOrbitWeapon->SetPositionOffset(mtx, 0);
 		}
 	}
+	else
+	{
+		if (m_info.pOrbitWeapon != nullptr)
+		{
+			Object::DeleteObject((CObject**)&m_info.pOrbitWeapon);
+		}
+	}
 }
 
 //=====================================================
@@ -1649,7 +1663,9 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 				for (auto pEnemy : listEnemy)
 				{
-					if ((CObject*)pEnemy == pObj)
+					CEnemy::TYPE type = pEnemy->GetType();
+
+					if ((CObject*)pEnemy == pObj && type != CEnemy::TYPE_BOSS)
 					{
 						pEnemyGrab = pEnemy;
 
@@ -1768,7 +1784,7 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 				(float)universal::RandRange(RAND_SHOT, -RAND_SHOT),
 			};
 
-			D3DXVECTOR3 vecDiff = posPridiction - posMazzle;
+			D3DXVECTOR3 vecDiff = posEnemy - posMazzle;
 
 			universal::VecConvertLength(&vecDiff, SPEED_BULLET);
 
