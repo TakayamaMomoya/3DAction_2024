@@ -407,13 +407,13 @@ void CStateBossAttackMachinegun::Attack(CEnemyBoss *pBoss)
 		posPrediction.y += (float)universal::RandRange(ACCURACY_MG, -ACCURACY_MG);
 		posPrediction.z += (float)universal::RandRange(ACCURACY_MG, -ACCURACY_MG);
 
-		D3DXVECTOR3 vecDiffBullet = posMazzle - posPrediction;
+		D3DXVECTOR3 vecDiffBullet = posPrediction - posMazzle;
 		D3DXVec3Normalize(&vecDiffBullet, &vecDiffBullet);
 
 		moveBullet = vecDiffBullet * SPEED_BULLET;
 
 		// 弾の発射
-		CBullet::Create(posMazzle, -moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 0.01f);
+		CBullet::Create(posMazzle, moveBullet, 5, CBullet::TYPE::TYPE_ENEMY, false, 50.0f, 1.5f);
 
 		// アニメエフェクト生成
 		CAnimEffect3D *pAnim3D = CAnimEffect3D::GetInstance();

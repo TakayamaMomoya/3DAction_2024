@@ -137,6 +137,7 @@ private:
 		int nNumThruster;	// スラスターの数
 		bool bLockTarget;	// ターゲットロックするかどうか
 		bool bLand;	// 着地しているかどうか
+		bool bMelee;	// 近接攻撃が当たったかどうか
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
 		COrbit *pOrbitWeapon;	// 武器の軌跡

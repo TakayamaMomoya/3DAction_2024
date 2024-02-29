@@ -133,6 +133,7 @@ void CBoost::Update(void)
 	// プレイヤー情報の取得
 	fBoost = pPlayer->GetBoost();
 	CPlayer::SParam param = pPlayer->GetParam();
+	CPlayer::STATEBOOST stateBoost = pPlayer->GetStateBoost();
 
 	// ブーストの割合を算出
 	fRate = fBoost / param.fInitialBoost;
@@ -147,6 +148,22 @@ void CBoost::Update(void)
 		// サイズ設定
 		m_pObjectGauge->SetRateAngle(fRate);
 		m_pObjectGauge->SetVtx();
+	}
+
+	if (m_pObjectFrame != nullptr)
+	{
+		D3DXCOLOR col = m_pObjectFrame->GetCol();
+
+		if (stateBoost == CPlayer::STATEBOOST::STATEBOOST_OVERHEAT)
+		{
+			col = { 1.0f,0.0f,0.0f,0.4f };
+		}
+		else
+		{
+			col = { 1.0f,1.0f,1.0f,0.4f };
+		}
+
+		m_pObjectFrame->SetCol(col);
 	}
 }
 

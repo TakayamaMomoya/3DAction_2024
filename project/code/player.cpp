@@ -1244,6 +1244,7 @@ void CPlayer::ManageMotion(void)
 				SetMotion(MOTION_MELEE2);
 				m_fragMotion.bAddAttack = false;
 				m_fragMotion.bMelee = false;
+				m_info.bMelee = false;
 
 				CEnemy *pEnemyLockon = GetLockOn();
 
@@ -1829,7 +1830,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 	{// ‘ÎÛ‚Æ‚Ì“–‚½‚è”»’è
 		CObject *pObj = m_info.pClsnAttack->GetOther();
 
-		if (pObj != nullptr)
+		if (pObj != nullptr && !m_info.bMelee)
 		{
 			Sound::Play(CSound::LABEL_SE_HIT01);
 
@@ -1863,8 +1864,10 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 				pCamera->SetQuake(1.01f, 1.01f, 10);
 			}
 
-			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 5.0f);
+			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 10.0f);
 		}
+
+		m_info.bMelee = true;
 	}
 }
 
@@ -1964,6 +1967,8 @@ void CPlayer::EndMelee(void)
 	{
 		//pEnemyManager->EnableLockTarget(false);
 	}
+
+	m_info.bMelee = false;
 }
 
 //=====================================================
