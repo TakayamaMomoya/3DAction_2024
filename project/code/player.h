@@ -97,6 +97,7 @@ public:
 	float GetLife(void) { return m_info.fLife; }
 	SParam GetParam(void) { return m_param; }
 	STATEBOOST GetStateBoost(void) { return m_info.stateBoost; }
+	bool IsLock(void) { return m_info.bLockTarget; }
 
 private:
 	struct SFragMotion

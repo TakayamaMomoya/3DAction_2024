@@ -1,7 +1,7 @@
 //*****************************************************
 //
 // UIマネージャー[UIManager.cpp]
-// Author:基盤（髙山桃也）+ 酒井南勝
+// Author:髙山桃也
 //
 //*****************************************************
 
@@ -25,6 +25,7 @@ namespace
 const D3DXVECTOR3 POS_FRAME = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
 const D3DXCOLOR COL_NORMAL = { 1.0f,1.0f,1.0f,1.0f };
 const D3DXCOLOR COL_DAMAGE = { 1.0f,0.0f,0.0f,1.0f };
+const float SPEED_FRAME = 0.1f;	// フレームの速度
 }
 
 //*****************************************************
@@ -37,8 +38,9 @@ CUIManager *CUIManager::m_pUIManager = nullptr;	// 自身のポインタ
 //=====================================================
 CUIManager::CUIManager()
 {
+	m_fCntFrame = 0.0f;
 	m_bDisp = false;
-	m_pFrame = nullptr;
+	m_pCockpit = nullptr;
 }
 
 //=====================================================
@@ -73,17 +75,17 @@ HRESULT CUIManager::Init(void)
 	m_bDisp = true;
 
 	// コックピット演出表示
-	m_pFrame = CUI::Create();
+	m_pCockpit = CUI::Create();
 
-	if (m_pFrame != nullptr)
+	if (m_pCockpit != nullptr)
 	{
-		m_pFrame->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
-		m_pFrame->SetPosition(POS_FRAME);
-		m_pFrame->SetVtx();
+		m_pCockpit->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+		m_pCockpit->SetPosition(POS_FRAME);
+		m_pCockpit->SetVtx();
 
 		int nIdx = Texture::GetIdx("data\\TEXTURE\\UI\\Frame03.png");
-		m_pFrame->SetIdxTexture(nIdx);
-		m_pFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
+		m_pCockpit->SetIdxTexture(nIdx);
+		m_pCockpit->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
 	}
 
 	CBoost::Create();
@@ -107,6 +109,7 @@ void CUIManager::Uninit(void)
 //=====================================================
 void CUIManager::Update(void)
 {
+#ifdef _DEBUG
 	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
 
 	if (pKeyboard != nullptr)
@@ -116,24 +119,69 @@ void CUIManager::Update(void)
 			m_bDisp = m_bDisp ? false : true;
 		}
 	}
+#endif
 
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
-	if (pPlayer != nullptr && m_pFrame != nullptr)
+	if (pPlayer != nullptr)
 	{
 		float fLifeInitial = pPlayer->GetParam().fInitialLife;
 		float fLife = pPlayer->GetLife();
 
 		float fRate = fLife / fLifeInitial;
 
-		D3DXCOLOR colDIff = COL_DAMAGE - COL_NORMAL;
-
-		D3DXCOLOR col = COL_NORMAL + colDIff * (1.0f - fRate);
-
-		col.a = 0.4f;
-
-		m_pFrame->SetCol(col);
+		if (m_pFrame == nullptr)
+		{
+			if (fRate <= 0.3f)
+			{// フレームの生成
+				CreateFrame();
+			}
+		}
 	}
+
+	// フレームの制御
+	ManageFrame();
+}
+
+//=====================================================
+// フレーム生成
+//=====================================================
+void CUIManager::CreateFrame(void)
+{
+	if (m_pFrame == nullptr)
+	{
+		m_pFrame = CUI::Create();
+
+		if (m_pFrame != nullptr)
+		{
+			m_pFrame->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+			m_pFrame->SetPosition(POS_FRAME);
+			m_pFrame->SetVtx();
+
+			int nIdx = Texture::GetIdx("data\\TEXTURE\\UI\\frame.png");
+			m_pFrame->SetIdxTexture(nIdx);
+			m_pFrame->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f));
+		}
+	}
+}
+
+//=====================================================
+// フレームの制御
+//=====================================================
+void CUIManager::ManageFrame(void)
+{
+	if (m_pFrame == nullptr)
+		return;
+
+	m_fCntFrame += SPEED_FRAME;
+
+	universal::LimitRot(&m_fCntFrame);
+
+	D3DXCOLOR col = m_pFrame->GetCol();
+
+	col.a = sinf(m_fCntFrame);
+
+	m_pFrame->SetCol(col);
 }
 
 //=====================================================

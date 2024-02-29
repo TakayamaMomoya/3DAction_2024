@@ -366,6 +366,27 @@ void CEnemyManager::Update(void)
 		DeleteGauge();
 	}
 
+	if (m_pIsLock != nullptr)
+	{
+		CPlayer *pPlayer = CPlayer::GetInstance();
+
+		if (pPlayer != nullptr)
+		{
+			bool bLock = pPlayer->IsLock();
+
+			if (bLock)
+			{
+				int nIdx = CTexture::GetInstance()->Regist(LOCK_PATH);
+				m_pIsLock->SetIdxTexture(nIdx);
+			}
+			else
+			{
+				int nIdx = CTexture::GetInstance()->Regist(MANUAL_PATH);
+				m_pIsLock->SetIdxTexture(nIdx);
+			}
+		}
+	}
+
 #ifdef _DEBUG
 
 	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
@@ -702,19 +723,6 @@ void CEnemyManager::EnableLockTarget(bool bLock)
 {
 	m_bLockTarget = bLock;
 
-	if (m_pIsLock != nullptr)
-	{
-		if (m_bLockTarget)
-		{
-			int nIdx = CTexture::GetInstance()->Regist(LOCK_PATH);
-			m_pIsLock->SetIdxTexture(nIdx);
-		}
-		else
-		{
-			int nIdx = CTexture::GetInstance()->Regist(MANUAL_PATH);
-			m_pIsLock->SetIdxTexture(nIdx);
-		}
-	}
 }
 
 //=====================================================

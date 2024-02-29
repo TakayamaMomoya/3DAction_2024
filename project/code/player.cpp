@@ -490,7 +490,7 @@ void CPlayer::Update(void)
 
 // デバッグ処理
 #if _DEBUG
-
+	Debug();
 #endif // _DEBUG
 }
 
@@ -1843,8 +1843,8 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 
 				if (pEffect != nullptr)
 				{
-					pEffect->EnableAdd(true);
-					pEffect->SetSize(100.0f, 100.0f);
+					pEffect->SetSize(300.0f, 300.0f);
+					pEffect->EnableZtest(true);
 				}
 			}
 
@@ -1864,7 +1864,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 				pCamera->SetQuake(1.01f, 1.01f, 10);
 			}
 
-			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 10.0f);
+			m_info.pClsnAttack->DamageAll(CCollision::TAG::TAG_ENEMY, 7.5f);
 		}
 
 		m_info.bMelee = true;
@@ -1965,7 +1965,7 @@ void CPlayer::EndMelee(void)
 
 	if (pEnemyManager != nullptr)
 	{
-		//pEnemyManager->EnableLockTarget(false);
+		pEnemyManager->EnableLockTarget(false);
 	}
 
 	m_info.bMelee = false;
@@ -2125,4 +2125,14 @@ void CPlayer::Debug(void)
 	pDebugProc->Print("\nターゲットロック[%d]", m_info.bLockTarget);
 	pDebugProc->Print("\n着地[%d]", m_info.bLand);
 	pDebugProc->Print("\n空中[%d]", m_fragMotion.bAir);
+
+	CInputKeyboard *pKey = CInputKeyboard::GetInstance();
+
+	if (pKey != nullptr)
+	{
+		if (pKey->GetTrigger(DIK_O))
+		{
+			m_info.fLife = 1.0f;
+		}
+	}
 }

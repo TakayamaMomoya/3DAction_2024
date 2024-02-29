@@ -11,7 +11,6 @@
 //*****************************************************
 // インクルード
 //*****************************************************
-
 #include "object.h"
 
 //*****************************************************
@@ -43,8 +42,13 @@ public:
 	void EnableDisp(bool bDisp) { m_bDisp = bDisp; }
 
 private:
+	void CreateFrame(void);
+	void ManageFrame(void);
+
+	float m_fCntFrame;	// フレームのカウンター
 	bool m_bDisp;	// 表示するかどうか
-	CUI *m_pFrame;	// コックピットっぽいやつ
+	CUI *m_pCockpit;	// コックピットっぽいやつ
+	CUI *m_pFrame;	// フレーム
 	static CUIManager *m_pUIManager;	// 自身のポインタ
 };
 
