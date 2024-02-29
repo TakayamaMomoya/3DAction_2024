@@ -99,6 +99,7 @@ private:
 	bool m_bEndSpawn;	// スポーン終了フラグ
 	float m_fTimerSpawn;	// スポーンタイマー
 	int m_nCntSpawn;	// スポーンカウンター
+	float m_fTimerChange;	// ロック替えタイマー
 
 	static CEnemyManager *m_pEnemyManager;	// 自身のポインタ
 };

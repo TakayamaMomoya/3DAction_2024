@@ -44,6 +44,7 @@ const char* TEXTURE_PATH = "data\\TEXTURE\\UI\\boost00.png";	// ゲージのパス
 const float RADIUS_GAUGE = 330.0f;	// ゲージの半径
 const float INITIAL_ROT = -D3DX_PI * 0.15f;
 const float ANGLE_MAX = D3DX_PI * 0.3f;
+const float TIME_CHANGE = 1.0f;	// ロック切り替え時間
 }
 
 //*****************************************************
@@ -66,6 +67,7 @@ CEnemyManager::CEnemyManager()
 	m_bEndSpawn = false;
 	m_fTimerSpawn = 0.0f;
 	m_nCntSpawn = 0;
+	m_fTimerChange = TIME_CHANGE;
 }
 
 //=====================================================
@@ -354,6 +356,11 @@ void CEnemyManager::Uninit(void)
 //=====================================================
 void CEnemyManager::Update(void)
 {
+	if (m_fTimerChange < TIME_CHANGE)
+	{
+		m_fTimerChange += CManager::GetDeltaTime();
+	}
+
 	// ロックオンゲージの制御
 	if (m_pEnemyLockon != nullptr)
 	{
@@ -417,7 +424,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 
 	if (pPlayer == nullptr)
 	{
-		return nullptr;
+		return m_pEnemyLockon;
 	}
 
 	bool bLock = IsLockTarget();
@@ -457,7 +464,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 					pEnemy->EnableLock(true);
 					pEnemy->SetPositionCursor(posScreenTemp);
 
-					if (bLock == false || (m_pEnemyLockon == nullptr && bLock == true))
+					if (m_fTimerChange > TIME_CHANGE || (bLock == false || (m_pEnemyLockon == nullptr && bLock == true)))
 					{// 自動でロックオン対象が切り替わるかどうか
 						D3DXVECTOR3 vecDiff = posScreenTemp - posCenter;
 
@@ -711,6 +718,8 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 	if (pEnemyLock != nullptr)
 	{
 		m_pEnemyLockon = pEnemyLock;
+
+		m_fTimerChange = 0.0f;
 	}
 
 	return pEnemyLock;
@@ -821,6 +830,7 @@ void CEnemyManager::Draw(void)
 	if (m_pEnemyLockon != nullptr)
 	{
 		CDebugProc::GetInstance()->Print("\nロックオンしてる敵いるよ");
+		CDebugProc::GetInstance()->Print("\nチェンジタイマー[%f]",m_fTimerChange);
 	}
 #endif
 }
