@@ -23,6 +23,7 @@ class CEnemy;
 class CHeat;
 class CBoostEffect;
 class COrbit;
+class CPlayerController;
 
 //*****************************************************
 // クラスの定義
@@ -67,6 +68,13 @@ public:
 		STATEBOOST_OVERHEAT,	// オーバーヒート状態
 		STATEBOOST_MAX
 	};
+	enum TYPE_CONTROLLER
+	{
+		TYPE_MOVE = 0,	// 移動
+		TYPE_CAMERA,	// カメラ
+		TYPE_ATTACK,	// 攻撃
+		TYPE_MAX
+	};
 	enum PARAM
 	{
 		PARAM_GUN = 0,	// 銃の熱
@@ -79,39 +87,6 @@ public:
 		float fSpeedMove;		// 移動速度
 		float fInitialBoost;		// ブースト残量初期値
 		float fInitialLife;	// 初期体力
-	};
-
-	CPlayer(int nPriority = 4);	// コンストラクタ
-	~CPlayer();	// デストラクタ
-
-	static CPlayer *Create(void);
-	static CPlayer *GetInstance(void) { return m_pPlayer; }
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
-	void Hit(float fDamage);
-	bool IsTargetLock(void) { return m_info.bLockTarget; }
-	void EnableLock(bool bLock) { m_info.bLockTarget = bLock; }
-	float GetBoost(void) { return m_info.fBoost; }
-	float GetLife(void) { return m_info.fLife; }
-	SParam GetParam(void) { return m_param; }
-	STATEBOOST GetStateBoost(void) { return m_info.stateBoost; }
-	bool IsLock(void) { return m_info.bLockTarget; }
-
-private:
-	struct SFragMotion
-	{
-		bool bMove;	// 移動
-		bool bJump;	// ジャンプ
-		bool bDodge;	// 回避
-		bool bStamp;	// 踏みつけ
-		bool bShot;	// 射撃
-		bool bMelee;	// 近接攻撃
-		bool bAddAttack;	// 追加攻撃
-		bool bGrab;	// 掴み
-		bool bAir;	// 滞空
-		bool bStop;	// 急停止
 	};
 	struct SInfoThruster
 	{
@@ -142,16 +117,54 @@ private:
 		CEnemy *pEnemyGrab;	// 掴んでいる敵
 		D3DXVECTOR3 rotDest;	// 目標の向き
 		COrbit *pOrbitWeapon;	// 武器の軌跡
+		CPlayerController *apController[TYPE_CONTROLLER::TYPE_MAX];	// コントローラー配列
+	};
+	struct SFragMotion
+	{
+		bool bMove;	// 移動
+		bool bJump;	// ジャンプ
+		bool bDodge;	// 回避
+		bool bStamp;	// 踏みつけ
+		bool bShot;	// 射撃
+		bool bMelee;	// 近接攻撃
+		bool bAddAttack;	// 追加攻撃
+		bool bGrab;	// 掴み
+		bool bAir;	// 滞空
+		bool bStop;	// 急停止
 	};
 
+	CPlayer(int nPriority = 4);	// コンストラクタ
+	~CPlayer();	// デストラクタ
+
+	static CPlayer *Create(void);
+	static CPlayer *GetInstance(void) { return m_pPlayer; }
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+	void Hit(float fDamage);
+	bool IsTargetLock(void) { return m_info.bLockTarget; }
+	void EnableLock(bool bLock) { m_info.bLockTarget = bLock; }
+	float GetBoost(void) { return m_info.fBoost; }
+	float GetLife(void) { return m_info.fLife; }
+	SParam GetParam(void) { return m_param; }
+	STATEBOOST GetStateBoost(void) { return m_info.stateBoost; }
+	bool IsLock(void) { return m_info.bLockTarget; }
+	SInfo *GetInfo(void) { return &m_info; }
+	SFragMotion *GetFragMotion(void) { return &m_fragMotion; }
+	void AddMoveStamp(void);
+	void AddBoost(float fValue);
+	void AddMoveForward(float fSpeed);
+	void Stamp(void);
+	void ToggleLockTarget(void);
+	void SwitchLockEnemy(void);
+	void CreateController(TYPE_CONTROLLER type);
+	void DeleteController(TYPE_CONTROLLER type);
+
+private:
 	void Load(void);
 	void Lockon(void);
 	void Input(void);
-	void InputMove(void);
-	void Stamp(void);
-	void InputCamera(void);
-	void SwitchLockEnemy(void);
-	void InputAttack(void);
 	void Rotation(void);
 	void ManageCollision(void);
 	void ManageState(void);
@@ -159,23 +172,18 @@ private:
 	void ManageParam(void);
 	void Boost(void);
 	void StartMelee(void);
-	void AddMoveForward(float fSpeed);
 	void AddMoveUp(float fSpeed);
 	void Event(EVENT_INFO *pEventInfo);
 	void Shot(D3DXVECTOR3 posMazzle);
 	void ManageAttack(D3DXVECTOR3 pos,float fRadius);
 	CEnemy *GetLockOn(void);
 	void EndMelee(void);
-	void AddBoost(float fValue);
-	void ToggleLockTarget(void);
-	void AddMoveStamp(void);
 	void Death(void);
 	void Debug(void);
 
 	SInfo m_info;	// 自身の情報
 	SParam m_param;	// パラメータ情報
 	SFragMotion m_fragMotion;	// モーションのフラグ
-
 	static CPlayer *m_pPlayer;	// 自身のポインタ
 };
 

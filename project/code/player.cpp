@@ -37,6 +37,7 @@
 #include "sound.h"
 #include "UIManager.h"
 #include "orbit.h"
+#include "playercontroller.h"
 
 //*****************************************************
 // 定数定義
@@ -47,24 +48,19 @@ const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
 const float INITIAL_BOOST = 200.0f;	// ブースト残量の初期値
 const float REGEN_BOOST = 2.5f;	// ブースト回復量
 const float GRAVITY = 0.50f;	// 重力
-const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
 const float SPEED_BULLET = 200.0f;	// 弾速
 const float POW_JUMP = 20.0f;	// ジャンプ力
 const float POW_STAMP = 30.0f;	// 踏みつけの推進力
 const float SPEED_STAMP = 70.0f;	// 踏みつけ水平推進力
 const float SPEED_MOVE = 1.6f;	// 移動速度
 const float FACT_MOVE = 0.04f;	// 移動の減衰係数
-const float SPEED_ASSAULT = 7.0f;	// 突進の移動速度
 const float POW_ADDMELEE = 70.0f;	// 追撃の推進力
-const float SPEED_DODGE = 100.0f;	// 回避推進力
 const float POW_GRAB = 50.0f;	// 掴みの推進力
 const float RADIUS_GRAB = 500.0f;	// 掴みの判定
 const float POW_THROW = 200.0f;	// 投げの力
 const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
 const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
 const float MELEE_DIST = 500.0f;	// 格闘に移る距離
-const float MIN_ANGLE_CAMERA = D3DX_PI * 0.1f;	// カメラの下を見る制限
-const float MAX_ANGLE_CAMERA = D3DX_PI * 0.9f;	// カメラの上を見る制限
 const float DAMAGE_BULLET = 1.0f;	// 弾の威力
 const float DECREASE_PARAM = 2.0f;	// パラメータ全回復にかかる時間
 const D3DXVECTOR3 POS_PARAM[CPlayer::PARAM_MAX] =
@@ -177,7 +173,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// パラメーターに初期値を入れる
-	m_param.fInitialLife = 300.0f;
+	m_param.fInitialLife = 1.0f;
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;
@@ -205,6 +201,11 @@ HRESULT CPlayer::Init(void)
 
 	// 読込
 	Load();
+
+	for (int i = 0; i < TYPE_CONTROLLER::TYPE_MAX; i++)
+	{// コントローラーの生成
+		CreateController((TYPE_CONTROLLER)i);
+	}
 
 	return S_OK;
 }
@@ -333,15 +334,61 @@ void CPlayer::Uninit(void)
 	Object::DeleteObject((CObject**)&m_info.pOrbitWeapon);
 
 	if (m_info.pThruster != nullptr)
-	{
+	{// スラスター情報の破棄
 		for (int i = 0; i < m_info.nNumThruster; i++)
 		{
 			Object::DeleteObject((CObject**)&m_info.pThruster[i].pFire);
 		}
 	}
 
+	for (int i = 0; i < TYPE_CONTROLLER::TYPE_MAX; i++)
+	{// コントローラーの破棄
+		DeleteController((TYPE_CONTROLLER)i);
+	}
+
 	// 継承クラスの終了
 	CMotion::Uninit();
+}
+
+//=====================================================
+// コントローラー生成
+//=====================================================
+void CPlayer::CreateController(TYPE_CONTROLLER type)
+{
+	if (m_info.apController[type] != nullptr)
+	{// 既にコントローラーがある場合は一度削除する
+		delete m_info.apController[type];
+		m_info.apController[type] = nullptr;
+	}
+
+	// コントローラーの生成
+	switch (type)
+	{
+	case CPlayer::TYPE_MOVE:
+		m_info.apController[type] = new CPlayerControllerMove;
+		break;
+	case CPlayer::TYPE_CAMERA:
+		m_info.apController[type] = new CPlayerControllerCamera;
+		break;
+	case CPlayer::TYPE_ATTACK:
+		m_info.apController[type] = new CPlayerControllerAttack;
+		break;
+	default:
+		assert(("プレイヤーコントローラー生成時に不正な種類が入力されています", false));
+		break;
+	}
+}
+
+//=====================================================
+// コントローラー削除
+//=====================================================
+void CPlayer::DeleteController(TYPE_CONTROLLER type)
+{
+	if (m_info.apController[type] != nullptr)
+	{
+		delete m_info.apController[type];
+		m_info.apController[type] = nullptr;
+	}
 }
 
 //=====================================================
@@ -354,7 +401,7 @@ void CPlayer::Update(void)
 	// ロックオン
 	Lockon();
 
-	if (m_info.state != CPlayer::STATE::STATE_DEATH && GetMotion() != MOTION_APPER)
+	if (GetMotion() != MOTION_APPER)
 	{
 		// 入力
 		Input();
@@ -515,14 +562,13 @@ void CPlayer::Lockon(void)
 //=====================================================
 void CPlayer::Input(void)
 {
-	// 移動操作
-	InputMove();
-
-	// カメラ操作
-	InputCamera();
-
-	// 攻撃操作
-	InputAttack();
+	for (CPlayerController *pController : m_info.apController)
+	{// 各コントローラーの更新
+		if (pController != nullptr)
+		{
+			pController->Update(this);
+		}
+	}
 
 	if (CManager::GetMode() == CScene::MODE_GAME)
 	{
@@ -536,224 +582,6 @@ void CPlayer::Input(void)
 			}
 		}
 	}
-}
-
-//=====================================================
-// 移動の入力
-//=====================================================
-void CPlayer::InputMove(void)
-{
-	CSlow *pSlow = CSlow::GetInstance();
-	CInputManager *pInputManager = CInputManager::GetInstance();
-
-	if (pInputManager == nullptr)
-	{
-		return;
-	}
-
-	// カメラ取得
-	CCamera *pCamera = CManager::GetCamera();
-
-	if (pCamera == nullptr)
-	{
-		return;
-	}
-
-	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
-
-	// 目標方向の設定
-	CInputManager::SAxis axis = pInputManager->GetAxis();
-	D3DXVECTOR3 axisMove = axis.axisMove;
-
-	// 入力方向の取得
-	D3DXVECTOR3 vecInput = { 0.0f,0.0f,0.0f };
-
-	vecInput += {sinf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x, 0.0f, cosf(pInfoCamera->rot.y + D3DX_PI * 0.5f) * axis.axisMove.x};
-	vecInput += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
-
-	float fLengthAxis = D3DXVec3Length(&axisMove);
-
-	int nMotion = GetMotion();
-
-	if ((fLengthAxis >= 0.3f && nMotion != MOTION_SHOT) || nMotion == MOTION_DODGE)
-	{// 通常移動時の目標向き設定
-		if (nMotion == MOTION_DODGE)
-		{
-			D3DXVECTOR3 move = GetMove();
-
-			m_info.rotDest.y = atan2f(move.x, move.z);
-		}
-		else
-		{
-			m_info.rotDest.y = atan2f(vecInput.x, vecInput.z);
-		}
-
-		CDebugProc *pDebugProc = CDebugProc::GetInstance();
-
-		pDebugProc->Print("\n通常移動");
-	}
-
-	if (nMotion != MOTION_DODGE && (nMotion == MOTION_SHOT || nMotion == MOTION_ASSAULT || nMotion == MOTION_MELEE || nMotion == MOTION_MELEE2 || nMotion == MOTION_THROW || m_info.bLockTarget))
-	{// 敵の方向を向く処理
-		CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
-
-		if (pEnemyManager != nullptr)
-		{
-			CEnemy *pEnemyLockon = pEnemyManager->GetLockon();
-
-			if (pEnemyLockon != nullptr)
-			{
-				D3DXVECTOR3 pos = GetPosition();
-				pos.y += 200.0f;
-
-				D3DXVECTOR3 posEnemy = pEnemyLockon->GetMtxPos(0);
-
-				D3DXVECTOR3 vecDiff = posEnemy - pos;
-
-				m_info.rotDest = universal::VecToRot(vecDiff);
-				m_info.rotDest.x -= D3DX_PI * 0.5f;
-			}
-		}
-	}
-
-	if (nMotion != MOTION_ASSAULT &&
-		nMotion != MOTION_MELEE &&
-		nMotion != MOTION_MELEE2 &&
-		nMotion != MOTION_GRAB &&
-		nMotion != MOTION_THROW &&
-		nMotion != MOTION_DODGE &&
-		m_fragMotion.bStamp == false)
-	{
-		// 方向入力の取得
-		CInputManager::SAxis axis = pInputManager->GetAxis();
-		D3DXVECTOR3 axisMove = axis.axisMove;
-
-		D3DXVECTOR3 vecMove = { 0.0f,0.0f,0.0f };
-		D3DXVECTOR3 rot = GetRotation();
-
-		float fLengthAxis = D3DXVec3Length(&axisMove);
-
-		if (m_fragMotion.bMove && fLengthAxis <= 0.3f)
-		{// 急停止フラグ
-			m_fragMotion.bStop = true;
-		}
-
-		fLengthAxis *= SPEED_MOVE;
-
-		if (nMotion == MOTION_SHOT || m_info.bLockTarget)
-		{// 視点固定時
-			D3DXVECTOR3 rotCamera = pInfoCamera->rot;
-
-			vecMove += {sinf(rotCamera.y + D3DX_PI * 0.5f) * axisMove.x, 0.0f, cosf(rotCamera.y + D3DX_PI * 0.5f) * axisMove.x};
-			vecMove += {sinf(rotCamera.y) * axisMove.z, 0.0f, cosf(rotCamera.y) * axisMove.z};
-		}
-		else
-		{// 向きが自由な時
-			vecMove -= {sinf(rot.y) * fLengthAxis, 0.0f, cosf(rot.y) * fLengthAxis};
-		}
-
-		// 移動速度の設定
-		D3DXVECTOR3 move = GetMove();
-
-		D3DXVec3Normalize(&vecMove, &vecMove);
-		vecMove *= m_param.fSpeedMove;
-
-		if (pSlow != nullptr)
-		{
-			float fScale = pSlow->GetScale();
-
-			vecMove *= fScale;
-		}
-
-		if (m_info.bLand)
-		{
-			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
-			{// ジャンプ操作
-				m_fragMotion.bJump = true;
-				m_fragMotion.bMove = false;
-
-				Sound::Play(CSound::LABEL_SE_BOOST00);
-			};
-		}
-		else
-		{
-			if (m_info.stateBoost != STATEBOOST_OVERHEAT)
-			{
-				if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
-				{
-					Sound::Play(CSound::LABEL_SE_BOOST00);
-				}
-
-				if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
-				{// ブースト上昇
-					vecMove.y += 1.0f;
-
-					AddBoost(-3.0f);
-				};
-			}
-
-			Stamp();
-		}
-		
-		float fAngleInput = atan2f(axisMove.x, axisMove.z);
-
-		if (m_info.stateBoost != STATEBOOST_OVERHEAT)
-		{
-			if (pInputManager->GetTrigger(CInputManager::BUTTON_DODGE))
-			{// ブースト回避
-				vecMove +=
-				{
-					sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
-					0.0f,
-					cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
-				};
-
-				AddBoost(-50.0f);
-
-				m_fragMotion.bDodge = true;
-
-				Sound::Play(CSound::LABEL_SE_DASH00);
-			}
-		}
-
-		move += vecMove;
-
-		SetMove(move);
-	}
-	else if (nMotion == MOTION_ASSAULT)
-	{
-		AddMoveForward(SPEED_ASSAULT);
-	}
-
-#ifdef _DEBUG
-	CInputKeyboard *pKeyboard = CInputKeyboard::GetInstance();
-
-	if (pKeyboard != nullptr)
-	{
-		if (pKeyboard->GetTrigger(DIK_RETURN))
-		{// スローにする
-			if (pSlow != nullptr)
-			{
-				pSlow->SetScale(0.25f);
-			}
-		}
-
-		if (pKeyboard->GetRelease(DIK_RETURN))
-		{// スロー解除
-			CSlow *pSlow = CSlow::GetInstance();
-
-			if (pSlow != nullptr)
-			{
-				pSlow->SetScale(1.0f);
-			}
-		}
-
-		if (pKeyboard->GetTrigger(DIK_O))
-		{// 可動パーツリセット
-			ResetEnableMotion();
-		}
-	}
-#endif
 }
 
 //=====================================================
@@ -812,55 +640,6 @@ void CPlayer::Stamp(void)
 }
 
 //=====================================================
-// カメラ操作
-//=====================================================
-void CPlayer::InputCamera(void)
-{
-	// 入力マネージャー取得
-	CInputManager *pInputManager = CInputManager::GetInstance();
-
-	if (pInputManager == nullptr)
-	{
-		return;
-	}
-
-	// カメラ取得
-	CCamera *pCamera = CManager::GetCamera();
-
-	if (pCamera == nullptr)
-	{
-		return;
-	}
-
-	CCamera::Camera *pInfoCamera = pCamera->GetCamera();
-	
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_LOCK))
-	{// ターゲットロック切り替え
-		m_info.bLockTarget = m_info.bLockTarget ? false : true;
-
-		ToggleLockTarget();
-	}
-	
-	if (m_info.bLockTarget)
-	{// ロックしてる敵の切り替え
-		SwitchLockEnemy();
-	}
-
-	// 方向入力の取得
-	CInputManager::SAxis axis = pInputManager->GetAxis();
-	D3DXVECTOR3 axisCamera = axis.axisCamera;
-
-	// カメラの回転
-	pInfoCamera->rot.x += axisCamera.y * SPEED_ROLL_CAMERA;
-	pInfoCamera->rot.y += axisCamera.x * SPEED_ROLL_CAMERA;
-
-	universal::LimitValue(&pInfoCamera->rot.x, MAX_ANGLE_CAMERA, MIN_ANGLE_CAMERA);
-
-	universal::LimitRot(&pInfoCamera->rot.x);
-	universal::LimitRot(&pInfoCamera->rot.y);
-}
-
-//=====================================================
 // ロックしてる敵の切り替え
 //=====================================================
 void CPlayer::SwitchLockEnemy(void)
@@ -889,61 +668,6 @@ void CPlayer::SwitchLockEnemy(void)
 	else if (pInputManager->GetTrigger(CInputManager::BUTTON_TRIGGER_DOWN))
 	{// 下方向
 		pEnemyManager->SwitchTarget(0, -1, m_info.pEnemyGrab);
-	}
-}
-
-//=====================================================
-// 攻撃の入力
-//=====================================================
-void CPlayer::InputAttack(void)
-{
-	CInputManager *pInputManager = CInputManager::GetInstance();
-	int nMotion = GetMotion();
-
-	if (pInputManager == nullptr)
-	{
-		return;
-	}
-
-	if (pInputManager->GetPress(CInputManager::BUTTON_SHOT) && 
-		m_info.aHeat[PARAM_GUN] == false)
-	{// 射撃処理
-		m_fragMotion.bShot = true;
-	}
-	else
-	{
-		m_fragMotion.bShot = false;
-	}
-
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_MELEE) &&
-		m_info.aHeat[PARAM_MELEE] == false)
-	{// 近接攻撃処理
-		m_fragMotion.bMelee = true;
-
-		if (nMotion == MOTION_MELEE)
-		{
-			m_fragMotion.bAddAttack = true;
-		}
-	}
-
-	if (pInputManager->GetTrigger(CInputManager::BUTTON_GRAB))
-	{// 掴み処理
-
-		if (nMotion != MOTION_THROW && nMotion != MOTION_GRAB)
-		{
-			m_fragMotion.bGrab = true;
-		}
-
-		if (nMotion == MOTION_THROW)
-		{
-			// スローをキャンセル
-			CSlow *pSlow = CSlow::GetInstance();
-
-			if (pSlow != nullptr)
-			{
-				pSlow->SetScale(1.0f);
-			}
-		}
 	}
 }
 
@@ -1901,6 +1625,11 @@ void CPlayer::Hit(float fDamage)
 			m_info.state = STATE_DEATH;
 
 			SetMotion(MOTION::MOTION_DEATH);
+
+			for (int i = 0; i < TYPE_CONTROLLER::TYPE_MAX; i++)
+			{// コントローラーの削除
+				DeleteController((TYPE_CONTROLLER)i);
+			}
 		}
 		else
 		{// ダメージ判定
