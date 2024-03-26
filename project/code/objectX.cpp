@@ -48,7 +48,7 @@ HRESULT CObjectX::Init(void)
 
 	m_fScale = 1.0f;
 
-	if (m_pModel != nullptr)
+	if (m_pModel == nullptr)
 	{
 		int nIdx = CModel::Load("data\\MODEL\\weapon\\minigun.x");
 

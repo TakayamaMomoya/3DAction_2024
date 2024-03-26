@@ -161,6 +161,8 @@ void CResult::LoadRanking(void)
 				}
 			}
 		}
+
+		file.close();
 	}
 	else
 	{

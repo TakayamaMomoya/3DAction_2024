@@ -24,15 +24,18 @@
 //*****************************************************
 // マクロ定義
 //*****************************************************
-#define MESHFIELD_TEX_FILE			"data\\TEXTURE\\MATERIAL\\field01.jpg"				// テクスチャファイル名
-#define MOVE_SPEED					(1.0f)										// 移動速度
-#define MESH_LENGTH					(300.0f)									// メッシュの一辺の長さ
-#define MESH_U						(254)											// 横のブロック数
-#define MESH_V						(254)											// 縦のブロック数
-#define SPLIT_TEX					(10)										// テクスチャ分割数
-#define CHENGE_LENGTH	(10000)	// 操作できる頂点までの距離
-#define ANGLE_SLIP	(0.7f)	// 坂を滑る角度
-#define CMP_LENGTH	(1000.0f)	// 判定する半径
+namespace
+{
+const char* MESHFIELD_TEX_FILE = "data\\TEXTURE\\MATERIAL\\field01.jpg";	// テクスチャファイル名
+const float MOVE_SPEED = 1.0f;	// 移動速度
+const float MESH_LENGTH = 300.0f;	// メッシュの一辺の長さ
+const short MESH_U = 254;	// 横のブロック数
+const short MESH_V = 254;	// 縦のブロック数
+const short SPLIT_TEX = 10;	// テクスチャ分割数
+const int CHENGE_LENGTH = 10000;	// 操作できる頂点までの距離
+const float ANGLE_SLIP = 0.7f;	// 坂を滑る角度
+const float CMP_LENGTH = 1000.0f;	// 判定する半径
+}
 
 //*****************************************************
 // 静的メンバ変数宣言
@@ -656,7 +659,7 @@ float CMeshField::GetHeight(D3DXVECTOR3 pos, D3DXVECTOR3 *pMove, D3DXVECTOR3 *pN
 	}
 	else
 	{// 右上のポリゴンの上にいる
-	 // 法線の算出
+		// 法線の算出
 		D3DXVec3Cross(&nor, &vec3, &vec4);
 
 		// 法線正規化
