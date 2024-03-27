@@ -178,7 +178,6 @@ LPDIRECT3DTEXTURE9 CTexture::GetAddress(int nIdx)
 	}
 }
 
-
 namespace Texture
 {
 int GetIdx(const char *pFileName)

@@ -15,11 +15,6 @@
 #include "model.h"
 
 //*****************************************************
-// マクロ定義
-//*****************************************************
-#define NUM_TEX	(5)	// テクスチャの数
-
-//*****************************************************
 // クラス定義
 //*****************************************************
 class CObjectX : public CObject
@@ -72,7 +67,7 @@ private:
 	D3DXVECTOR3 m_rot;								//向き
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
 	D3DXCOLOR m_col;	// 色
-	CModel::Model *m_pModel;
+	CModel::Model *m_pModel;	// モデル情報
 	int m_nIdxModel;	// モデルの番号
 	float m_fRadius;	// モデルの半径
 	float m_fScale;	// スケール

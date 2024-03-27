@@ -120,6 +120,9 @@ void CLimit::DeleteGuide(void)
 //=====================================================
 void CLimit::Update(void)
 {
+	if (IsDeath())
+		return;
+
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
 	if (pPlayer != nullptr)
