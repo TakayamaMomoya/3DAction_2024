@@ -62,7 +62,7 @@ CTexture *CTexture::Create(void)
 HRESULT CTexture::Load(void)
 {
 	// ファイル名の設定
-	char *apFileName[MAX_TEX] = 
+	char *apFileName[] = 
 	{
 		"data\\TEXTURE\\EFFECT\\muzzleFlush.png",
 		"data\\TEXTURE\\EFFECT\\beam.png",
@@ -78,7 +78,7 @@ HRESULT CTexture::Load(void)
 		"data\\TEXTURE\\UI\\menu_quit.png",
 	};
 
-	for ( int nCntTex = 0;nCntTex < MAX_TEX;nCntTex++)
+	for ( int nCntTex = 0;nCntTex < sizeof(apFileName) / sizeof(char*);nCntTex++)
 	{
 		if (apFileName[nCntTex] != nullptr)
 		{// ファイル名があったらテクスチャの読込

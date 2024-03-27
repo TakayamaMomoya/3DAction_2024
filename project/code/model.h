@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// Xファイルモデルの処理[model.h]
+// Xファイルモデルの管理[model.h]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -40,7 +40,7 @@ public:
 	
 	static int Load(char *pPath);
 	static void Unload(void);
-	static void Init(int nIdx);
+	static void InitialLoad(int nIdx);
 	static Model *GetModel(int nIdx) { return m_apModel[nIdx]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	static char *GetPath(int nIdx) { return &m_aPath[nIdx][0]; }

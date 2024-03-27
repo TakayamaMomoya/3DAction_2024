@@ -51,9 +51,6 @@
     <ClCompile Include="code\collision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="code\model.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="code\motion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -300,6 +297,9 @@
     <ClCompile Include="code\playercontroller.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\model.cpp">
+      <Filter>ソース ファイル\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -312,9 +312,6 @@
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\collision.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="code\model.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\motion.h">
@@ -562,6 +559,9 @@
     </ClInclude>
     <ClInclude Include="code\playercontroller.h">
       <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\model.h">
+      <Filter>ソース ファイル\base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

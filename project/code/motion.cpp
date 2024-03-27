@@ -470,25 +470,10 @@ void CMotion::MultiplyMtx(void)
 		//親パーツとパーツのワールドマトリックスをかけ合わせる
 		D3DXMatrixMultiply(pMtx, pMtx, pMtxParent);
 
-		if (m_bShadow)
-		{
-			// シャドウマトリックス初期化
-			D3DXMatrixIdentity(&mtxShadow);
-
-			// シャドウマトリックスの作成
-			D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
-			D3DXMatrixMultiply(&mtxShadow, pMtx, &mtxShadow);
-
-			// シャドウマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
-
-			m_apParts[nCntParts]->pParts->DrawShadow();
-		}
-
 		//ワールドマトリックス設定
 		pDevice->SetTransform(D3DTS_WORLD, pMtx);
 
-		m_apParts[nCntParts]->pParts->Draw();
+		m_apParts[nCntParts]->pParts->JustDraw();
 	}
 }
 
@@ -883,7 +868,6 @@ void CMotion::SetAfterImage(D3DXCOLOR col, int m_nLife)
 		if (m_apParts[nCntParts] != nullptr)
 		{// 残像設定
 			D3DXMATRIX *pMtx = m_apParts[nCntParts]->pParts->GetMatrix();
-			CModel::Model *model = m_apParts[nCntParts]->pParts->GetModel();
 
 			CAfterImage::Create(*m_apParts[nCntParts]->pParts->GetMatrix(), m_apParts[nCntParts]->pParts->GetIdxModel(),col,m_nLife);
 		}
