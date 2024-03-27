@@ -297,6 +297,9 @@
     <ClCompile Include="code\model.cpp">
       <Filter>ソース ファイル\base</Filter>
     </ClCompile>
+    <ClCompile Include="code\fan.cpp">
+      <Filter>ソース ファイル\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -556,6 +559,9 @@
     </ClInclude>
     <ClInclude Include="code\model.h">
       <Filter>ソース ファイル\base</Filter>
+    </ClInclude>
+    <ClInclude Include="code\fan.h">
+      <Filter>ソース ファイル\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// 2D円の処理[Fan3D.h]
+// 3D円の処理[fan3D.h]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -9,7 +9,6 @@
 // インクルード
 //*****************************************************
 #include "fan3D.h"
-#include "manager.h"
 #include "renderer.h"
 #include "texture.h"
 #include "universal.h"
@@ -20,25 +19,16 @@
 //*****************************************************
 namespace
 {
-	const float INITIAL_RADIUS = 50.0f;	// 初期の半径
-	const char* TEX_PATH = "data\\TEXTURE\\UI\\gauge.png";	// テクスチャのパス
+
 }
 
 //=====================================================
 // 優先順位を決めるコンストラクタ
 //=====================================================
-CFan3D::CFan3D(int nPriority) : CObject(nPriority)
+CFan3D::CFan3D(int nPriority) : CFan(nPriority)
 {
-	// 変数のクリア
-	m_pVtxBuff = nullptr;
 	m_bBillboard = false;
-	m_pos = { 0,0,0 };
-	m_rot = { 0.0f,0.0f,0.0f };
-	m_fRadius = 0.0f;
-	m_nNumVtx = 0;
-	m_fAngleMax = 1.0f;
-	m_col = { 1.0f,1.0f,1.0f,1.0f };
-	m_nIdxTexture = -1;
+	ZeroMemory(&m_mtxWorld, sizeof(D3DXMATRIX));
 }
 
 //=====================================================
@@ -61,7 +51,7 @@ CFan3D *CFan3D::Create(int nPriority, int nNumVtx)
 
 	if (pFan3D != nullptr)
 	{
-		pFan3D->m_nNumVtx = nNumVtx;
+		pFan3D->SetNumVtx(nNumVtx);
 
 		// 初期化処理
 		pFan3D->Init();
@@ -75,31 +65,29 @@ CFan3D *CFan3D::Create(int nPriority, int nNumVtx)
 //=====================================================
 HRESULT CFan3D::Init(void)
 {
+	CFan::Init();
+
+	m_bBillboard = true;
+
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();
 
 	if (pDevice != nullptr)
 	{
-		if (m_pVtxBuff == nullptr)
+		LPDIRECT3DVERTEXBUFFER9 *pVtxBuff = GetVtxBuff();
+		int nNumVtx = GetNumVtx();
+
+		if (*pVtxBuff == nullptr)
 		{
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (m_nNumVtx + 2),
+			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (nNumVtx + 2),
 				D3DUSAGE_WRITEONLY,
 				FVF_VERTEX_3D,
 				D3DPOOL_MANAGED,
-				&m_pVtxBuff,
+				pVtxBuff,
 				nullptr);
 		}
 	}
-
-	// テクスチャ読み込み
-	int nIdx = CTexture::GetInstance()->Regist(TEX_PATH);
-	SetIdxTexture(nIdx);
-
-	m_fRadius = INITIAL_RADIUS;
-
-	// 色初期化
-	SetCol(m_col);
 
 	// 頂点設定
 	SetVtx();
@@ -114,14 +102,7 @@ HRESULT CFan3D::Init(void)
 //=====================================================
 void CFan3D::Uninit(void)
 {
-	if (m_pVtxBuff != nullptr)
-	{
-		m_pVtxBuff->Release();
-		m_pVtxBuff = nullptr;
-	}
-
-	// 自分自身の破棄
-	Release();
+	CFan::Uninit();
 }
 
 //=====================================================
@@ -140,25 +121,30 @@ void CFan3D::SetVtx(void)
 	// 頂点情報のポインタ
 	VERTEX_3D *pVtx;
 
-	if (m_pVtxBuff != nullptr)
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = *GetVtxBuff();
+	int nNumVtx = GetNumVtx();
+	float fAngleMax = GetMaxAngle();
+	float fRadius = GetRadius();
+
+	if (pVtxBuff != nullptr)
 	{
 		// 頂点バッファをロックし、頂点情報へのポインタを取得
-		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 		// 中心の頂点の設定
 		pVtx[0].pos = D3DXVECTOR3{ 0.0f,0.0f,0.0f };
 		pVtx[0].tex = D3DXVECTOR2{ 0.5f,0.5f };
 
-		for (int i = 1;i < m_nNumVtx + 2;i++)
+		for (int i = 1;i < nNumVtx + 2;i++)
 		{// 円周の頂点の設定
-			float fAngle = (6.28f * m_fAngleMax) * ((float)(i - 1) / (float)m_nNumVtx);
+			float fAngle = (6.28f * fAngleMax) * ((float)(i - 1) / (float)nNumVtx);
 
 			universal::LimitRot(&fAngle);
 
 			pVtx[i].pos =
 			{
-				sinf(fAngle) * m_fRadius,
-				cosf(fAngle) * m_fRadius,
+				sinf(fAngle) * fRadius,
+				cosf(fAngle) * fRadius,
 				0.0f,
 			};
 
@@ -172,7 +158,7 @@ void CFan3D::SetVtx(void)
 		}
 
 		// 頂点バッファのアンロック
-		m_pVtxBuff->Unlock();
+		pVtxBuff->Unlock();
 	}
 }
 
@@ -184,9 +170,11 @@ void CFan3D::Draw(void)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();
 
-	if (pDevice != nullptr)
-	{
+	// 頂点バッファの取得
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = *GetVtxBuff();
 
+	if (pDevice != nullptr && pVtxBuff != nullptr)
+	{
 		//ワールドマトリックス初期化
 		D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -203,23 +191,13 @@ void CFan3D::Draw(void)
 		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
 		//頂点バッファをデータストリームに設定
-		pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
+		pDevice->SetStreamSource(0, pVtxBuff, 0, sizeof(VERTEX_3D));
 
 		//頂点フォーマットの設定
 		pDevice->SetFVF(FVF_VERTEX_3D);
 
-		// テクスチャ設定
-		LPDIRECT3DTEXTURE9 pTexture = CTexture::GetInstance()->GetAddress(m_nIdxTexture);
-		pDevice->SetTexture(0, pTexture);
-
-		// カリングのOFF
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
-		// 描画
-		pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, m_nNumVtx);
-
-		// カリングのON
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_FORCE_DWORD);
+		// ポリゴンの描画
+		CFan::Draw();
 	}
 }
 
@@ -229,15 +207,17 @@ void CFan3D::Draw(void)
 void CFan3D::DrawNormal(void)
 {
 	D3DXMATRIX mtxRot, mtxTrans;
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 rot = GetRotation();
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot,
-		m_rot.y, m_rot.x, m_rot.z);
+		rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	//位置を反映
 	D3DXMatrixTranslation(&mtxTrans,
-		m_pos.x, m_pos.y, m_pos.z);
+		pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 }
 
@@ -248,6 +228,7 @@ void CFan3D::DrawBillboard(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CRenderer::GetInstance()->GetDevice();
 	D3DXMATRIX mtxView, mtxTrans;
+	D3DXVECTOR3 pos = GetPosition();
 
 	//ビューマトリックス取得
 	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
@@ -260,41 +241,6 @@ void CFan3D::DrawBillboard(void)
 
 	// 位置を反映
 	D3DXMatrixTranslation(&mtxTrans,
-		m_pos.x, m_pos.y, m_pos.z);
+		pos.x, pos.y, pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-}
-
-//=====================================================
-// 設定処理
-//=====================================================
-void CFan3D::SetPosition(D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-
-//=====================================================
-// 色設定処理
-//=====================================================
-void CFan3D::SetCol(D3DXCOLOR col)
-{
-	m_col = col;
-
-	// 頂点情報のポインタ
-	VERTEX_3D *pVtx;
-
-	if (m_pVtxBuff != nullptr)
-	{
-		// 頂点バッファをロックし、頂点情報へのポインタを取得
-		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-		for (int nCnt = 0; nCnt < m_nNumVtx + 2; nCnt++)
-		{
-			pVtx[nCnt].col = (D3DCOLOR)m_col;
-
-			pVtx[nCnt].nor = D3DXVECTOR3{ 0.0f, 0.0f, -1.0f };
-		}
-
-		// 頂点バッファのアンロック
-		m_pVtxBuff->Unlock();
-	}
 }

@@ -189,6 +189,7 @@
     <ClCompile Include="code\explosionAttack.cpp" />
     <ClCompile Include="code\explosionspawner.cpp" />
     <ClCompile Include="code\fade.cpp" />
+    <ClCompile Include="code\fan.cpp" />
     <ClCompile Include="code\fan2D.cpp" />
     <ClCompile Include="code\fan3D.cpp" />
     <ClCompile Include="code\frame.cpp" />
@@ -277,6 +278,7 @@
     <ClInclude Include="code\explosionAttack.h" />
     <ClInclude Include="code\explosionspawner.h" />
     <ClInclude Include="code\fade.h" />
+    <ClInclude Include="code\fan.h" />
     <ClInclude Include="code\fan2D.h" />
     <ClInclude Include="code\fan3D.h" />
     <ClInclude Include="code\frame.h" />
