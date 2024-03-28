@@ -67,7 +67,7 @@ HRESULT CLight::Init(void)
 	vecDir = D3DXVECTOR3(1.42f, -0.8f, 0.08f);
 	D3DXVec3Normalize(&vecDir, &vecDir);		//ベクトル正規化
 	m_aLight[1].Direction = vecDir;
-
+	
 	//ライト設定
 	pDevice->SetLight(1, &m_aLight[1]);
 

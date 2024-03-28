@@ -28,7 +28,7 @@ public:
 	void Update(void);
 	void SetPosition(D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
-	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(); }	// æ“¾ˆ—
+	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }	// æ“¾ˆ—
 
 private:
 	D3DXVECTOR3 m_pos;	// ˆÊ’u

@@ -113,7 +113,7 @@ HRESULT CEnemyBoss::Init(void)
 	// èÛë‘ê›íË
 	ChangeState(new CStateBossApper);
 
-	SetMoveState(CEnemy::MOVESTATE::MOVESTATE_ATTACK);
+	SetStateMove(CEnemy::MOVESTATE::MOVESTATE_ATTACK);
 
 	FollowCollision();
 

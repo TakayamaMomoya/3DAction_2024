@@ -46,7 +46,7 @@ public:
 	static CParticle *Create(D3DXVECTOR3 pos, TYPE type, D3DXVECTOR3 rot = { 0.0f,0.0f,0.0f },D3DXVECTOR3 *pPosOwner = nullptr, int nPriorityEffect = 5);
 	void SetPosition(D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
-	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(); }	// æ“¾ˆ—
+	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }	// æ“¾ˆ—
 	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; };	// Œü‚«İ’è
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }	// Œü‚«æ“¾
 	float GetWidth(void) { return 0.0f; }	// ƒTƒCƒYæ“¾

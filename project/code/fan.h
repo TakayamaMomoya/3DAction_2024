@@ -1,6 +1,6 @@
 //*****************************************************
 //
-// 2D円の処理[fan2D.h]
+// 扇ポリゴンの処理[fan.h]
 // Author:髙山桃也
 //
 //*****************************************************
@@ -23,28 +23,37 @@ public:
 	CFan(int nPriority = 6);
 	~CFan();	//	デストラクタ
 
-	virtual HRESULT Init(void);	// 初期化処理
-	virtual void Uninit(void);	// 終了処理
-	virtual void Update(void);	// 更新処理
-	virtual void Draw(void);	// 描画処理
+	virtual HRESULT Init(void);
+	virtual void Uninit(void);
+	virtual void Update(void);
+	virtual void Draw(void);
 
-	void SetPosition(D3DXVECTOR3 pos);	// 設定処理
-	D3DXVECTOR3 GetPosition(void) { return m_pos; }	// 取得処理
-	void SetRotation(D3DXVECTOR3 rot);// 向き設定処理
-	D3DXVECTOR3 GetRotation(void) { return m_rot; }	// 向き取得処理
-	D3DXCOLOR GetCol(void) { return m_col; }
-	void SetCol(D3DXCOLOR col);
 	virtual void SetVtx(void) = 0;
+
+	void SetPosition(D3DXVECTOR3 pos);
+	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+
+	void SetRotation(D3DXVECTOR3 rot);
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }
+
+	void SetCol(D3DXCOLOR col);
+	D3DXCOLOR GetCol(void) { return m_col; }
+
 	void SetIdxTexture(int nIdx) { m_nIdxTexture = nIdx; }
 	int GetIdxTexture(void) { return m_nIdxTexture; }
+
 	void SetRateAngle(float fAngle) { m_fRateAngle = fAngle; }
 	float GetRateAngle(void) { return m_fRateAngle; }
-	float GetRadius(void) { return m_fRadius; }
+
 	void SetRadius(float fRadius) { m_fRadius = fRadius; }
+	float GetRadius(void) { return m_fRadius; }
+
 	void SetAngleMax(float fAngle) { m_fAngleMax = fAngle; }
-	float GetMaxAngle(void) { return m_fAngleMax; }
-	int GetNumVtx(void) { return m_nNumVtx; }
+	float GetAngleMax(void) { return m_fAngleMax; }
+
 	void SetNumVtx(int nValue) { m_nNumVtx = nValue; }
+	int GetNumVtx(void) { return m_nNumVtx; }
+
 	LPDIRECT3DVERTEXBUFFER9 *GetVtxBuff(void) { return &m_pVtxBuff; }
 
 private:

@@ -52,41 +52,65 @@ public:
 		MOVESTATE_MAX
 	};
 
-	CEnemy();	// コンストラクタ
-	~CEnemy();	// デストラクタ
+	CEnemy();
+	~CEnemy();
 
+	// 基本関数==========================================
 	static CEnemy *Create(D3DXVECTOR3 pos,TYPE type);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	static int GetNumAll(void) { return m_nNumAll; }
-	void SetLife(float fLife,bool bInit = false);
-	float GetLife(void) { return m_info.fLife; }
-	float GetLifeInitial(void) { return m_info.fLifeInitial; }
+
+	// 諸々関数==========================================
 	void Hit(float fDamage);
-	void SetSpherePosition(D3DXVECTOR3 pos);
-	STATE GetState(void) { return m_info.state; }
-	void SetState(STATE state) { m_info.state = state; }
-	CCollisionSphere *GetClsnSphere(void) { return m_info.pCollisionSphere; }
-	int GetCntState(void) { return m_info.nTimerState; }
-	void SetCntState(int nCnt) { m_info.nTimerState = nCnt; }
-	float GetSpeed(void) { return m_info.fMoveSpeed; }
-	void SetMoveSpeed(float fSpeed) { m_info.fMoveSpeed = fSpeed; }
-	void SetMoveState(MOVESTATE state) { m_info.moveState = state; }
-	MOVESTATE GetMoveState(void) { return m_info.moveState; }
-	void SetPosDest(D3DXVECTOR3 pos) { m_info.posDest = pos; }
-	void CreateCollision(float fRadius = 90.0f);
-	void DeleteCollision(void);
 	void EnableLock(bool bLock);
 	void SetPositionCursor(D3DXVECTOR3 pos);
-	void SetDistMoveState(float fValue, MOVESTATE moveState) { m_info.aDistMoveState[moveState] = fValue; }
 	bool AttackTimer(float fTime);
+
+	void CreateCollision(float fRadius = 90.0f);
+	void DeleteCollision(void);
+
+	static int GetNumAll(void) { return m_nNumAll; }
+
+	// 情報設定・取得==========================================
+	void SetLife(float fLife,bool bInit = false);
+	float GetLife(void) { return m_info.fLife; }
+
+	void SetLifeInitial(float fLife) { m_info.fLifeInitial = fLife; }
+	float GetLifeInitial(void) { return m_info.fLifeInitial; }
+
+	void SetSpherePosition(D3DXVECTOR3 pos);	// 球当たり判定の位置設定
+	
+	CCollisionSphere *GetClsnSphere(void) { return m_info.pCollisionSphere; }
+
+	void SetState(STATE state) { m_info.state = state; }
+	STATE GetState(void) { return m_info.state; }
+
+	void SetCntState(int nCnt) { m_info.nTimerState = nCnt; }
+	int GetCntState(void) { return m_info.nTimerState; }
+
+	void SetSpeedMove(float fSpeed) { m_info.fMoveSpeed = fSpeed; }
+	float GetSpeedMove(void) { return m_info.fMoveSpeed; }
+
+	void SetStateMove(MOVESTATE state) { m_info.moveState = state; }
+	MOVESTATE GetStateMove(void) { return m_info.moveState; }
+
+	void SetPosDest(D3DXVECTOR3 pos) { m_info.posDest = pos; }
+	D3DXVECTOR3 GetPosDest(void) { return m_info.posDest; }
+
+	void SetDistMoveState(float fValue, MOVESTATE moveState) { m_info.aDistMoveState[moveState] = fValue; }
+	float GetDistMoveState(MOVESTATE moveState) { return m_info.aDistMoveState[moveState]; }
+
 	void SetDistLock(float fDist) { m_info.fDistLock = fDist; }
 	float GetDistLock(void) { return m_info.fDistLock; }
-	bool IsStamp(void) { return m_info.bStamp; }
+
 	void EnableStamp(bool bStamp) { m_info.bStamp = bStamp; }
+	bool IsStamp(void) { return m_info.bStamp; }
+
 	void SetMovefact(float fFact) { m_info.fFactMove = fFact; }
+	float GetFactMove(void) { return m_info.fFactMove; }
+
 	void SetType(TYPE type) { m_info.type = type; }
 	TYPE GetType(void) { return m_info.type; }
 

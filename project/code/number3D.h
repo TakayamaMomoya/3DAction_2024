@@ -36,7 +36,7 @@ public:
 	void Draw(void) {}
 	void SetPosition(D3DXVECTOR3 pos);
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
-	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(); }	// 取得処理
+	D3DXVECTOR3 GetPositionOld(void) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }	// 取得処理
 	void SetValue(int nValue, int nNumPlace);
 	void SetSizeAll(float width,float height);
 	float GetWidth(void) { return 0.0f; }	// サイズ取得

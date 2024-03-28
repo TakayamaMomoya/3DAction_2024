@@ -144,7 +144,7 @@ HRESULT CEnemy::Init(void)
 
 	// パラメーター初期設定
 	SetLife(INITIAL_LIFE, true);
-	SetMoveSpeed(INITIAL_SPEED);
+	SetSpeedMove(INITIAL_SPEED);
 	m_info.fDistLock = INITIAL_DIST_LOCK;
 	m_info.bStamp = true;
 	m_info.fFactMove = 0.98f;

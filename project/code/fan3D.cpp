@@ -123,7 +123,7 @@ void CFan3D::SetVtx(void)
 
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = *GetVtxBuff();
 	int nNumVtx = GetNumVtx();
-	float fAngleMax = GetMaxAngle();
+	float fAngleMax = GetAngleMax();
 	float fRadius = GetRadius();
 
 	if (pVtxBuff != nullptr)

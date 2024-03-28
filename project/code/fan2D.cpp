@@ -132,7 +132,7 @@ void CFan2D::SetVtx(void)
 		pVtx[0].tex = D3DXVECTOR2{ 0.5f,0.5f };
 
 		int nNumVtx = GetNumVtx();
-		float fAngleMax = GetMaxAngle();
+		float fAngleMax = GetAngleMax();
 		float fRadius = GetRadius();
 		float fRateAngle = GetRateAngle();
 		D3DXVECTOR3 rot = GetRotation();
