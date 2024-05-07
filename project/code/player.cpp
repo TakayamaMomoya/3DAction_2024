@@ -173,7 +173,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// パラメーターに初期値を入れる
-	m_param.fInitialLife = 1.0f;
+	m_param.fInitialLife = 200.0f;
 	m_info.fLife = m_param.fInitialLife;
 	m_param.fSpeedMove = SPEED_MOVE;
 	m_param.fInitialBoost = INITIAL_BOOST;

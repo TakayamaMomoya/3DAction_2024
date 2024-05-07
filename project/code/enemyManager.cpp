@@ -427,7 +427,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 		return m_pEnemyLockon;
 	}
 
-	bool bLock = IsLockTarget();
+	bool bLock = IsLockTarget();	// ロックオンする状態かどうか
 
 	bool bInAny = false;
 	float fDistMax = FLT_MAX;
@@ -440,10 +440,11 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 	{
 		CEnemy::STATE state = pEnemy->GetState();
 
+		// 敵がロックされていない状態にする
 		pEnemy->EnableLock(false);
 
 		if (state != CEnemy::STATE::STATE_DEATH && pEnemyExclusive != pEnemy)
-		{
+		{// ロックオンしない敵の場合、無視する
 			D3DXVECTOR3 pos = pEnemy->GetMtxPos(0);
 			D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
 			D3DXMATRIX mtx = *pEnemy->GetMatrix();
@@ -452,7 +453,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 			float fDistPlayer = D3DXVec3Length(&vecDiffPlayer);
 			D3DXVECTOR3 posScreenTemp;
 
-			// ロックオンする敵の決定
+			// 画面内にいるかの判定
 			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
 			{
 				float fDist = pEnemy->GetDistLock();
@@ -464,8 +465,8 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 					pEnemy->EnableLock(true);
 					pEnemy->SetPositionCursor(posScreenTemp);
 
-					if (m_fTimerChange > TIME_CHANGE || (bLock == false || (m_pEnemyLockon == nullptr && bLock == true)))
-					{// 自動でロックオン対象が切り替わるかどうか
+					if (bLock == false || (m_pEnemyLockon == nullptr && bLock == true))
+					{// ロックオン状態でないか、ロックオン状態だけど見ている敵がいない場合、自動でロックオン切り替え
 						D3DXVECTOR3 vecDiff = posScreenTemp - posCenter;
 
 						// 画面中心からの距離を計算
