@@ -462,6 +462,7 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 				{// 距離内に敵がいたら
 					bInAny = true;
 
+					// ロックオンできる状態にしてスクリーン座標を設定
 					pEnemy->EnableLock(true);
 					pEnemy->SetPositionCursor(posScreenTemp);
 
@@ -494,10 +495,11 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 		}
 	}
 
+	// 照準カーソルのデフォルト位置設定
 	D3DXVECTOR3 posDestCursor = posCenter;
 
 	if (bInAny == false)
-	{
+	{// 画面内に敵がいなかった場合、狙っている敵をなくす
 		if (bLock == false)
 		{
 			m_pEnemyLockon = nullptr;
