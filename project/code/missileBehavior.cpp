@@ -263,6 +263,4 @@ void CMissileRightAngle::Update(CMissile *pMissile)
 	default:
 		break;
 	}
-
-	
 }

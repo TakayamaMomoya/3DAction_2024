@@ -144,6 +144,8 @@ void CLimit::Update(void)
 		{
 			SetColGuide(fDiff);
 
+			posGuide.y = pPlayer->GetMtxPos(0).y;
+
 			m_info.pGuide->SetPosition(posGuide);
 		}
 	}
