@@ -73,22 +73,22 @@ HRESULT CLimit::Init(void)
 //=====================================================
 void CLimit::CreateGuide(void)
 {
-	if (m_info.pGuide == nullptr)
+	if (m_info.pFence == nullptr)
 	{
-		m_info.pGuide = CObject3D::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_info.pFence = CObject3D::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-		if (m_info.pGuide != nullptr)
+		if (m_info.pFence != nullptr)
 		{
 			D3DXVECTOR3 rot = m_info.rot;
 			rot.x = D3DX_PI * -0.5f;
 
-			m_info.pGuide->SetSize(SIZE_GUIDE.x, SIZE_GUIDE.y);
-			m_info.pGuide->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f));
-			m_info.pGuide->SetRotation(rot);
-			m_info.pGuide->EnableCull(false);
+			m_info.pFence->SetSize(SIZE_GUIDE.x, SIZE_GUIDE.y);
+			m_info.pFence->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f));
+			m_info.pFence->SetRotation(rot);
+			m_info.pFence->EnableCull(false);
 
 			int nIdx = Texture::GetIdx("data\\TEXTURE\\UI\\limit00.png");
-			m_info.pGuide->SetIdxTexture(nIdx);
+			m_info.pFence->SetIdxTexture(nIdx);
 		}
 	}
 }
@@ -108,10 +108,10 @@ void CLimit::Uninit(void)
 //=====================================================
 void CLimit::DeleteGuide(void)
 {
-	if (m_info.pGuide != nullptr)
+	if (m_info.pFence != nullptr)
 	{
-		m_info.pGuide->Uninit();
-		m_info.pGuide = nullptr;
+		m_info.pFence->Uninit();
+		m_info.pFence = nullptr;
 	}
 }
 
@@ -132,7 +132,7 @@ void CLimit::Update(void)
 		D3DXVECTOR3 posGuide = CheckLimit((CObject*)pPlayer, &fDiff);
 
 		if (fDiff * fDiff < DIST_DISP * DIST_DISP)
-		{
+		{// 表示する距離になったらフェンスを生成
 			CreateGuide();
 		}
 		else
@@ -140,13 +140,13 @@ void CLimit::Update(void)
 			DeleteGuide();
 		}
 
-		if (m_info.pGuide != nullptr)
-		{
+		if (m_info.pFence != nullptr)
+		{// フェンスの位置をプレイヤーの腰に合わせる
 			SetColGuide(fDiff);
 
 			posGuide.y = pPlayer->GetMtxPos(0).y;
 
-			m_info.pGuide->SetPosition(posGuide);
+			m_info.pFence->SetPosition(posGuide);
 		}
 	}
 
@@ -228,10 +228,10 @@ D3DXVECTOR3 CLimit::CheckLimit(CObject *pObj, float *pDiff)
 //=====================================================
 void CLimit::SetColGuide(float fDiff)
 {
-	if (m_info.pGuide == nullptr)
+	if (m_info.pFence == nullptr)
 		return;
 
-	D3DXCOLOR col = m_info.pGuide->GetColor();
+	D3DXCOLOR col = m_info.pFence->GetColor();
 
 	float fRate = fDiff / DIST_DISP;
 
@@ -242,7 +242,7 @@ void CLimit::SetColGuide(float fDiff)
 
 	col.a = 1.0f - fRate;
 
-	m_info.pGuide->SetColor(col);
+	m_info.pFence->SetColor(col);
 }
 
 //=====================================================

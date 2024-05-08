@@ -40,7 +40,7 @@ public:
 private:
 	struct SInfo
 	{
-		CObject3D *pGuide;
+		CObject3D *pFence;
 		D3DXVECTOR3 pos;
 		D3DXVECTOR3 rot;
 	};
