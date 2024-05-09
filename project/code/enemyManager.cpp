@@ -427,14 +427,14 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 		return m_pEnemyLockon;
 	}
 
-	bool bLock = IsLockTarget();	// ロックオンする状態かどうか
+	bool bLock = pPlayer->IsTargetLock();	// ロックオンする状態かどうか
 
 	bool bInAny = false;
 	float fDistMax = FLT_MAX;
 	D3DXVECTOR3 posCenter = { SCREEN_WIDTH * 0.5f,SCREEN_HEIGHT * 0.5f,0.0f };
 	D3DXVECTOR3 posScreen = posCenter;
 
-	std::list<CEnemy*> listEnemy = GetListRanking();
+	std::list<CEnemy*> listEnemy = GetList();
 
 	for (auto pEnemy : listEnemy)
 	{
@@ -447,15 +447,16 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 		{// ロックオンしない敵の場合、無視する
 			D3DXVECTOR3 pos = pEnemy->GetMtxPos(0);
 			D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-			D3DXMATRIX mtx = *pEnemy->GetMatrix();
 
+			// 敵とプレイヤーの差分距離
 			D3DXVECTOR3 vecDiffPlayer = pos - posPlayer;
 			float fDistPlayer = D3DXVec3Length(&vecDiffPlayer);
+			
 			D3DXVECTOR3 posScreenTemp;
+			D3DXMATRIX mtx = *pEnemy->GetMatrix();
 
-			// 画面内にいるかの判定
 			if (universal::IsInScreen(pos, mtx, &posScreenTemp))
-			{
+			{// 画面内にいるかの判定
 				float fDist = pEnemy->GetDistLock();
 
 				if (fDist > fDistPlayer)
@@ -481,14 +482,6 @@ CEnemy *CEnemyManager::Lockon(CEnemy *pEnemyExclusive)
 
 							fDistMax = fDist;
 						}
-					}
-				}
-				else if (m_pEnemyLockon == pEnemy)
-				{
-					if (SwitchTarget(1, 1) == nullptr &&
-						SwitchTarget(-1, -1) == nullptr)
-					{
-						m_pEnemyLockon = nullptr;
 					}
 				}
 			}
@@ -645,7 +638,7 @@ CEnemy *CEnemyManager::SwitchTarget(int nAxisX, int nAxisY, CEnemy *pEnemyExclus
 	D3DXVECTOR3 posLockEnemy = m_pEnemyLockon->GetMtxPos(0);
 	universal::IsInScreen(posLockEnemy, mtx, &posScreenLockEnemy);
 
-	std::list<CEnemy*> listEnemy = GetListRanking();
+	std::list<CEnemy*> listEnemy = GetList();
 
 	for (auto pEnemy : listEnemy)
 	{
@@ -813,7 +806,7 @@ void CEnemyManager::CheckDeathLockon(CEnemy *pEnemy)
 //=====================================================
 void CEnemyManager::DeleteAll(void)
 {
-	std::list<CEnemy*> listEnemy = GetListRanking();
+	std::list<CEnemy*> listEnemy = GetList();
 
 	for (auto pEnemy : listEnemy)
 	{

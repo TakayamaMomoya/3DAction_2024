@@ -612,7 +612,7 @@ void CPlayer::Stamp(void)
 				return;
 			}
 
-			std::list<CEnemy*> listEnemy = pEnemyManager->GetListRanking();
+			std::list<CEnemy*> listEnemy = pEnemyManager->GetList();
 
 			for (auto pEnemy : listEnemy)
 			{
@@ -1384,7 +1384,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 				// ’Í‚Þ
 				CEnemy *pEnemyGrab = nullptr;
 
-				std::list<CEnemy*> listEnemy = pEnemyManager->GetListRanking();
+				std::list<CEnemy*> listEnemy = pEnemyManager->GetList();
 
 				for (auto pEnemy : listEnemy)
 				{

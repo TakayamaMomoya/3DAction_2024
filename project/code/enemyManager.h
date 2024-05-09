@@ -64,7 +64,7 @@ public:
 	void SpawnGroup(int nIdx);
 	bool IsEndSpawn(void) { return m_bEndSpawn; }
 	void EnableEndSpawn(bool bEnd) { m_bEndSpawn = bEnd; }
-	std::list<CEnemy*> GetListRanking(void) { return m_list; }
+	std::list<CEnemy*> GetList(void) { return m_list; }
 	void AddToList(CEnemy *pEnemy);
 	void RemoveFromList(CEnemy *pEnemy);
 	static CEnemyManager *GetInstance(void) { return m_pEnemyManager; }

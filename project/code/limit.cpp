@@ -48,7 +48,7 @@ CLimit *CLimit::Create(void)
 
 	if (pLimit == nullptr)
 	{
-		pLimit = new CLimit;
+		//pLimit = new CLimit;
 
 		if (pLimit != nullptr)
 		{
@@ -154,7 +154,7 @@ void CLimit::Update(void)
 
 	if (pEnemyManager != nullptr)
 	{
-		std::list<CEnemy*> listEnemy = pEnemyManager->GetListRanking();
+		std::list<CEnemy*> listEnemy = pEnemyManager->GetList();
 
 		for (auto pEnemy : listEnemy)
 		{
