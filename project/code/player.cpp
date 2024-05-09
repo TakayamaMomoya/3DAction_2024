@@ -38,6 +38,7 @@
 #include "UIManager.h"
 #include "orbit.h"
 #include "playercontroller.h"
+#include "rader.h"
 
 //*****************************************************
 // 定数定義
@@ -76,6 +77,7 @@ const char* PATH_PARAM[CPlayer::PARAM_MAX] =
 	"data\\TEXTURE\\UI\\frame02.png",
 };
 const int RAND_SHOT = 60;	// 射撃精度のランダム幅
+const float SIZE_HIT_EFFECT = 600.0f;	// ヒットエフェクトのサイズ
 }
 
 //*****************************************************
@@ -206,6 +208,9 @@ HRESULT CPlayer::Init(void)
 	{// コントローラーの生成
 		CreateController((TYPE_CONTROLLER)i);
 	}
+
+	// レーダー生成
+	CRader::Create();
 
 	return S_OK;
 }
@@ -1567,7 +1572,7 @@ void CPlayer::ManageAttack(D3DXVECTOR3 pos, float fRadius)
 
 				if (pEffect != nullptr)
 				{
-					pEffect->SetSize(300.0f, 300.0f);
+					pEffect->SetSize(SIZE_HIT_EFFECT, SIZE_HIT_EFFECT);
 					pEffect->EnableZtest(true);
 				}
 			}

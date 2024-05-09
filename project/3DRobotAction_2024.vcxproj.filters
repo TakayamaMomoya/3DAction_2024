@@ -300,6 +300,9 @@
     <ClCompile Include="code\fan.cpp">
       <Filter>ソース ファイル\mesh</Filter>
     </ClCompile>
+    <ClCompile Include="code\rader.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\block.h">
@@ -562,6 +565,9 @@
     </ClInclude>
     <ClInclude Include="code\fan.h">
       <Filter>ソース ファイル\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="code\rader.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
