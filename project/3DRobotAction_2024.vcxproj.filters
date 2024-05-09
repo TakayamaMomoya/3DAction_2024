@@ -219,9 +219,6 @@
     <ClCompile Include="code\stateEnemyBoss.cpp">
       <Filter>ソース ファイル\enemy\boss</Filter>
     </ClCompile>
-    <ClCompile Include="code\enemyDrone.cpp">
-      <Filter>ソース ファイル\enemy</Filter>
-    </ClCompile>
     <ClCompile Include="code\missile.cpp">
       <Filter>ソース ファイル\enemy</Filter>
     </ClCompile>
@@ -481,9 +478,6 @@
     </ClInclude>
     <ClInclude Include="code\stateEnemyBoss.h">
       <Filter>ソース ファイル\enemy\boss</Filter>
-    </ClInclude>
-    <ClInclude Include="code\enemyDrone.h">
-      <Filter>ソース ファイル\enemy</Filter>
     </ClInclude>
     <ClInclude Include="code\missile.h">
       <Filter>ソース ファイル\enemy</Filter>

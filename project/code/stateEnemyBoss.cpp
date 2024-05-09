@@ -10,7 +10,6 @@
 //*****************************************************
 #include "stateEnemyBoss.h"
 #include "enemyBoss.h"
-#include "enemyDrone.h"
 #include "manager.h"
 #include "missile.h"
 #include "bullet.h"
@@ -317,57 +316,6 @@ void CStateBossAttackMissile::Attack(CEnemyBoss *pBoss)
 
 	// 後退処理
 	pBoss->AimPlayer(0.0f, false);
-}
-
-//=====================================================
-// 子機の射出
-//=====================================================
-void CStateBossLaunchDrone::Init(CEnemyBoss *pBoss)
-{
-	CheckPointer(pBoss);
-
-	m_nCnt = 0;
-
-	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_MISSILE);
-}
-
-void CStateBossLaunchDrone::Attack(CEnemyBoss *pBoss)
-{
-	CheckPointer(pBoss);
-
-	if (pBoss->AttackTimer(TIME_DRONE))
-	{// 射出する
-		CEnemyDrone *pDrone = new CEnemyDrone;
-
-		if (pDrone != nullptr)
-		{
-			pDrone->Init();
-
-			D3DXVECTOR3 pos = pBoss->GetPosition();
-
-			pDrone->SetPosition(pos);
-
-			pos.y += universal::RandRange(0, -RANGE_HEIGHT_DRONE);
-
-			// 射出してからの位置設定
-			pDrone->SetPositionDest(pos);
-
-			// 移動量を足す
-			D3DXVECTOR3 move = { 0.0f,MOVE_DRONE,0.0f };
-			pDrone->SetMove(move);
-		}
-
-		m_nCnt++;
-
-		if (m_nCnt > NUM_DRONE)
-		{// 一定数撃ったら次の行動へ
-			pBoss->ChangeState(new CStateBossSelect1st);
-		}
-	}
-
-	// 後退処理
-	pBoss->Back();
-	pBoss->AimPlayer();
 }
 
 //=====================================================
