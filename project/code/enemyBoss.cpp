@@ -43,6 +43,7 @@ const int DAMAGE_FRAME = 10;	// ダメージ状態の時間
 const float SPEED_BACK = 1.8f;	// 後退の移動速度
 const float SPEED_DODGE = 2.1f;	// 後退時の横移動速度
 const float DAMAGE_SLASH = 10.0f;	// 斬撃ダメージ
+const float LINE_STOP_CORRECT = 0.02f;	// 向きの補正をやめる差分のしきい値
 }
 
 //*****************************************************
@@ -239,8 +240,8 @@ void CEnemyBoss::AimPlayer(float fSpeed, bool bPridict, float fFact)
 		// 向きの補正
 		D3DXVECTOR3 rot = GetRotation();
 
-		universal::FactingRot(&rot.x, rotDest.x, fFact);
-		universal::FactingRot(&rot.y, rotDest.y, fFact);
+		universal::FactingRot(&rot.x, rotDest.x, fFact, LINE_STOP_CORRECT);
+		universal::FactingRot(&rot.y, rotDest.y, fFact, LINE_STOP_CORRECT);
 
 		SetRotation(rot);
 	}

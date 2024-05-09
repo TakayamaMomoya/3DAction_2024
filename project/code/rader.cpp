@@ -32,6 +32,8 @@
 #define WAVE_SPEED	(0.08f)	// 波の動く速度
 #define MESH_LENGTH	(230.0f)	// メッシュの一辺の長さ
 #define MESH_HEIGHT	(10.0f)	// メッシュの高さ
+#define MESH_U (255) // メッシュの横の分割数
+#define MESH_V (1) // メッシュの縦の分割数
 
 //=====================================================
 // コンストラクタ
@@ -69,8 +71,8 @@ CRader *CRader::Create(void)
 //=====================================================
 HRESULT CRader::Init(void)
 {
-	SetNumMeshU(255);
-	SetNumMeshV(1);
+	SetNumMeshU(MESH_U);
+	SetNumMeshV(MESH_V);
 
 	// 継承クラスの初期化
 	CMeshCylinder::Init();
@@ -173,9 +175,6 @@ void CRader::ChaseTarget(void)
 //=====================================================
 void CRader::Wave(void)
 {
-	// 頂点バッファ取得
-	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = CMeshCylinder::GetVtxBuff();
-
 	CEnemyManager *pEnemyManager = CEnemyManager::GetInstance();
 	CPlayer *pPlayer = CPlayer::GetInstance();
 
@@ -184,7 +183,6 @@ void CRader::Wave(void)
 		return;
 	}
 
-	// 計算用変数
 	int nIdxStart = 0;
 	int nCntEnd = 0;
 	int nIdx;
@@ -209,6 +207,9 @@ void CRader::Wave(void)
 	fRot = D3DX_PI * 2 / mesh.nMeshU;	// 一角あたりの回転量
 
 	nCntEnd = (int)(WAVE_ANGLE / fRot) * 2;	// 波形の幅分の角数
+
+	// 頂点バッファ取得
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = CMeshCylinder::GetVtxBuff();
 
 	// 頂点情報のポインタ
 	VERTEX_3D *pVtx;

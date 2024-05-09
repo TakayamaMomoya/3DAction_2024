@@ -253,19 +253,22 @@ void SetOffSet(D3DXMATRIX *pMtxWorldOffset, D3DXMATRIX mtxWorldOwner, D3DXVECTOR
 //========================================
 // Œü‚«•â³ˆ—
 //========================================
-void FactingRot(float *pfRot, float fRotDest, float rotateFact)
+void FactingRot(float *pfRot, float fRotDest, float rotateFact, float fLineStop)
 {
 	// ˆø”‚ÌŠp“x‚Ì•â³
 	LimitRot(pfRot);
 	LimitRot(&fRotDest);
 
-	//·•ªŠp“x‚ğæ“¾
+	// ·•ªŠp“x‚ğæ“¾
 	float fRotDiff = fRotDest - *pfRot;
 
-	//Šp“x‚ÌC³
+	if (fRotDiff * fRotDiff < fLineStop * fLineStop)	// •â³‚ğ‚â‚ß‚é‚µ‚«‚¢’l
+		return;
+
+	// Šp“x‚ÌC³
 	LimitRot(&fRotDiff);
 
-	//Šp“x•â³
+	// Šp“x•â³
 	*pfRot += fRotDiff * rotateFact;
 
 	LimitRot(pfRot);

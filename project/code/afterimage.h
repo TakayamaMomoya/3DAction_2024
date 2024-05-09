@@ -21,7 +21,7 @@ class CCollisionCube;
 class CAfterImage : public CObjectX
 {
 public:
-	CAfterImage(int nPriority = 6);	// コンストラクタ
+	CAfterImage(int nPriority = 7);	// コンストラクタ
 	~CAfterImage();	// デストラクタ
 
 	static CAfterImage *Create(D3DXMATRIX mtx, int nIdxModel,D3DXCOLOR col,int m_nLife);
