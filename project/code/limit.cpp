@@ -48,7 +48,7 @@ CLimit *CLimit::Create(void)
 
 	if (pLimit == nullptr)
 	{
-		//pLimit = new CLimit;
+		pLimit = new CLimit;
 
 		if (pLimit != nullptr)
 		{

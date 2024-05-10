@@ -45,36 +45,21 @@
 //*****************************************************
 namespace
 {
-const char* BODY_PATH = "data\\MOTION\\motionArms01.txt";	// 見た目のパス
-const float INITIAL_BOOST = 200.0f;	// ブースト残量の初期値
-const float REGEN_BOOST = 2.5f;	// ブースト回復量
-const float GRAVITY = 0.50f;	// 重力
-const float SPEED_BULLET = 200.0f;	// 弾速
-const float POW_JUMP = 20.0f;	// ジャンプ力
-const float POW_STAMP = 30.0f;	// 踏みつけの推進力
-const float SPEED_STAMP = 70.0f;	// 踏みつけ水平推進力
-const float SPEED_MOVE = 1.6f;	// 移動速度
-const float FACT_MOVE = 0.04f;	// 移動の減衰係数
-const float POW_ADDMELEE = 70.0f;	// 追撃の推進力
-const float POW_GRAB = 50.0f;	// 掴みの推進力
-const float RADIUS_GRAB = 500.0f;	// 掴みの判定
-const float POW_THROW = 200.0f;	// 投げの力
-const float LENGTH_LOCKON = 5000.0f;	// ロックオンの長さ
-const float ANGLE_LOCKON = D3DX_PI * 0.2f;	// ロックオンの角度
-const float MELEE_DIST = 500.0f;	// 格闘に移る距離
-const float DAMAGE_BULLET = 1.0f;	// 弾の威力
-const float DECREASE_PARAM = 2.0f;	// パラメータ全回復にかかる時間
+const float POW_QUAKE_LOW_DAMAGE = 0.2f;	// 弱攻撃ヒット時の画面揺れ強度
+const int TIME_QUAKE_LOW_DAMAGE = 10;	// 弱攻撃ヒット時の画面揺れ時間
+const float POW_QUAKE_MIDDLE_DAMAGE = 0.2f;	// 中攻撃ヒット時の画面揺れ強度
+const int TIME_QUAKE_MIDDLE_DAMAGE = 10;	// 中攻撃ヒット時の画面揺れ時間
+const float POW_QUAKE_HIGH_DAMAGE = 0.2f;	// 強攻撃ヒット時の画面揺れ強度
+const int TIME_QUAKE_HIGH_DAMAGE = 20;	// 強攻撃ヒット時の画面揺れ時間
 const D3DXVECTOR3 POS_PARAM[CPlayer::PARAM_MAX] =
 {// パラメータ表示の位置
 	{SCREEN_WIDTH * 0.5f - 370.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 銃
 	{SCREEN_WIDTH * 0.5f + 370.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// 近接
-	{SCREEN_WIDTH * 0.5f + 370.0f,SCREEN_HEIGHT * 0.5f + 100.0f,0.0f},// 掴み
 };
 const char* PATH_PARAM[CPlayer::PARAM_MAX] =
 {// パラメータUIのテクスチャパス
 	"data\\TEXTURE\\UI\\frame00.png",
 	"data\\TEXTURE\\UI\\frame01.png",
-	"data\\TEXTURE\\UI\\frame02.png",
 };
 const int RAND_SHOT = 60;	// 射撃精度のランダム幅
 const float SIZE_HIT_EFFECT = 600.0f;	// ヒットエフェクトのサイズ
@@ -128,8 +113,11 @@ CPlayer *CPlayer::Create(void)
 //=====================================================
 HRESULT CPlayer::Init(void)
 {
+	// パラメーター読込
+	Load();
+
 	// モデルの設定
-	CMotion::Load((char*)BODY_PATH);
+	CMotion::Load((char*)&m_param.pathBody[0]);
 
 	// 継承クラスの初期化
 	CMotion::Init();
@@ -174,12 +162,6 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 
-	// パラメーターに初期値を入れる
-	m_param.fInitialLife = 200.0f;
-	m_info.fLife = m_param.fInitialLife;
-	m_param.fSpeedMove = SPEED_MOVE;
-	m_param.fInitialBoost = INITIAL_BOOST;
-	m_info.fBoost = m_param.fInitialBoost;
 	m_info.state = STATE_NORMAL;
 	m_info.stateBoost = STATEBOOST_NORMAL;
 	m_info.bLand = true;
@@ -200,9 +182,6 @@ HRESULT CPlayer::Init(void)
 			m_info.apHeatUI[i]->BindTextureFrame(PATH_PARAM[i]);
 		}
 	}
-
-	// 読込
-	Load();
 
 	for (int i = 0; i < TYPE_CONTROLLER::TYPE_MAX; i++)
 	{// コントローラーの生成
@@ -229,8 +208,149 @@ void CPlayer::Load(void)
 	{
 		while (true)
 		{
-			// ここで読み込んだ文字によって下記のIFにかかる
 			(void)fscanf(pFile, "%s", &cTemp[0]);
+
+			if (strcmp(cTemp, "BODY_PATH") == 0)
+			{// 見た目のパス
+				char aPath[MAX_STRING];
+
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%s", &aPath[0]);
+
+				m_param.pathBody = aPath;
+			}
+
+			if (strcmp(cTemp, "LIFE") == 0)
+			{// 初期体力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fInitialLife);
+
+				m_info.fLife = m_param.fInitialLife;
+			}
+
+
+			if (strcmp(cTemp, "SPEED_MOVE") == 0)
+			{// 移動速度
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fSpeedMove);
+			}
+
+			if (strcmp(cTemp, "FACT_MOVE") == 0)
+			{// 移動量の減衰係数
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fFactMove);
+			}
+
+			if (strcmp(cTemp, "BOOST") == 0)
+			{// ブースト最大量
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fInitialBoost);
+
+				m_info.fBoost = m_param.fInitialBoost;
+			}
+
+			if (strcmp(cTemp, "REGEN_BOOST") == 0)
+			{// ブースト回復量
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fRegenBoost);
+			}
+
+			if (strcmp(cTemp, "GRAVITY") == 0)
+			{// 重力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fGravity);
+			}
+
+			if (strcmp(cTemp, "SPEED_BULLET") == 0)
+			{// 弾の速度
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fSpeedBullet);
+			}
+
+			if (strcmp(cTemp, "DAMAGE_BULLET") == 0)
+			{// 弾の威力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fDamageBullet);
+			}
+
+			if (strcmp(cTemp, "ACC_SHOT") == 0)
+			{// 射撃精度
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fAccuracyBullet);
+			}
+
+			if (strcmp(cTemp, "POW_JUMP") == 0)
+			{// ジャンプ力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fPowJump);
+			}
+
+			if (strcmp(cTemp, "SPEED_STAMP") == 0)
+			{// 踏みつけの水平推進力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fSpeedStamp);
+			}
+
+			if (strcmp(cTemp, "POW_ADDMELEE") == 0)
+			{// 追撃推進力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fPowAddMelee);
+			}
+
+			if (strcmp(cTemp, "POW_THROW") == 0)
+			{// 投げの力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fPowThrow);
+			}
+
+			if (strcmp(cTemp, "POW_STAMP") == 0)
+			{// 踏みつけの垂直推進力
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fPowStamp);
+			}
+
+			if (strcmp(cTemp, "LENGTH_LOCKON") == 0)
+			{// ロックオン距離
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fLengthLockOn);
+			}
+
+			if (strcmp(cTemp, "MELEE_DIST") == 0)
+			{// 突進から格闘に移る距離
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fDistMelee);
+			}
+
+			if (strcmp(cTemp, "DECREASE_PARAM") == 0)
+			{// パラメータ全回復にかかる時間
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fTimeRegenParam);
+			}
+
+			if (strcmp(cTemp, "SIZE_HITEFFECT") == 0)
+			{// 格闘ヒットエフェクトのサイズ
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fSizeHitEffect);
+			}
 
 			if (strcmp(cTemp, "NUM_THRUSTER") == 0)
 			{// スラスタ数読込
@@ -451,19 +571,19 @@ void CPlayer::Update(void)
 		{
 			float fScale = pSlow->GetScale();
 
-			move.x += (0 - move.x) * FACT_MOVE * fScale;
-			move.z += (0 - move.z) * FACT_MOVE * fScale;
+			move.x += (0 - move.x) * m_param.fFactMove * fScale;
+			move.z += (0 - move.z) * m_param.fFactMove * fScale;
 
-			move.y -= GRAVITY * fScale;
+			move.y -= m_param.fGravity * fScale;
 		}
 		else
 		{
 			float fScale = pSlow->GetScale();
 
-			move.x *= FACT_MOVE;
-			move.z *= FACT_MOVE;
+			move.x *= m_param.fFactMove;
+			move.z *= m_param.fFactMove;
 
-			move.y -= GRAVITY * fScale;
+			move.y -= m_param.fGravity * fScale;
 		}
 	}
 	else
@@ -514,15 +634,14 @@ void CPlayer::Update(void)
 		m_info.pEnemyGrab->SetMatrix(mtxParent);
 	}
 
+	// 空中の場合、ブーストの回復量が落ちる
 	if (m_info.bLand)
 	{
-		// ブースト回復
-		AddBoost(REGEN_BOOST);
+		AddBoost(m_param.fRegenBoost);
 	}
 	else
 	{
-		// ブースト回復
-		AddBoost(REGEN_BOOST * 0.2f);
+		AddBoost(m_param.fRegenBoost * 0.2f);
 	}
 	
 	if (nMotion == MOTION_WALK_FRONT)
@@ -943,7 +1062,7 @@ void CPlayer::ManageMotion(void)
 		{
 			SetMotion(MOTION_GRAB);
 
-			AddMoveForward(POW_GRAB);
+			AddMoveForward(m_param.fPowGrab);
 		}
 		else
 		{
@@ -982,11 +1101,11 @@ void CPlayer::ManageMotion(void)
 					D3DXVECTOR3 pos = GetPosition();
 					D3DXVECTOR3 posEnemy = pEnemyLockon->GetPosition();
 
-					if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr) == false)
+					if (universal::DistCmp(pos, posEnemy, m_param.fDistMelee, nullptr) == false)
 					{
 						Camera::ChangeBehavior(new CMoveCylinder);
 
-						AddMoveForward(POW_ADDMELEE);
+						AddMoveForward(m_param.fPowAddMelee);
 					}
 				}
 
@@ -1096,7 +1215,7 @@ void CPlayer::ManageParam(void)
 
 		float fDeltaTime = CManager::GetDeltaTime();
 
-		m_info.aParam[i] -= 1.0f * (fDeltaTime / DECREASE_PARAM);
+		m_info.aParam[i] -= 1.0f * (fDeltaTime / m_param.fTimeRegenParam);
 
 		if (m_info.aParam[i] < 0.0f)
 		{
@@ -1235,7 +1354,7 @@ void CPlayer::StartMelee(void)
 		D3DXVECTOR3 pos = GetPosition();
 		D3DXVECTOR3 posEnemy = pEnemyLockon->GetPosition();
 
-		if (universal::DistCmp(pos, posEnemy, MELEE_DIST, nullptr))
+		if (universal::DistCmp(pos, posEnemy, m_param.fDistMelee, nullptr))
 		{
 			Camera::ChangeBehavior(new CMoveCylinder);
 
@@ -1347,14 +1466,14 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	{// ジャンプ
 		D3DXVECTOR3 move = GetMove();
 
-		move.y += POW_JUMP;
+		move.y += m_param.fPowJump;
 
 		SetMove(move);
 	}
 
 	if (nMotion == MOTION_STAMP)
 	{// 踏みつけ
-		AddMoveUp(POW_STAMP);
+		AddMoveUp(m_param.fPowStamp);
 
 		AddMoveStamp();
 
@@ -1375,7 +1494,7 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 		}
 
 		m_info.pClsnAttack->SetPosition(pos);
-		m_info.pClsnAttack->SetRadius(RADIUS_GRAB);
+		m_info.pClsnAttack->SetRadius(m_param.fRadiusGrab);
 
 
 		if (m_info.pClsnAttack->OnEnter(CCollision::TAG::TAG_ENEMY))
@@ -1458,9 +1577,9 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 
 			vecMove =
 			{
-				sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * POW_THROW,
-				cosf(rot.x - D3DX_PI * 0.5f) * POW_THROW,
-				sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * POW_THROW
+				sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * m_param.fPowThrow,
+				cosf(rot.x - D3DX_PI * 0.5f) * m_param.fPowThrow,
+				sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * m_param.fPowThrow
 			};
 
 			m_info.pEnemyGrab->SetMove(vecMove);
@@ -1489,9 +1608,9 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 
 	D3DXVECTOR3 move =
 	{
-		sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * SPEED_BULLET,
-		cosf(rot.x - D3DX_PI * 0.5f) * SPEED_BULLET,
-		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * SPEED_BULLET
+		sinf(rot.x - D3DX_PI * 0.5f) * sinf(rot.y) * m_param.fSpeedBullet,
+		cosf(rot.x - D3DX_PI * 0.5f) * m_param.fSpeedBullet,
+		sinf(rot.x - D3DX_PI * 0.5f) * cosf(rot.y) * m_param.fSpeedBullet
 	};
 
 	CEnemyManager *pEnemymanager = CEnemyManager::GetInstance();
@@ -1505,7 +1624,7 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 			D3DXVECTOR3 posEnemy = pEnemyLock->GetMtxPos(0);
 			D3DXVECTOR3 moveEnemy = pEnemyLock->GetMove();
 
-			D3DXVECTOR3 posPridiction = universal::LinePridiction(posMazzle, SPEED_BULLET, posEnemy, moveEnemy);
+			D3DXVECTOR3 posPridiction = universal::LinePridiction(posMazzle, m_param.fSpeedBullet, posEnemy, moveEnemy);
 
 			posPridiction +=
 			{
@@ -1516,13 +1635,13 @@ void CPlayer::Shot(D3DXVECTOR3 posMazzle)
 
 			D3DXVECTOR3 vecDiff = posEnemy - posMazzle;
 
-			universal::VecConvertLength(&vecDiff, SPEED_BULLET);
+			universal::VecConvertLength(&vecDiff, m_param.fSpeedBullet);
 
 			move = vecDiff;
 		}
 	}
 
-	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, DAMAGE_BULLET,
+	CBullet *pBullet = CBullet::Create(posMazzle, move, 5, CBullet::TYPE_PLAYER, false, 40.0f, m_param.fDamageBullet,
 		D3DXCOLOR(1.0f, 0.6f, 0.0f, 1.0f));
 
 	// 熱量を加算
@@ -1647,15 +1766,15 @@ void CPlayer::Hit(float fDamage)
 			{
 				if (fDamage < 0.5f)
 				{
-					pCamera->SetQuake(0.2f, 0.2f, 10);
+					pCamera->SetQuake(POW_QUAKE_LOW_DAMAGE, POW_QUAKE_LOW_DAMAGE, TIME_QUAKE_LOW_DAMAGE);
 				}
 				else if (fDamage < 1.0f)
 				{
-					pCamera->SetQuake(0.4f, 0.4f, 10);
+					pCamera->SetQuake(POW_QUAKE_MIDDLE_DAMAGE, POW_QUAKE_MIDDLE_DAMAGE, TIME_QUAKE_MIDDLE_DAMAGE);
 				}
 				else
 				{
-					pCamera->SetQuake(1.5f, 1.5f, 20);
+					pCamera->SetQuake(POW_QUAKE_HIGH_DAMAGE, POW_QUAKE_HIGH_DAMAGE, TIME_QUAKE_HIGH_DAMAGE);
 				}
 			}
 		}
@@ -1781,9 +1900,9 @@ void CPlayer::AddMoveStamp(void)
 
 		move +=
 		{
-			sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_STAMP,
+			sinf(pInfoCamera->rot.y + fAngleInput) * m_param.fSpeedStamp,
 			0.0f,
-			cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_STAMP,
+			cosf(pInfoCamera->rot.y + fAngleInput) * m_param.fSpeedStamp,
 		};
 
 		SetMove(move);

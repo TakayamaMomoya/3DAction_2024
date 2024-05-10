@@ -35,10 +35,6 @@ int g_nCountFPS;	// FPSカウンター
 //=====================================================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine, int nCmdShow)
 {
-	//WIN32_FIND_DATAW
-	//FindFirstFileW();
-	//FindNextFileW();
-
 	//乱数シード値の設定
 	srand((unsigned int)time(0));
 

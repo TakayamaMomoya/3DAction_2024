@@ -12,6 +12,7 @@
 // インクルード
 //*****************************************************
 #include "motion.h"
+#include <iostream>
 
 //*****************************************************
 // 前方宣言
@@ -79,14 +80,31 @@ public:
 	{
 		PARAM_GUN = 0,	// 銃の熱
 		PARAM_MELEE,	// 近接武器の熱
-		PARAM_HAND,	// 腕の熱
 		PARAM_MAX
 	};
 	struct SParam
 	{
+		std::string pathBody;	// 見た目のパス
 		float fSpeedMove;		// 移動速度
-		float fInitialBoost;		// ブースト残量初期値
 		float fInitialLife;	// 初期体力
+		float fFactMove;	// 移動量の減衰係数
+		float fInitialBoost;		// ブースト残量初期値
+		float fRegenBoost;	// ブーストの回復量
+		float fGravity;	// 重力の大きさ
+		float fSpeedBullet;	// 弾の速度
+		float fDamageBullet;	// 弾の威力
+		float fAccuracyBullet;	// 弾の精度
+		float fPowJump;	// ジャンプ力
+		float fPowStamp;	// 踏みつけの垂直推進力
+		float fSpeedStamp;	// 踏みつけの水平推進力
+		float fPowAddMelee;	// 追撃時の推進力
+		float fPowGrab;	// 掴みの推進力
+		float fRadiusGrab;	// 掴みの判定の半径
+		float fPowThrow;	// 投げの力
+		float fLengthLockOn;	// ロックオン距離
+		float fDistMelee;	// 突進から攻撃にうつるまでの距離
+		float fTimeRegenParam;	// 各攻撃のパラメーターの回復にかかる時間
+		float fSizeHitEffect;	// 格闘攻撃ヒットエフェクトのサイズ
 	};
 	struct SInfoThruster
 	{

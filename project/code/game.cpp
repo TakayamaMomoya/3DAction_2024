@@ -143,8 +143,6 @@ HRESULT CGame::Init(void)
 		}
 	}
 
-	CEnemyBoss::Create();
-
 	return S_OK;
 }
 
@@ -178,8 +176,6 @@ void CGame::Update(void)
 		// シーンの更新
 		CScene::Update();
 
-		//CParticle::Create(D3DXVECTOR3(0.0f,0.0f,0.0f), CParticle::TYPE::TYPE_BEAM_BLADE);
-
 		// カーソルを中心に固定
 		SetCursorPos((int)(SCREEN_WIDTH * 0.5f), (int)(SCREEN_HEIGHT * 0.5f));
 	}
@@ -195,9 +191,9 @@ void CGame::Update(void)
 	// 状態管理
 	ManageState();
 
-//#ifdef _DEBUG
+#ifdef _DEBUG
 	Debug();
-//#endif
+#endif
 }
 
 //=====================================================

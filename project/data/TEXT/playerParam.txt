@@ -1,26 +1,66 @@
 #====================================================================
 #
-# ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«[playerParam.txt]
-# Authorï¼šMomoya Takayama
+# ƒvƒŒƒCƒ„[ƒpƒ‰ƒ[ƒ^[ƒtƒ@ƒCƒ‹[playerParam.txt]
+# AuthorFMomoya Takayama
 #
 #====================================================================
 SCRIPT
 
 #====================================================================
-# ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
+# ƒpƒ‰ƒ[ƒ^[
 #====================================================================
-LIFE = 30.0	# åˆæœŸä½“åŠ›
-SPEED_MOVE = 3.0	# ç§»å‹•é€Ÿåº¦
+BODY_PATH = data\\MOTION\\motionArms01.txt	// Œ©‚½–Ú‚ÌƒpƒX
+LIFE = 300.0	# ‰Šú‘Ì—Í
+SPEED_MOVE = 1.6	# ˆÚ“®‘¬“x
+FACT_MOVE = 0.04	# ˆÚ“®—Ê‚ÌŒ¸ŠŒW”
+BOOST = 200.0	# ƒu[ƒXƒgÅ‘å—Ê
+REGEN_BOOST = 2.5	// ƒu[ƒXƒg‰ñ•œ—Ê
+GRAVITY = 0.50	// d—Í
+SPEED_BULLET = 200.0	// ’e‘¬
+DAMAGE_BULLET = 1.0	// ’e‚ÌˆÐ—Í
+ACC_SHOT = 60	// ŽËŒ‚¸“x‚Ìƒ‰ƒ“ƒ_ƒ€•
+POW_JUMP = 20.0	// ƒWƒƒƒ“ƒv—Í
+POW_STAMP = 30.0	// “¥‚Ý‚Â‚¯‚Ì„i—Í
+SPEED_STAMP = 70.0	// “¥‚Ý‚Â‚¯…•½„i—Í
+POW_ADDMELEE = 70.0	// ’ÇŒ‚‚Ì„i—Í
+POW_GRAB = 50.0	// ’Í‚Ý‚Ì„i—Í
+RADIUS_GRAB = 500.0	// ’Í‚Ý‚Ì”»’è
+POW_THROW = 200.0	// “Š‚°‚Ì—Í
+LENGTH_LOCKON = 5000.0	// ƒƒbƒNƒIƒ“‚Ì’·‚³
+MELEE_DIST = 500.0	// Ši“¬‚ÉˆÚ‚é‹——£
+DECREASE_PARAM = 2.0	// ƒpƒ‰ƒ[ƒ^‘S‰ñ•œ‚É‚©‚©‚éŽžŠÔ
+SIZE_HITEFFECT = 600.0	// ƒqƒbƒgƒGƒtƒFƒNƒg‚ÌƒTƒCƒY
 
 #====================================================================
-# ã‚¹ãƒ©ã‚¹ã‚¿è¨­ç½®
+# ƒqƒbƒgŽž‚Ì‰æ–Ê—h‚ê
 #====================================================================
-#ROTã¯0ãŒå·¦æ–¹å‘ã§å³å›žã‚Šã«0ï½ž3ã®4æ–¹å‘ã§è¨­å®šã€ä¸‹å‘ãã¯-1
-#è¨­å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯VECTORã®å‘ãã‹ã‚‰è‡ªå‹•ã§å‰²ã‚Šå½“ã¦
+QUAKESET	# ŽãUŒ‚‚É‘Î‚·‚é—h‚ê
+	LINE = 0.0 0.5	# ¶’lˆÈãA‰E’lˆÈ‰º‚Ìƒ_ƒ[ƒW‚Å—h‚ç‚·
+	POW = 0.2
+	TIME = 10
+END_QUAKESET
+
+QUAKESET	# ’†UŒ‚‚É‘Î‚·‚é—h‚ê
+	LINE = 0.5 1.0
+	POW = 0.3
+	TIME = 10
+END_QUAKESET
+
+QUAKESET	# ‹­UŒ‚‚É‘Î‚·‚é—h‚ê
+	LINE = 1.0 1000.0
+	POW = 0.3
+	TIME = 20
+END_QUAKESET
+
+#====================================================================
+# ƒXƒ‰ƒXƒ^Ý’u
+#====================================================================
+#ROT‚Í0‚ª¶•ûŒü‚Å‰E‰ñ‚è‚É0`3‚Ì4•ûŒü‚ÅÝ’èA‰ºŒü‚«‚Í-1
+#Ý’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍVECTOR‚ÌŒü‚«‚©‚çŽ©“®‚ÅŠ„‚è“–‚Ä
 
 NUM_THRUSTER = 2
 
-THRUSTERSET		#1å¾Œæ–¹ã‚¹ãƒ©ã‚¹ã‚¿1
+THRUSTERSET		#1Œã•ûƒXƒ‰ƒXƒ^1
 	PARENT = 1
 	OFFSET = -5.0 50.0 10.0
 	VECTOR = 0.0 -1.0 1.0
@@ -28,7 +68,7 @@ THRUSTERSET		#1å¾Œæ–¹ã‚¹ãƒ©ã‚¹ã‚¿1
 	ROT = 3
 END_THRUSTER
 
-THRUSTERSET		#2å¾Œæ–¹ã‚¹ãƒ©ã‚¹ã‚¿2
+THRUSTERSET		#2Œã•ûƒXƒ‰ƒXƒ^2
 	PARENT = 1
 	OFFSET = 5.0 50.0 10.0
 	VECTOR = 0.0 -1.0 1.0

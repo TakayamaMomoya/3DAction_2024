@@ -500,14 +500,11 @@ void CMotion::Load(char *pPath)
 		}
 	}
 
-	//ZeroMemory(&m_aMotionInfo, sizeof(m_aMotionInfo));
 	ZeroMemory(&m_aKeyOld, sizeof(m_aKeyOld));
 	ZeroMemory(&m_apParts[0], sizeof(m_apParts));
-	//ZeroMemory(&m_abMotion[0], sizeof(m_abMotion));
 	m_nKey = 0;
 	m_nNumMotion = 0;
 
-	//ïœêîêÈåæ
 	char cTemp[MAX_STRING];
 	int nCntMotion = 0;
 	int nCntModel = 0;
