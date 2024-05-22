@@ -41,6 +41,7 @@ public:
 	void Update(CPlayer *pPlayer) override;
 
 private:
+	float m_fLengthInputOld;	// 前フレームスティック入力ベクトルの長さ
 };
 
 class CPlayerControllerCamera : public CPlayerController

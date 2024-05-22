@@ -27,6 +27,9 @@ const float SPEED_ASSAULT = 7.0f;	// 突進の移動速度
 const float MIN_ANGLE_CAMERA = D3DX_PI * 0.1f;	// カメラの下を見る制限
 const float MAX_ANGLE_CAMERA = D3DX_PI * 0.9f;	// カメラの上を見る制限
 const float SPEED_ROLL_CAMERA = 0.03f;	// カメラ回転速度
+const float COST_BOOST = 3.0f;	// ブーストのコスト
+const float POW_BOOST = 1.0f;	// ブーストの推進力
+const float COST_DODGE = 50.0f;	// 回避のブーストコスト
 }
 
 //===================================================================================
@@ -56,7 +59,7 @@ CPlayerController::~CPlayerController()
 //=====================================================
 CPlayerControllerMove::CPlayerControllerMove()
 {
-
+	m_fLengthInputOld = 0.0f;
 }
 
 //=====================================================
@@ -104,6 +107,12 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 	vecInput += {sinf(pInfoCamera->rot.y) * axis.axisMove.z, 0.0f, cosf(pInfoCamera->rot.y) * axis.axisMove.z};
 
 	float fLengthAxis = D3DXVec3Length(&axisMove);
+
+	if (fLengthAxis > 0.0f && m_fLengthInputOld == 0)	// 動き始めにパーティクルを出す
+		pPlayer->SetParticleBoost();
+
+	// スティック入力を保存
+	m_fLengthInputOld = fLengthAxis;
 
 	int nMotion = pPlayer->GetMotion();
 
@@ -216,13 +225,16 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 				if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
 				{// ジャンプボタンを押した瞬間だけ音を鳴らす
 					Sound::Play(CSound::LABEL_SE_BOOST00);
+
+					// ブーストパーティクルを出す
+					pPlayer->SetParticleBoost();
 				}
 
 				if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
 				{// ブースト上昇
-					vecMove.y += 1.0f;
+					vecMove.y += POW_BOOST;
 
-					pPlayer->AddBoost(-3.0f);
+					pPlayer->AddBoost(-COST_BOOST);
 
 					pFragMotion->bFall = false;
 				}
@@ -250,11 +262,14 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 					cosf(pInfoCamera->rot.y + fAngleInput) * param.fSpeedDodge,
 				};
 
-				pPlayer->AddBoost(-50.0f);
+				pPlayer->AddBoost(-COST_DODGE);
 
 				pFragMotion->bDodge = true;
 
 				Sound::Play(CSound::LABEL_SE_DASH00);
+
+				// ブーストパーティクルを出す
+				pPlayer->SetParticleBoost();
 			}
 		}
 

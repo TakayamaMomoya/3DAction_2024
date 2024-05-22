@@ -1221,20 +1221,6 @@ void CPlayer::ManageMotion(void)
 
 		}
 	}
-	else if (m_fragMotion.bStop)
-	{// 急停止モーション
-		if (nMotion != MOTION_STOP)
-		{
-			SetMotion(MOTION_STOP);
-		}
-		else
-		{
-			if (bFinish)
-			{
-				m_fragMotion.bStop = false;
-			}
-		}
-	}
 	else if (m_fragMotion.bMove)
 	{// 歩きモーション
 		if (nMotion != MOTION_WALK_FRONT)
@@ -1328,21 +1314,23 @@ void CPlayer::Boost(void)
 			posBoost = { mtx._41, mtx._42 ,mtx._43 };
 			vecBoost = { mtxVec._41 - posBoost.x,mtxVec._42 - posBoost.y,mtxVec._43 - posBoost.z };
 
+			// 向きの設定
 			D3DXVECTOR3 rot = universal::VecToRot(vecBoost);
 			rot.x *= -1;
 			rot.x += D3DX_PI;
-
-			float fHeight = m_info.pThruster[i].pFire->GetHeight();
 			
 			if (!m_info.bLand)
-			{
+			{// 滞空状態ならすこし縮ませる
 				fSpeed *= 0.5f;
 			}
 
 			if (pInputManager->GetPress(CInputManager::BUTTON_JUMP))
-			{
+			{// ジャンプしていたら伸ばす
 				fSpeed = 1.0f;
 			}
+
+			// 目標の長さに補完
+			float fHeight = m_info.pThruster[i].pFire->GetHeight();
 
 			float fDest = m_info.pThruster[i].size.y * fSpeed;
 			
@@ -1357,6 +1345,7 @@ void CPlayer::Boost(void)
 
 			fHeight += fDiff * fFact;
 
+			// スラスター情報設定
 			m_info.pThruster[i].pFire->SetHeight(fHeight);
 			m_info.pThruster[i].pFire->SetRotation(rot);
 			m_info.pThruster[i].pFire->SetPosition(posBoost);
@@ -1388,6 +1377,47 @@ void CPlayer::Boost(void)
 			Object::DeleteObject((CObject**)&m_info.pOrbitWeapon);
 		}
 	}
+}
+
+//=====================================================
+// ブーストパーティクルを出す処理
+//=====================================================
+void CPlayer::SetParticleBoost(void)
+{
+	CInputManager *pInputManager = CInputManager::GetInstance();
+
+	if (pInputManager == nullptr)
+		return;
+
+	for (int i = 0; i < m_info.nNumThruster; i++)
+	{
+		if (m_info.pThruster[i].pFire != nullptr)
+		{
+			int nParent = m_info.pThruster[i].nIdxParent;
+			D3DXVECTOR3 offset = m_info.pThruster[i].offset;
+			D3DXVECTOR3 vector = m_info.pThruster[i].vector;
+
+			D3DXVECTOR3 posBoost;
+			D3DXVECTOR3 vecBoost;
+
+			D3DXMATRIX mtxParent = *GetParts(nParent)->pParts->GetMatrix();
+			D3DXMATRIX mtx;
+			D3DXMATRIX mtxVec;
+
+			universal::SetOffSet(&mtx, mtxParent, offset);
+			universal::SetOffSet(&mtxVec, mtx, vector);
+
+			posBoost = { mtx._41, mtx._42 ,mtx._43 };
+			vecBoost = { mtxVec._41 - posBoost.x,mtxVec._42 - posBoost.y,mtxVec._43 - posBoost.z };
+
+			D3DXVECTOR3 rot = universal::VecToRot(vecBoost);
+			rot.x *= -1;
+			rot.x += D3DX_PI;
+
+			CParticle::Create(posBoost, CParticle::TYPE::TYPE_BEAM_BLADE, rot, m_info.pThruster[i].pFire->GetAdressPos());
+		}
+	}
+
 }
 
 //=====================================================

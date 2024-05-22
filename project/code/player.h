@@ -189,6 +189,7 @@ public:
 	void SwitchLockEnemy(void);
 	void CreateController(TYPE_CONTROLLER type);
 	void DeleteController(TYPE_CONTROLLER type);
+	void SetParticleBoost(void);
 
 private:
 	void Load(void);
