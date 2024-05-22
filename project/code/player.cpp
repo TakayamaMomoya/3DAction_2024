@@ -58,6 +58,8 @@ const char* PATH_PARAM[CPlayer::PARAM_MAX] =
 };
 const int RAND_SHOT = 60;	// 射撃精度のランダム幅
 const float SIZE_HIT_EFFECT = 600.0f;	// ヒットエフェクトのサイズ
+const float POW_QUAKE_APPER = 1.0f;	// 出現演出のカメラ揺れの強さ
+const int TIME_QUAKE_APPER = 60;	// 出現演出のカメラ揺れのフレーム数
 }
 
 //*****************************************************
@@ -1489,12 +1491,20 @@ void CPlayer::Event(EVENT_INFO *pEventInfo)
 	D3DXVECTOR3 pos = { mtxParent._41,mtxParent._42 ,mtxParent._43 };
 
 	if (nMotion == MOTION_APPER)
-	{// 出現時の煙
-		Sound::Play(CSound::LABEL_SE_LAND00);
+	{// 出現時の着地演出
+		Sound::Play(CSound::LABEL_SE_LAND00);	// 着地音
 
+		// 煙のパーティクル
 		D3DXVECTOR3 posParticle = GetPosition();
-
 		CParticle::Create(posParticle, CParticle::TYPE::TYPE_APPER_SMOKE);
+
+		// カメラ揺れ
+		CCamera *pCamera = CManager::GetCamera();
+
+		if (pCamera != nullptr)
+		{
+			pCamera->SetQuake(POW_QUAKE_APPER, POW_QUAKE_APPER, TIME_QUAKE_APPER);
+		}
 	}
 
 	if (nMotion == MOTION_DODGE)

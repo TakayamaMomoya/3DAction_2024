@@ -40,6 +40,7 @@
 #include "beamBlade.h"
 #include "boostEffect.h"
 #include "limit.h"
+#include "guideInput.h"
 
 //*****************************************************
 // ’è”’è‹`
@@ -142,6 +143,9 @@ HRESULT CGame::Init(void)
 			pLimit->SetRotation(aRot[i]);
 		}
 	}
+
+	// “ü—ÍƒKƒCƒh¶¬
+	CGuideInput::Create();
 
 	return S_OK;
 }

@@ -71,6 +71,7 @@ const float LIMIT_BACKSTEP = 5000.0f;	// バックスステップの制限距離
 const float LIMIT_BACKSTEP_LOW = 3000.0f;	// バックスステップの最低距離
 const int NUM_EXPLATTACK = 3;	// 1フレームに出る爆発の数
 const float TIME_AIRBEAM = 10.0f;	// 空中ビームの時間
+const float TIME_TRANS_SECOND = 3.0f;	// 第二形態に移る時間
 }
 
 CStateBoss::CStateBoss()
@@ -479,7 +480,7 @@ void CStateBossTrans::Move(CEnemyBoss *pBoss)
 	int nMotion = pBoss->GetMotion();
 	bool bFinish = pBoss->IsFinish();
 
-	float fTime = 6.0f;
+	float fTime = TIME_TRANS_SECOND;
 
 #ifdef _DEBUG
 	fTime = 0.5f;
@@ -546,7 +547,7 @@ void CStateBossTrans::TransMovie(CEnemyBoss *pBoss)
 
 	// 爆発エフェクト
 	pos.y += 400.0f;
-	CExplSpawner::Create(pos, 300.0f, 360);
+	CExplSpawner::Create(pos, 300.0f, TIME_TRANS_SECOND * 60);
 	CParticle::Create(pos, CParticle::TYPE::TYPE_TURN_EXPLOSION);
 
 	pBoss->SetMotion(CEnemyBoss::MOTION::MOTION_DEATH);
