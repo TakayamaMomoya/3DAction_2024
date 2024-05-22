@@ -1333,17 +1333,24 @@ void CPlayer::Boost(void)
 			float fHeight = m_info.pThruster[i].pFire->GetHeight();
 
 			float fDest = m_info.pThruster[i].size.y * fSpeed;
-			
+
 			float fDiff = fDest - fHeight;
 
-			float fFact = 0.2f;
-
-			if (fDiff < 0.0f)
+			if (fDiff > 0.0f)
 			{
-				fFact = 0.8f;
-			}
+				float fFact = 0.2f;
 
-			fHeight += fDiff * fFact;
+				if (fDiff < 0.0f)
+				{
+					fFact = 0.8f;
+				}
+
+				fHeight += fDiff * fFact;
+			}
+			else
+			{// k‚Þê‡‚Íˆêu‚Åk‚Þ
+				fHeight = fDest;
+			}
 
 			// ƒXƒ‰ƒXƒ^[î•ñÝ’è
 			m_info.pThruster[i].pFire->SetHeight(fHeight);
@@ -1414,7 +1421,7 @@ void CPlayer::SetParticleBoost(void)
 			rot.x *= -1;
 			rot.x += D3DX_PI;
 
-			CParticle::Create(posBoost, CParticle::TYPE::TYPE_BEAM_BLADE, rot, m_info.pThruster[i].pFire->GetAdressPos());
+			CParticle::Create(posBoost, CParticle::TYPE::TYPE_BOOST, rot, m_info.pThruster[i].pFire->GetAdressPos());
 		}
 	}
 

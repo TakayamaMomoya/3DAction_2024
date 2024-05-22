@@ -33,6 +33,7 @@ public:
 		TYPE_EXPLOSION_SMOKE_BIG,	// 爆発の煙
 		TYPE_EXPLOSION_FIRE_BIG,	// 爆発の火
 		TYPE_APPER_SMOKE,	// 出現煙
+		TYPE_BOOST,	// ブースト
 		TYPE_MAX
 	}TYPE;
 
