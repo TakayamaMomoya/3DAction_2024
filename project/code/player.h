@@ -13,6 +13,7 @@
 //*****************************************************
 #include "motion.h"
 #include <iostream>
+#include <list>
 
 //*****************************************************
 // 前方宣言
@@ -39,6 +40,7 @@ public:
 		MOTION_SHOT,	// 射撃
 		MOTION_JUMP,	// ジャンプ
 		MOTION_AIR,	// 滞空
+		MOTION_FALL,	// 降下
 		MOTION_ASSAULT,	// 突進状態
 		MOTION_MELEE,	// 近接攻撃
 		MOTION_MELEE2,	// ２回目の近接攻撃
@@ -82,11 +84,18 @@ public:
 		PARAM_MELEE,	// 近接武器の熱
 		PARAM_MAX
 	};
+	struct SDamageQuake
+	{
+		float fLineMin;	// 揺らす最小ダメージ
+		float fLineMax;	// 揺らす最大ダメージ
+		float fPowQuake;	// 揺らす強さ
+		int nFrameQuake;	// 揺れるフレーム数
+	};
 	struct SParam
 	{
 		std::string pathBody;	// 見た目のパス
-		float fSpeedMove;		// 移動速度
 		float fInitialLife;	// 初期体力
+		float fSpeedMove;		// 移動速度
 		float fFactMove;	// 移動量の減衰係数
 		float fInitialBoost;		// ブースト残量初期値
 		float fRegenBoost;	// ブーストの回復量
@@ -95,6 +104,7 @@ public:
 		float fDamageBullet;	// 弾の威力
 		float fAccuracyBullet;	// 弾の精度
 		float fPowJump;	// ジャンプ力
+		float fSpeedDodge;	// 回避の速度
 		float fPowStamp;	// 踏みつけの垂直推進力
 		float fSpeedStamp;	// 踏みつけの水平推進力
 		float fPowAddMelee;	// 追撃時の推進力
@@ -148,6 +158,7 @@ public:
 		bool bAddAttack;	// 追加攻撃
 		bool bGrab;	// 掴み
 		bool bAir;	// 滞空
+		bool bFall;	// 落下
 		bool bStop;	// 急停止
 	};
 
@@ -202,6 +213,7 @@ private:
 	SInfo m_info;	// 自身の情報
 	SParam m_param;	// パラメータ情報
 	SFragMotion m_fragMotion;	// モーションのフラグ
+	std::list<SDamageQuake> m_listDamageQuake;	// 被弾時のカメラ揺れパラメーター
 	static CPlayer *m_pPlayer;	// 自身のポインタ
 };
 

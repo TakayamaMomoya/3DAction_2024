@@ -23,7 +23,6 @@
 //*****************************************************
 namespace
 {
-const float SPEED_DODGE = 100.0f;	// 回避推進力
 const float SPEED_ASSAULT = 7.0f;	// 突進の移動速度
 const float MIN_ANGLE_CAMERA = D3DX_PI * 0.1f;	// カメラの下を見る制限
 const float MAX_ANGLE_CAMERA = D3DX_PI * 0.9f;	// カメラの上を見る制限
@@ -77,9 +76,7 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 	CInputManager *pInputManager = CInputManager::GetInstance();
 
 	if (pInputManager == nullptr)
-	{// 入力取得失敗
 		return;
-	}
 
 	// カメラ取得
 	CCamera *pCamera = CManager::GetCamera();
@@ -201,10 +198,11 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 			vecMove *= fScale;
 		}
 
+		// ジャンプ操作
 		if (pInfo->bLand)
 		{
 			if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
-			{// ジャンプ操作
+			{// 地上用のジャンプ
 				pFragMotion->bJump = true;
 				pFragMotion->bMove = false;
 
@@ -214,9 +212,9 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 		else
 		{
 			if (pInfo->stateBoost != CPlayer::STATEBOOST_OVERHEAT)
-			{
+			{// 空中のジャンプ操作はブースト容量が必要
 				if (pInputManager->GetTrigger(CInputManager::BUTTON_JUMP))
-				{
+				{// ジャンプボタンを押した瞬間だけ音を鳴らす
 					Sound::Play(CSound::LABEL_SE_BOOST00);
 				}
 
@@ -225,12 +223,20 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 					vecMove.y += 1.0f;
 
 					pPlayer->AddBoost(-3.0f);
-				};
+
+					pFragMotion->bFall = false;
+				}
+				else if(pFragMotion->bAir)
+				{
+					pFragMotion->bFall = true;
+				}
 			}
 
+			// 踏みつけ判定
 			pPlayer->Stamp();
 		}
 
+		// 入力方向の取得
 		float fAngleInput = atan2f(axisMove.x, axisMove.z);
 
 		if (pInfo->stateBoost != CPlayer::STATEBOOST_OVERHEAT)
@@ -239,9 +245,9 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 			{// ブースト回避
 				vecMove +=
 				{
-					sinf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
-						0.0f,
-						cosf(pInfoCamera->rot.y + fAngleInput) * SPEED_DODGE,
+					sinf(pInfoCamera->rot.y + fAngleInput) * param.fSpeedDodge,
+					0.0f,
+					cosf(pInfoCamera->rot.y + fAngleInput) * param.fSpeedDodge,
 				};
 
 				pPlayer->AddBoost(-50.0f);
@@ -252,12 +258,13 @@ void CPlayerControllerMove::Update(CPlayer *pPlayer)
 			}
 		}
 
+		// 移動量の反映
 		move += vecMove;
 
 		pPlayer->SetMove(move);
 	}
 	else if (nMotion == CPlayer::MOTION_ASSAULT)
-	{
+	{// 突進時の推進
 		pPlayer->AddMoveForward(SPEED_ASSAULT);
 	}
 }

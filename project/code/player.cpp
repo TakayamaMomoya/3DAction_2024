@@ -45,12 +45,7 @@
 //*****************************************************
 namespace
 {
-const float POW_QUAKE_LOW_DAMAGE = 0.2f;	// é„çUåÇÉqÉbÉgéûÇÃâÊñ óhÇÍã≠ìx
-const int TIME_QUAKE_LOW_DAMAGE = 10;	// é„çUåÇÉqÉbÉgéûÇÃâÊñ óhÇÍéûä‘
-const float POW_QUAKE_MIDDLE_DAMAGE = 0.2f;	// íÜçUåÇÉqÉbÉgéûÇÃâÊñ óhÇÍã≠ìx
-const int TIME_QUAKE_MIDDLE_DAMAGE = 10;	// íÜçUåÇÉqÉbÉgéûÇÃâÊñ óhÇÍéûä‘
-const float POW_QUAKE_HIGH_DAMAGE = 0.2f;	// ã≠çUåÇÉqÉbÉgéûÇÃâÊñ óhÇÍã≠ìx
-const int TIME_QUAKE_HIGH_DAMAGE = 20;	// ã≠çUåÇÉqÉbÉgéûÇÃâÊñ óhÇÍéûä‘
+const float LIMIT_HEIGHT = 4000.0f;	// çÇÇ≥êßå¿
 const D3DXVECTOR3 POS_PARAM[CPlayer::PARAM_MAX] =
 {// ÉpÉâÉÅÅ[É^ï\é¶ÇÃà íu
 	{SCREEN_WIDTH * 0.5f - 370.0f,SCREEN_HEIGHT * 0.5f - 100.0f,0.0f},// èe
@@ -296,6 +291,13 @@ void CPlayer::Load(void)
 				(void)fscanf(pFile, "%f", &m_param.fPowJump);
 			}
 
+			if (strcmp(cTemp, "SPEED_DODGE") == 0)
+			{// âÒîë¨ìx
+				(void)fscanf(pFile, "%s", &cTemp[0]);
+
+				(void)fscanf(pFile, "%f", &m_param.fSpeedDodge);
+			}
+
 			if (strcmp(cTemp, "SPEED_STAMP") == 0)
 			{// ì•Ç›Ç¬ÇØÇÃêÖïΩêÑêióÕ
 				(void)fscanf(pFile, "%s", &cTemp[0]);
@@ -350,6 +352,45 @@ void CPlayer::Load(void)
 				(void)fscanf(pFile, "%s", &cTemp[0]);
 
 				(void)fscanf(pFile, "%f", &m_param.fSizeHitEffect);
+			}
+
+			if (strcmp(cTemp, "QUAKESET") == 0)
+			{
+				while (true)
+				{
+					SDamageQuake m_quake;
+
+					(void)fscanf(pFile, "%s", &cTemp[0]);
+
+					if (strcmp(cTemp, "LINE") == 0)
+					{// óhÇÍÇÃÇµÇ´Ç¢íl
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%f", &m_quake.fLineMin);
+						(void)fscanf(pFile, "%f", &m_quake.fLineMax);
+					}
+
+					if (strcmp(cTemp, "POW") == 0)
+					{// óhÇÍÇÃã≠Ç≥
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%f", &m_quake.fPowQuake);
+					}
+
+					if (strcmp(cTemp, "FRAME") == 0)
+					{// óhÇÍÇÃí∑Ç≥
+						(void)fscanf(pFile, "%s", &cTemp[0]);
+
+						(void)fscanf(pFile, "%d", &m_quake.nFrameQuake);
+					}
+
+					if (strcmp(cTemp, "END_QUAKESET") == 0)
+					{
+						m_listDamageQuake.push_back(m_quake);
+
+						break;
+					}
+				}
 			}
 
 			if (strcmp(cTemp, "NUM_THRUSTER") == 0)
@@ -969,9 +1010,9 @@ void CPlayer::ManageCollision(void)
 
 		m_info.pCollisionSphere->PushCollision(&pos, CCollision::TAG::TAG_ENEMY);
 
-		if (pos.y > 4000.0f)
+		if (pos.y > LIMIT_HEIGHT)
 		{
-			pos.y = 4000.0f;
+			pos.y = LIMIT_HEIGHT;
 		}
 
 		SetPosition(pos);
@@ -981,10 +1022,11 @@ void CPlayer::ManageCollision(void)
 
 		if (m_info.bLand)
 		{
-			if (nMotion == MOTION_AIR)
+			if (nMotion == MOTION_AIR || nMotion == MOTION_FALL)
 			{
 				m_fragMotion.bJump = false;
 				m_fragMotion.bAir = false;
+				m_fragMotion.bFall = false;
 			}
 		}
 	}
@@ -1150,6 +1192,13 @@ void CPlayer::ManageMotion(void)
 			{
 				m_fragMotion.bShot = false;
 			}
+		}
+	}
+	else if (m_fragMotion.bFall)
+	{// ç~â∫ÉÇÅ[ÉVÉáÉì
+		if (nMotion != MOTION_FALL)
+		{
+			SetMotion(MOTION_FALL);
 		}
 	}
 	else if (m_fragMotion.bAir)
@@ -1764,17 +1813,10 @@ void CPlayer::Hit(float fDamage)
 
 			if (pCamera != nullptr)
 			{
-				if (fDamage < 0.5f)
+				for (SDamageQuake quake : m_listDamageQuake)
 				{
-					pCamera->SetQuake(POW_QUAKE_LOW_DAMAGE, POW_QUAKE_LOW_DAMAGE, TIME_QUAKE_LOW_DAMAGE);
-				}
-				else if (fDamage < 1.0f)
-				{
-					pCamera->SetQuake(POW_QUAKE_MIDDLE_DAMAGE, POW_QUAKE_MIDDLE_DAMAGE, TIME_QUAKE_MIDDLE_DAMAGE);
-				}
-				else
-				{
-					pCamera->SetQuake(POW_QUAKE_HIGH_DAMAGE, POW_QUAKE_HIGH_DAMAGE, TIME_QUAKE_HIGH_DAMAGE);
+					if (fDamage >= quake.fLineMin && fDamage < quake.fLineMax)
+						pCamera->SetQuake(quake.fPowQuake, quake.fPowQuake, quake.nFrameQuake);
 				}
 			}
 		}

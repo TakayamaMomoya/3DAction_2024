@@ -14,22 +14,23 @@ LIFE = 300.0	# 初期体力
 SPEED_MOVE = 1.6	# 移動速度
 FACT_MOVE = 0.04	# 移動量の減衰係数
 BOOST = 200.0	# ブースト最大量
-REGEN_BOOST = 2.5	// ブースト回復量
-GRAVITY = 0.50	// 重力
-SPEED_BULLET = 200.0	// 弾速
-DAMAGE_BULLET = 1.0	// 弾の威力
-ACC_SHOT = 60	// 射撃精度のランダム幅
-POW_JUMP = 20.0	// ジャンプ力
-POW_STAMP = 30.0	// 踏みつけの推進力
-SPEED_STAMP = 70.0	// 踏みつけ水平推進力
-POW_ADDMELEE = 70.0	// 追撃の推進力
-POW_GRAB = 50.0	// 掴みの推進力
-RADIUS_GRAB = 500.0	// 掴みの判定
-POW_THROW = 200.0	// 投げの力
-LENGTH_LOCKON = 5000.0	// ロックオンの長さ
-MELEE_DIST = 500.0	// 格闘に移る距離
-DECREASE_PARAM = 2.0	// パラメータ全回復にかかる時間
-SIZE_HITEFFECT = 600.0	// ヒットエフェクトのサイズ
+REGEN_BOOST = 2.5	# ブースト回復量
+GRAVITY = 0.50	# 重力
+SPEED_BULLET = 200.0	# 弾速
+DAMAGE_BULLET = 1.0	# 弾の威力
+ACC_SHOT = 60	# 射撃精度のランダム幅
+SPEED_DODGE = 100.0	# 回避速度
+POW_JUMP = 20.0	# ジャンプ力
+POW_STAMP = 30.0	# 踏みつけの推進力
+SPEED_STAMP = 70.0	# 踏みつけ水平推進力
+POW_ADDMELEE = 70.0	# 追撃の推進力
+POW_GRAB = 50.0	# 掴みの推進力
+RADIUS_GRAB = 500.0	# 掴みの判定
+POW_THROW = 200.0	# 投げの力
+LENGTH_LOCKON = 5000.0	# ロックオンの長さ
+MELEE_DIST = 500.0	# 格闘に移る距離
+DECREASE_PARAM = 2.0	# パラメータ全回復にかかる時間
+SIZE_HITEFFECT = 600.0	# ヒットエフェクトのサイズ
 
 #====================================================================
 # ヒット時の画面揺れ
@@ -37,19 +38,19 @@ SIZE_HITEFFECT = 600.0	// ヒットエフェクトのサイズ
 QUAKESET	# 弱攻撃に対する揺れ
 	LINE = 0.0 0.5	# 左値以上、右値以下のダメージで揺らす
 	POW = 0.2
-	TIME = 10
+	FRAME = 10
 END_QUAKESET
 
 QUAKESET	# 中攻撃に対する揺れ
 	LINE = 0.5 1.0
 	POW = 0.3
-	TIME = 10
+	FRAME = 10
 END_QUAKESET
 
 QUAKESET	# 強攻撃に対する揺れ
 	LINE = 1.0 1000.0
 	POW = 0.3
-	TIME = 20
+	FRAME = 20
 END_QUAKESET
 
 #====================================================================
